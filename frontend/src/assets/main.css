@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply min-h-screen;
+  }
+  input:focus, button:focus, select:focus, textarea:focus, a:focus {
+    @apply outline-none ring-2 ring-club-blue/40;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-club-gray-300 rounded-full;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-club-blue text-white hover:bg-club-blue-dark shadow-sm;
+  }
+  .btn-success {
+    @apply btn bg-club-green text-white hover:bg-club-green-dark shadow-sm;
+  }
+  .btn-danger {
+    @apply btn bg-club-red text-white hover:bg-red-600 shadow-sm;
+  }
+  .btn-secondary {
+    @apply btn bg-club-gray-200 text-club-gray-800 hover:bg-club-gray-300;
+  }
+  .btn-outline {
+    @apply btn border-2 border-club-blue text-club-blue hover:bg-club-blue/5;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-club-gray-700 hover:bg-club-gray-200;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-card p-4;
+  }
+  .input {
+    @apply w-full px-4 py-2.5 rounded-lg border border-club-gray-300 bg-white text-club-gray-900 placeholder:text-club-gray-400 focus:border-club-blue focus:ring-2 focus:ring-club-blue/20 transition-all text-sm;
+  }
+  .label {
+    @apply block text-sm font-semibold text-club-gray-700 mb-1.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold;
+  }
+  .badge-dot {
+    @apply absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white bg-club-red;
+  }
+  .page-padding {
+    @apply px-4 py-4 pb-28 max-w-5xl mx-auto;
+  }
+  .title-page {
+    @apply text-2xl font-extrabold text-club-gray-900;
+  }
+  .subtitle-page {
+    @apply text-sm text-club-gray-500 mt-0.5;
+  }
+  .section-title {
+    @apply text-base font-bold text-club-gray-800 mb-2 flex items-center gap-2;
+  }
+}

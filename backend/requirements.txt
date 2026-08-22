@@ -1,0 +1,55 @@
+# ============================================
+# FAMILY HEALTH MF - Backend Dependencies
+# Python 3.10.x EXCLUSIVO (Compatibilidad estricta)
+# Trabajo de Grado - Universidad Antonio Nariño
+# Autor: Luis Fermín Díaz Choles
+# ============================================
+# Python: >=3.10,<3.11
+# ============================================
+
+# --- Core Django ---
+Django==5.0.7
+django-environ==0.11.2
+
+# --- API REST ---
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1
+
+# --- CORS y Seguridad ---
+django-cors-headers==4.4.0
+django-ratelimit==4.1.0
+django-axes==6.3.0
+django-allauth==0.61.1
+argon2-cffi==23.1.0
+
+# --- Campos avanzados ---
+django-hashid-field==3.4.1
+django-phonenumber-field[phonenumbers]==7.3.0
+Pillow==10.3.0
+
+# --- Base de Datos (PostgreSQL para prod) ---
+psycopg2-binary==2.9.9
+
+# --- Reportes y Excel ---
+openpyxl==3.1.5
+reportlab==4.1.0
+
+# --- Fechas y utilidades ---
+python-dateutil==2.9.0.post0
+pytz==2024.1
+
+# --- Pruebas ---
+pytest==8.0.2
+pytest-django==4.8.0
+pytest-cov==5.0.0
+factory-boy==3.3.1
+
+# --- Linting y Formato ---
+black==24.3.0
+flake8==7.0.0
+isort==5.13.2
+mypy==1.9.0
+
+# --- Servidor WSGI para producción ---
+gunicorn==21.2.0
+whitenoise==6.6.0
