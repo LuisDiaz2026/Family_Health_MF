@@ -1,6 +1,6 @@
-# CLUB FAMILY HEALTH MF - Aplicativo Web Integral (TFM UAN)
+# CLUB FAMILY HEALTH MF - Aplicativo Web Integral
 
-> **Trabajo de Grado - Ingeniería de Sistemas**
+> **Ingeniería de Sistemas**
 > Universidad Antonio Nariño (UAN) - Maicao, La Guajira
 > Autor: **Luis Fermín Díaz Choles**
 > NIT Club: 32739028-5
@@ -150,7 +150,7 @@ Los accesos DEMO también son visibles en la pantalla de login del frontend.
 
 ---
 
-## 4. Módulos implementados (6 entregables del TFM)
+## 4. Módulos implementados
 
 ### 4.1 Autenticación + Perfiles RBAC 3 roles
 - Registro CLIENTE con políticas Ley 1581 (doble checkbox).
@@ -192,7 +192,7 @@ Los accesos DEMO también son visibles en la pantalla de login del frontend.
 
 ---
 
-## 5. Seguridad Integral (Cumplimiento TFM)
+## 5. Seguridad Integral
 
 | Controles | Estado |
 |---|---|
@@ -231,15 +231,15 @@ npm.cmd run preview   # Prueba local del build final
 
 ---
 
-## 8. Repositorio Git (Propiedad TFM - Luis Fermín Díaz Choles)
+## 8. Repositorio Git
 
 ```powershell
 cd c:\Family_Health_MF
 git config user.name "Luis Fermín Díaz Choles"
-git config user.email "tu_correo_institucional@uan.edu.co"
+git config user.email "diazcholesl@gmail.com"
 git init
 git add -A
-git commit -m "Release 1.0: Sistema Integral Club Family Health MF (TFM UAN).
+git commit -m "Release 1.0: Sistema Integral Club Family Health MF.
 Backend Django 5 + DRF 6 apps + 14 smoke tests OK.
 Frontend Vue 3 Mobile-First 20+ vistas RBAC cliente/staff.
 Stack: Python 3.10 + Node 18 + SQLite + JWT HS512 + Argon2 + Axes."
@@ -257,7 +257,3 @@ Stack: Python 3.10 + Node 18 + SQLite + JWT HS512 + Argon2 + Axes."
 - ❌ Integraciones terceros (Wompi, PlaceToPay, WhatsApp, etc.).
 
 El prototipo desplegable se sirve en local ejecutando `.\arrancar.bat` como se explicó arriba.
-
----
-
-**¡Felicitaciones Luis!** 🎉 Tu TFM ya tiene un prototipo 100% funcional: backend (API REST validada 14 tests), frontend Mobile-First (20+ vistas, 2 builds producción sin errores), documentación técnica, seed data real y usuarios demo. ¡Mucha suerte con la sustentación!
