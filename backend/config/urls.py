@@ -6,26 +6,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework_simplejwt.views import (
-    TokenBlacklistView,
-    TokenRefreshView,
-)
 
 urlpatterns = [
     # Django Admin
     path("admin/", admin.site.urls),
-
-    # Autenticación JWT
-    path(
-        "api/v1/auth/token/refresh/",
-        TokenRefreshView.as_view(),
-        name="token_refresh",
-    ),
-    path(
-        "api/v1/auth/token/blacklist/",
-        TokenBlacklistView.as_view(),
-        name="token_blacklist",
-    ),
 
     # Apps
     path("api/v1/auth/", include("apps.authentication.urls", namespace="auth")),
