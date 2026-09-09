@@ -3,8 +3,8 @@
     <div class="flex items-start justify-between gap-2">
       <div>
         <div class="flex items-center gap-2">
-          <component :is="spaceIcon" class="w-4 h-4 text-club-blue" />
-          <h3 class="font-bold text-club-gray-900">{{ space?.name || 'Espacio' }}</h3>
+          <component :is="spaceIcon" class="w-4 h-4 text-club-wellness" />
+          <h3 class="font-bold text-club-graphite">{{ space?.name || 'Espacio' }}</h3>
         </div>
         <div class="mt-0.5 text-xs text-club-gray-500">
           {{ formatDate(start_time) }} · {{ formatHour(start_time) }} - {{ formatHour(end_time) }}
@@ -17,7 +17,7 @@
         <span class="inline-flex items-center gap-1"><Users class="w-3.5 h-3.5" /> {{ guests }}</span>
         <span class="inline-flex items-center gap-1"><Clock class="w-3.5 h-3.5" /> {{ durationMin }} min</span>
       </div>
-      <div class="font-bold text-club-gray-900">${{ Number(total_amount || 0).toLocaleString('es-CO') }}</div>
+      <div class="font-bold text-club-graphite">${{ Number(total_amount || 0).toLocaleString('es-CO') }}</div>
     </div>
     <div v-if="showActions && !cancelled && !completed" class="pt-2 flex items-center justify-end gap-2">
       <button
@@ -57,11 +57,11 @@ const props = defineProps({
 defineEmits(['cancel', 'details'])
 
 const STATUS = {
-  PENDING: ['chip bg-club-amber/15 text-[#b45309] border border-club-amber/30', 'Pendiente'],
-  CONFIRMED: ['chip bg-club-blue/15 text-club-blue-dark border border-club-blue/30', 'Confirmada'],
-  COMPLETED: ['chip bg-club-green/15 text-club-green-dark border border-club-green/30', 'Completada'],
+  PENDING: ['chip bg-club-coral/15 text-club-coral-dark border border-club-coral/30', 'Pendiente'],
+  CONFIRMED: ['chip bg-club-forest/15 text-club-forest-dark border border-club-forest/30', 'Confirmada'],
+  COMPLETED: ['chip bg-club-wellness/15 text-club-wellness-dark border border-club-wellness/30', 'Completada'],
   CANCELLED: ['chip bg-club-red/15 text-club-red border border-club-red/30', 'Cancelada'],
-  NO_SHOW: ['chip bg-club-gray-200 text-club-gray-700', 'No asistió'],
+  NO_SHOW: ['chip bg-club-gray-200 text-club-graphite-light', 'No asistió'],
 }
 
 function statusChip(st) { return STATUS[st]?.[0] || STATUS.PENDING[0] }

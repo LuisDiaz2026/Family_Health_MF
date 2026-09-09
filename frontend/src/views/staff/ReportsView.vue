@@ -46,7 +46,7 @@
             </div>
             <div class="h-2 rounded-full bg-club-gray-200 overflow-hidden">
               <div class="h-full rounded-full transition-all"
-                   :style="{ background: t.color || '#0ea5e9', width: pct(t.users) + '%' }"></div>
+                   :style="{ background: t.color || '#174C3C', width: pct(t.users) + '%' }"></div>
             </div>
           </div>
         </div>
@@ -57,16 +57,16 @@
         <SkeletonLoader v-if="loadingTop" />
         <EmptyState v-else-if="!topClients.length" icon="Users" title="Sin datos" />
         <div v-else class="space-y-1.5">
-          <div v-for="(c, i) in topClients" :key="c.id" class="flex items-center gap-3 p-2 rounded-lg hover:bg-club-gray-50">
-            <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-club-amber to-club-red text-white text-xs font-black flex items-center justify-center shrink-0">
+          <div v-for="(c, i) in topClients" :key="c.id" class="flex items-center gap-3 p-2 rounded-lg hover:bg-club-ivory-light">
+            <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-club-gold to-club-coral text-white text-xs font-black flex items-center justify-center shrink-0">
               {{ i + 1 }}
             </div>
             <div class="flex-1 min-w-0 text-xs">
-              <div class="font-bold text-club-gray-900 truncate">{{ c.first_name }} {{ c.last_name }}</div>
+              <div class="font-bold text-club-graphite truncate">{{ c.first_name }} {{ c.last_name }}</div>
               <div class="text-club-gray-500">{{ c.username }}</div>
             </div>
             <div class="text-right shrink-0 text-xs">
-              <div class="font-black text-club-green">${{ formatMoney(c.total_spent || 0) }}</div>
+              <div class="font-black text-club-gold-dark">${{ formatMoney(c.total_spent || 0) }}</div>
               <div class="text-club-gray-500">{{ c.reservations_count || 0 }}R · {{ c.orders_count || 0 }}P</div>
             </div>
           </div>
@@ -96,12 +96,12 @@ const Metric = {
     return () => h('div', {
       class: [
         'p-3 rounded-xl border',
-        props.highlight ? 'border-club-green/30 bg-club-green/5' : 'border-club-gray-100 bg-white'
+        props.highlight ? 'border-club-gold/30 bg-club-gold/5' : 'border-club-gray-100 bg-white'
       ]
     }, [
       h('div', { class: 'text-[10px] uppercase tracking-wide font-bold text-club-gray-500' }, props.label),
       h('div', {
-        class: ['mt-1 font-black text-club-gray-900 text-lg', props.highlight ? '!text-club-green-dark !text-xl' : '']
+        class: ['mt-1 font-black text-club-graphite text-lg', props.highlight ? '!text-club-gold-dark !text-xl' : '']
       }, props.value ?? 0)
     ])
   }

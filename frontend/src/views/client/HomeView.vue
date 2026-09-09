@@ -1,6 +1,6 @@
 <template>
   <div class="page-padding space-y-5">
-    <section class="rounded-2xl p-5 text-white relative overflow-hidden bg-gradient-to-br from-club-blue via-sky-600 to-club-green">
+    <section class="rounded-2xl p-5 text-white relative overflow-hidden bg-gradient-to-br from-club-forest via-club-wellness to-club-gold">
       <div class="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white/10" />
       <div class="absolute right-10 bottom-0 w-20 h-20 rounded-full bg-white/10" />
       <div class="relative">
@@ -30,7 +30,7 @@
           <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white" :style="{ background: s.color }">
             <component :is="s.icon" class="w-5 h-5" />
           </div>
-          <span class="text-[11px] font-semibold text-club-gray-800 text-center leading-tight">{{ s.label }}</span>
+          <span class="text-[11px] font-semibold text-club-graphite-light text-center leading-tight">{{ s.label }}</span>
         </button>
       </div>
     </section>
@@ -38,7 +38,7 @@
     <section>
       <div class="flex items-center justify-between mb-3">
         <div class="section-title !mb-0">Reservas recientes</div>
-        <button class="text-xs font-bold text-club-blue hover:underline" @click="$router.push({ name: 'client-reservations' })">Ver todas</button>
+        <button class="text-xs font-bold text-club-forest hover:underline" @click="$router.push({ name: 'client-reservations' })">Ver todas</button>
       </div>
       <template v-if="loadingReservations"><SkeletonLoader text="Cargando reservas..." /></template>
       <EmptyState
@@ -63,7 +63,7 @@
     <section>
       <div class="flex items-center justify-between mb-3">
         <div class="section-title !mb-0">Ofertas refresquería</div>
-        <button class="text-xs font-bold text-club-blue hover:underline" @click="$router.push({ name: 'client-refreshments' })">Ver catálogo</button>
+        <button class="text-xs font-bold text-club-forest hover:underline" @click="$router.push({ name: 'client-refreshments' })">Ver catálogo</button>
       </div>
       <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory">
         <div
@@ -73,13 +73,13 @@
           @click="$router.push({ name: 'client-refreshments' })"
         >
           <div class="text-[10px] font-bold uppercase chip bg-club-red/15 text-club-red">{{ offer.tag }}</div>
-          <h4 class="font-extrabold text-club-gray-900 mt-2">{{ offer.name }}</h4>
+          <h4 class="font-extrabold text-club-graphite mt-2">{{ offer.name }}</h4>
           <div class="flex items-end justify-between mt-3">
             <div>
               <div class="text-xs text-club-gray-500 line-through">${{ offer.oldPrice.toLocaleString('es-CO') }}</div>
-              <div class="text-xl font-black text-club-green">${{ offer.price.toLocaleString('es-CO') }}</div>
+              <div class="text-xl font-black text-club-gold-dark">${{ offer.price.toLocaleString('es-CO') }}</div>
             </div>
-            <ShoppingBag class="w-7 h-7 text-club-blue" />
+            <ShoppingBag class="w-7 h-7 text-club-forest" />
           </div>
         </div>
       </div>
@@ -125,10 +125,10 @@ const membershipShort = computed(() => {
 })
 
 const shortcuts = [
-  { label: 'Reservar', icon: Calendar, to: { name: 'client-reservations' }, color: '#0ea5e9' },
-  { label: 'Refrescos', icon: ShoppingBag, to: { name: 'client-refreshments' }, color: '#10b981' },
-  { label: 'Puntos', icon: Award, to: { name: 'client-loyalty' }, color: '#f59e0b' },
-  { label: 'Gimnasio', icon: Dumbbell, to: { name: 'client-gym' }, color: '#8b5cf6' },
+  { label: 'Reservar', icon: Calendar, to: { name: 'client-reservations' }, color: '#174C3C' },
+  { label: 'Refrescos', icon: ShoppingBag, to: { name: 'client-refreshments' }, color: '#D7AE58' },
+  { label: 'Puntos', icon: Award, to: { name: 'client-loyalty' }, color: '#E9784A' },
+  { label: 'Gimnasio', icon: Dumbbell, to: { name: 'client-gym' }, color: '#3B8064' },
 ]
 
 const featuredOffers = [

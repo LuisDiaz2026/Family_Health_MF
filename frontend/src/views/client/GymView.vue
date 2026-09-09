@@ -10,11 +10,11 @@
         v-for="g in goals"
         :key="g.value"
         class="card !p-2.5 transition-all"
-        :class="goal === g.value ? 'ring-2 ring-club-blue bg-club-blue/5' : 'hover:bg-club-gray-50'"
+        :class="goal === g.value ? 'ring-2 ring-club-forest bg-club-forest/5' : 'hover:bg-club-ivory'"
         @click="goal = g.value"
       >
         <component :is="g.icon" class="w-5 h-5 mx-auto mb-1" :style="{ color: g.color }" />
-        <div class="text-[11px] font-bold text-club-gray-800 leading-tight">{{ g.label }}</div>
+        <div class="text-[11px] font-bold text-club-graphite-light leading-tight">{{ g.label }}</div>
       </button>
     </div>
 
@@ -44,12 +44,12 @@ const loading = computed(() => store.loading)
 const goal = ref('ALL')
 
 const goals = [
-  { label: 'Todos', value: 'ALL', icon: Sparkles, color: '#0f172a' },
-  { label: 'Fuerza', value: 'STRENGTH', icon: Dumbbell, color: '#0ea5e9' },
-  { label: 'Hipertrofia', value: 'HYPERTROPHY', icon: Target, color: '#8b5cf6' },
-  { label: 'Definición', value: 'DEFINITION', icon: Flame, color: '#10b981' },
-  { label: 'Pérdida Grasa', value: 'WEIGHT_LOSS', icon: Heart, color: '#f59e0b' },
-  { label: 'General', value: 'GENERAL', icon: Sparkles, color: '#0ea5e9' },
+  { label: 'Todos', value: 'ALL', icon: Sparkles, color: '#232927' },
+  { label: 'Fuerza', value: 'STRENGTH', icon: Dumbbell, color: '#174C3C' },
+  { label: 'Hipertrofia', value: 'HYPERTROPHY', icon: Target, color: '#3B8064' },
+  { label: 'Definición', value: 'DEFINITION', icon: Flame, color: '#D7AE58' },
+  { label: 'Pérdida Grasa', value: 'WEIGHT_LOSS', icon: Heart, color: '#E9784A' },
+  { label: 'General', value: 'GENERAL', icon: Sparkles, color: '#174C3C' },
 ]
 
 const filtered = computed(() => {

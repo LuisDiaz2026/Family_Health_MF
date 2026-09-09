@@ -15,8 +15,8 @@
         v-for="f in filters" :key="f.value"
         class="chip whitespace-nowrap !px-3 !py-1.5 !text-xs transition-all"
         :class="activeFilter === f.value
-          ? 'bg-club-blue text-white'
-          : 'bg-white border border-club-gray-200 text-club-gray-700'"
+          ? 'bg-club-forest text-white'
+          : 'bg-white border border-club-gray-200 text-club-graphite-light'"
         @click="activeFilter = f.value"
       >{{ f.label }}</button>
     </div>

@@ -17,7 +17,7 @@
         v-for="c in categories"
         :key="c.id || c.name"
         class="chip whitespace-nowrap !px-3 !py-1.5 !text-xs"
-        :class="cat === c.name ? 'bg-club-green text-white' : 'bg-white border border-club-gray-200 text-club-gray-700'"
+        :class="cat === c.name ? 'bg-club-gold text-club-graphite' : 'bg-white border border-club-gray-200 text-club-graphite-light'"
         @click="cat = c.name"
       >{{ c.name }}</button>
     </div>

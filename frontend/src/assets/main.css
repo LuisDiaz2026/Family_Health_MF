@@ -7,17 +7,17 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    @apply min-h-screen;
+    @apply min-h-screen bg-club-ivory;
   }
   input:focus, button:focus, select:focus, textarea:focus, a:focus {
-    @apply outline-none ring-2 ring-club-blue/40;
+    @apply outline-none ring-2 ring-club-forest/40;
   }
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-club-gray-300 rounded-full;
+    @apply bg-club-graphite/30 rounded-full;
   }
 }
 
@@ -26,34 +26,58 @@
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-primary {
-    @apply btn bg-club-blue text-white hover:bg-club-blue-dark shadow-sm;
+    @apply btn bg-club-forest text-white hover:bg-club-forest-dark shadow-sm;
   }
   .btn-success {
-    @apply btn bg-club-green text-white hover:bg-club-green-dark shadow-sm;
+    @apply btn bg-club-wellness text-white hover:bg-club-wellness-dark shadow-sm;
+  }
+  .btn-gold {
+    @apply btn bg-club-gold text-club-graphite hover:bg-club-gold-dark shadow-sm;
+  }
+  .btn-accent {
+    @apply btn bg-club-coral text-white hover:bg-club-coral-dark shadow-sm;
   }
   .btn-danger {
     @apply btn bg-club-red text-white hover:bg-red-600 shadow-sm;
   }
   .btn-secondary {
-    @apply btn bg-club-gray-200 text-club-gray-800 hover:bg-club-gray-300;
+    @apply btn bg-club-ivory-dark text-club-graphite hover:bg-club-gray-200;
   }
   .btn-outline {
-    @apply btn border-2 border-club-blue text-club-blue hover:bg-club-blue/5;
+    @apply btn border-2 border-club-forest text-club-forest hover:bg-club-forest/5;
+  }
+  .btn-outline-gold {
+    @apply btn border-2 border-club-gold text-club-gold-dark hover:bg-club-gold/10;
   }
   .btn-ghost {
-    @apply btn bg-transparent text-club-gray-700 hover:bg-club-gray-200;
+    @apply btn bg-transparent text-club-graphite-light hover:bg-club-ivory-dark;
   }
   .card {
     @apply bg-white rounded-xl shadow-card p-4;
   }
+  .card-ivory {
+    @apply bg-club-ivory-light rounded-xl shadow-card p-4;
+  }
   .input {
-    @apply w-full px-4 py-2.5 rounded-lg border border-club-gray-300 bg-white text-club-gray-900 placeholder:text-club-gray-400 focus:border-club-blue focus:ring-2 focus:ring-club-blue/20 transition-all text-sm;
+    @apply w-full px-4 py-2.5 rounded-lg border border-club-gray-300 bg-white text-club-graphite placeholder:text-club-gray-400 focus:border-club-forest focus:ring-2 focus:ring-club-forest/20 transition-all text-sm;
   }
   .label {
-    @apply block text-sm font-semibold text-club-gray-700 mb-1.5;
+    @apply block text-sm font-semibold text-club-graphite-light mb-1.5;
   }
   .chip {
     @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold;
+  }
+  .chip-forest {
+    @apply chip bg-club-forest/10 text-club-forest-dark;
+  }
+  .chip-gold {
+    @apply chip bg-club-gold/15 text-club-gold-dark;
+  }
+  .chip-wellness {
+    @apply chip bg-club-wellness/10 text-club-wellness-dark;
+  }
+  .chip-coral {
+    @apply chip bg-club-coral/10 text-club-coral-dark;
   }
   .badge-dot {
     @apply absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white bg-club-red;
@@ -62,12 +86,12 @@
     @apply px-4 py-4 pb-28 max-w-5xl mx-auto;
   }
   .title-page {
-    @apply text-2xl font-extrabold text-club-gray-900;
+    @apply text-2xl font-extrabold text-club-graphite;
   }
   .subtitle-page {
     @apply text-sm text-club-gray-500 mt-0.5;
   }
   .section-title {
-    @apply text-base font-bold text-club-gray-800 mb-2 flex items-center gap-2;
+    @apply text-base font-bold text-club-graphite-light mb-2 flex items-center gap-2;
   }
 }

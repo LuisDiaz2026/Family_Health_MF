@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-full bg-gradient-to-b from-club-blue via-sky-600 to-club-green px-4 py-8">
+  <div class="min-h-screen w-full bg-gradient-to-b from-club-forest via-club-forest-dark to-club-wellness px-4 py-8">
     <div class="w-full max-w-md mx-auto">
       <button class="mb-4 inline-flex items-center gap-1 text-white/90 text-sm font-semibold hover:underline" @click="$router.back()">
         <ArrowLeft class="w-4 h-4" /> Volver
@@ -68,10 +68,10 @@
             </div>
           </div>
 
-          <label class="flex items-start gap-2 p-3 rounded-xl bg-club-blue/5 border border-club-blue/20 text-sm text-club-gray-800 cursor-pointer">
-            <input v-model="form.privacy_policy_accepted" type="checkbox" class="mt-0.5 w-4 h-4 rounded text-club-blue" required />
+          <label class="flex items-start gap-2 p-3 rounded-xl bg-club-forest/5 border border-club-forest/20 text-sm text-club-graphite-light cursor-pointer">
+            <input v-model="form.privacy_policy_accepted" type="checkbox" class="mt-0.5 w-4 h-4 rounded text-club-forest" required />
             <span>
-              Acepto la <a class="text-club-blue font-bold hover:underline" href="#">Política de Tratamiento de Datos Personales (Ley 1581/2012)</a>
+              Acepto la <a class="text-club-forest font-bold hover:underline" href="#">Política de Tratamiento de Datos Personales (Ley 1581/2012)</a>
               y los términos y condiciones del club.
             </span>
           </label>
@@ -84,7 +84,7 @@
 
         <div class="mt-5 pt-4 border-t text-sm text-center text-club-gray-600">
           ¿Ya tienes cuenta?
-          <button class="font-bold text-club-blue hover:underline ml-1" @click="$router.push({ name: 'login' })">
+          <button class="font-bold text-club-forest hover:underline ml-1" @click="$router.push({ name: 'login' })">
             Ingresa aquí
           </button>
         </div>

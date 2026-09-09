@@ -10,7 +10,7 @@
         v-for="f in filters"
         :key="f.value"
         class="chip whitespace-nowrap !px-3 !py-1.5 !text-xs"
-        :class="active === f.value ? 'bg-club-green text-white' : 'bg-white border border-club-gray-200 text-club-gray-700'"
+        :class="active === f.value ? 'bg-club-wellness text-white' : 'bg-white border border-club-gray-200 text-club-gray-700'"
         @click="active = f.value"
       >{{ f.label }}</button>
     </div>
@@ -23,7 +23,7 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="chip" :class="statusChip(o.status)">{{ statusLabel(o.status) }}</span>
-              <span class="chip bg-club-gray-100 text-club-gray-700 !text-[10px]">Pedido #{{ o.id }}</span>
+              <span class="chip bg-club-ivory-dark text-club-gray-700 !text-[10px]">Pedido #{{ o.id }}</span>
             </div>
             <div class="mt-1 text-xs text-club-gray-600">
               <span class="font-bold">Cliente:</span> {{ clientName(o) }}
@@ -32,20 +32,20 @@
           </div>
           <div class="text-right shrink-0">
             <div class="text-xs text-club-gray-500">Total</div>
-            <div class="font-black text-club-green text-lg">${{ formatMoney(o.total_amount) }}</div>
+            <div class="font-black text-club-gold-dark text-lg">${{ formatMoney(o.total_amount) }}</div>
             <div class="text-[10px] text-club-gray-500 mt-0.5">{{ methodLabel(o.payment_method) }}</div>
           </div>
         </div>
-        <div class="rounded-xl bg-club-gray-50 divide-y divide-club-gray-200">
+        <div class="rounded-xl bg-club-ivory-light divide-y divide-club-gray-200">
           <div v-for="it in (o.items || []).slice(0, 10)" :key="it.id || it.product_id" class="flex items-center justify-between p-2 text-xs">
             <div>
-              <span class="font-bold text-club-gray-900">{{ it.quantity }}x</span>
+              <span class="font-bold text-club-graphite">{{ it.quantity }}x</span>
               <span class="ml-1 text-club-gray-800">{{ it.product_name || it.product?.name }}</span>
             </div>
             <span class="font-semibold text-club-gray-700">${{ formatMoney(Number(it.price || 0) * Number(it.quantity || 1)) }}</span>
           </div>
         </div>
-        <div v-if="o.notes" class="text-xs text-club-gray-600 bg-club-amber/5 p-2 rounded-lg border border-club-amber/20">
+        <div v-if="o.notes" class="text-xs text-club-gray-600 bg-club-coral/5 p-2 rounded-lg border border-club-coral/20">
           <span class="font-bold">Notas:</span> {{ o.notes }}
         </div>
         <div class="flex flex-wrap gap-2 pt-2 border-t">
@@ -82,11 +82,11 @@ const filters = [
 const filtered = computed(() => active.value === 'ALL' ? list.value : list.value.filter(o => o.status === active.value))
 
 const STATUS = {
-  PENDING: ['chip bg-club-amber/15 text-[#b45309]', 'Pendiente'],
-  PREPARING: ['chip bg-club-blue/15 text-club-blue-dark', 'Preparando'],
-  READY: ['chip bg-club-purple/15 text-club-purple', 'Listo'],
-  DELIVERED: ['chip bg-club-green/15 text-club-green-dark', 'Entregado'],
-  PAID: ['chip bg-club-green/15 text-club-green-dark', 'Pagado'],
+  PENDING: ['chip bg-club-coral/15 text-club-coral-dark', 'Pendiente'],
+  PREPARING: ['chip bg-club-forest/15 text-club-forest-dark', 'Preparando'],
+  READY: ['chip bg-club-gold/15 text-club-gold-dark', 'Listo'],
+  DELIVERED: ['chip bg-club-wellness/15 text-club-wellness-dark', 'Entregado'],
+  PAID: ['chip bg-club-wellness/15 text-club-wellness-dark', 'Pagado'],
   CANCELLED: ['chip bg-club-red/15 text-club-red', 'Cancelado'],
 }
 function statusChip(s) { return STATUS[s]?.[0] || STATUS.PENDING[0] }

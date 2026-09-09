@@ -32,13 +32,13 @@ const toasts = computed(() => toastState.toasts)
 function styleFor(type) {
   switch (type) {
     case 'success':
-      return 'bg-club-green text-white'
+      return 'bg-club-wellness text-white'
     case 'error':
       return 'bg-club-red text-white'
     case 'warn':
-      return 'bg-club-amber text-white'
+      return 'bg-club-gold text-club-graphite'
     default:
-      return 'bg-club-gray-800 text-white'
+      return 'bg-club-graphite text-white'
   }
 }
 

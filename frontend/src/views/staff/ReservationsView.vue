@@ -10,7 +10,7 @@
         v-for="f in filters"
         :key="f.value"
         class="chip whitespace-nowrap !px-3 !py-1.5 !text-xs"
-        :class="active === f.value ? 'bg-club-blue text-white' : 'bg-white border border-club-gray-200 text-club-gray-700'"
+        :class="active === f.value ? 'bg-club-forest text-white' : 'bg-white border border-club-gray-200 text-club-gray-700'"
         @click="active = f.value"
       >{{ f.label }}</button>
     </div>
@@ -23,9 +23,9 @@
           <div class="min-w-0">
             <div class="flex items-center gap-2">
               <span class="chip" :class="statusChip(r.status)">{{ statusLabel(r.status) }}</span>
-              <span class="chip bg-club-gray-100 text-club-gray-700 !text-[10px]">#{{ r.id }}</span>
+              <span class="chip bg-club-ivory-dark text-club-gray-700 !text-[10px]">#{{ r.id }}</span>
             </div>
-            <div class="font-bold text-sm text-club-gray-900 mt-1.5">{{ r.space?.name || r.space_name || 'Espacio' }}</div>
+            <div class="font-bold text-sm text-club-graphite mt-1.5">{{ r.space?.name || r.space_name || 'Espacio' }}</div>
             <div class="text-xs text-club-gray-500 mt-0.5">{{ formatDateTime(r.start_time) }} a {{ formatHour(r.end_time) }}</div>
             <div class="text-xs text-club-gray-600 mt-0.5">
               <span class="font-semibold">Cliente:</span>
@@ -34,7 +34,7 @@
           </div>
           <div class="text-right shrink-0">
             <div class="text-xs text-club-gray-500">Total</div>
-            <div class="font-black text-club-green text-lg">${{ formatMoney(r.total_amount) }}</div>
+            <div class="font-black text-club-gold-dark text-lg">${{ formatMoney(r.total_amount) }}</div>
           </div>
         </div>
         <div class="flex gap-2 flex-wrap pt-2 border-t">
@@ -70,9 +70,9 @@ const filters = [
 const filtered = computed(() => active.value === 'ALL' ? list.value : list.value.filter(r => r.status === active.value))
 
 const STATUS = {
-  PENDING: ['chip bg-club-amber/15 text-[#b45309] border border-club-amber/30', 'Pendiente'],
-  CONFIRMED: ['chip bg-club-blue/15 text-club-blue-dark border border-club-blue/30', 'Confirmada'],
-  COMPLETED: ['chip bg-club-green/15 text-club-green-dark border border-club-green/30', 'Completada'],
+  PENDING: ['chip bg-club-coral/15 text-club-coral-dark border border-club-coral/30', 'Pendiente'],
+  CONFIRMED: ['chip bg-club-forest/15 text-club-forest-dark border border-club-forest/30', 'Confirmada'],
+  COMPLETED: ['chip bg-club-wellness/15 text-club-wellness-dark border border-club-wellness/30', 'Completada'],
   CANCELLED: ['chip bg-club-red/15 text-club-red border border-club-red/30', 'Cancelada'],
 }
 function statusChip(s) { return STATUS[s]?.[0] || STATUS.PENDING[0] }

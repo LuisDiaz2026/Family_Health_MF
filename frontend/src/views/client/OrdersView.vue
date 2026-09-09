@@ -14,7 +14,7 @@
       <button
         v-for="f in filters" :key="f.value"
         class="chip whitespace-nowrap !px-3 !py-1.5 !text-xs"
-        :class="active === f.value ? 'bg-club-green text-white' : 'bg-white border border-club-gray-200 text-club-gray-700'"
+        :class="active === f.value ? 'bg-club-wellness text-white' : 'bg-white border border-club-gray-200 text-club-graphite-light'"
         @click="active = f.value"
       >{{ f.label }}</button>
     </div>
@@ -25,7 +25,7 @@
       <div v-for="o in filtered" :key="o.id" class="card">
         <div class="flex items-start justify-between gap-2 mb-2">
           <div>
-            <div class="font-bold text-club-gray-900">Pedido #{{ o.id }}</div>
+            <div class="font-bold text-club-graphite">Pedido #{{ o.id }}</div>
             <div class="text-xs text-club-gray-500">{{ formatDate(o.created_at) }}</div>
           </div>
           <span class="chip" :class="statusChip(o.status)">{{ statusLabel(o.status) }}</span>
@@ -39,9 +39,9 @@
         <div class="mt-3 pt-3 border-t flex items-center justify-between text-sm">
           <div>
             <div class="text-xs text-club-gray-500">Total</div>
-            <div class="font-black text-club-green text-lg">${{ Number(o.total_amount || 0).toLocaleString('es-CO') }}</div>
+            <div class="font-black text-club-gold-dark text-lg">${{ Number(o.total_amount || 0).toLocaleString('es-CO') }}</div>
           </div>
-          <span class="chip bg-club-gray-100 text-club-gray-700">{{ methodLabel(o.payment_method) }}</span>
+          <span class="chip bg-club-ivory text-club-graphite-light">{{ methodLabel(o.payment_method) }}</span>
         </div>
       </div>
     </div>
@@ -75,11 +75,11 @@ const filtered = computed(() => {
 })
 
 const STATUS = {
-  PENDING: ['chip bg-club-amber/15 text-[#b45309]', 'Pendiente'],
-  PREPARING: ['chip bg-club-blue/15 text-club-blue-dark', 'Preparando'],
-  READY: ['chip bg-club-purple/15 text-club-purple', 'Listo para retirar'],
-  DELIVERED: ['chip bg-club-green/15 text-club-green-dark', 'Entregado'],
-  PAID: ['chip bg-club-green/15 text-club-green-dark', 'Pagado'],
+  PENDING: ['chip bg-club-coral/15 text-club-coral-dark', 'Pendiente'],
+  PREPARING: ['chip bg-club-forest/15 text-club-forest-dark', 'Preparando'],
+  READY: ['chip bg-club-gold/15 text-club-gold-dark', 'Listo para retirar'],
+  DELIVERED: ['chip bg-club-wellness/15 text-club-wellness-dark', 'Entregado'],
+  PAID: ['chip bg-club-wellness/15 text-club-wellness-dark', 'Pagado'],
   CANCELLED: ['chip bg-club-red/15 text-club-red', 'Cancelado'],
 }
 function statusChip(s) { return STATUS[s]?.[0] || STATUS.PENDING[0] }

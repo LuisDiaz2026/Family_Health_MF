@@ -1,16 +1,16 @@
 <template>
   <div class="card flex gap-3">
-    <div class="w-20 h-20 shrink-0 rounded-lg bg-club-gray-100 flex items-center justify-center text-2xl overflow-hidden">
+    <div class="w-20 h-20 shrink-0 rounded-lg bg-club-ivory flex items-center justify-center text-2xl overflow-hidden">
       <span v-if="product.image"><img :src="product.image" class="w-full h-full object-cover" /></span>
       <component v-else :is="iconFor(product)" class="w-8 h-8 text-club-gray-400" />
     </div>
     <div class="flex-1 min-w-0 flex flex-col">
       <div class="flex items-start justify-between gap-2">
         <div class="min-w-0">
-          <h4 class="font-bold text-sm text-club-gray-900 truncate">{{ product.name }}</h4>
+          <h4 class="font-bold text-sm text-club-graphite truncate">{{ product.name }}</h4>
           <div class="text-[11px] text-club-gray-500 mt-0.5 truncate">{{ product.sku || '' }} · {{ stockLabel }}</div>
         </div>
-        <span class="chip bg-club-green/10 text-club-green-dark whitespace-nowrap">
+        <span class="chip-gold whitespace-nowrap">
           ${{ Number(product.price || 0).toLocaleString('es-CO') }}
         </span>
       </div>
@@ -29,7 +29,7 @@
             class="btn-ghost !p-1.5 !rounded-lg text-club-gray-700"
             @click="$emit('decrease')"
           ><Minus class="w-4 h-4" /></button>
-          <span v-if="quantity > 0" class="w-7 text-center text-sm font-bold text-club-gray-900">{{ quantity }}</span>
+          <span v-if="quantity > 0" class="w-7 text-center text-sm font-bold text-club-graphite">{{ quantity }}</span>
           <button
             class="btn-primary !py-1.5 !px-2.5 text-xs"
             :disabled="(product.stock || 0) <= 0"

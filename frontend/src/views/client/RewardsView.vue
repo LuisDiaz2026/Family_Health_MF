@@ -2,20 +2,20 @@
   <div class="page-padding space-y-4">
     <div>
       <h1 class="title-page">Catálogo de premios</h1>
-      <p class="subtitle-page">Tus puntos: <span class="font-bold text-club-green">{{ auth.currentPoints }}</span></p>
+      <p class="subtitle-page">Tus puntos: <span class="font-bold text-club-gold-dark">{{ auth.currentPoints }}</span></p>
     </div>
 
     <SkeletonLoader v-if="loading" />
     <EmptyState v-else-if="!items.length" icon="Gift" title="Catálogo vacío" description="Pronto tendremos nuevos premios." />
     <div v-else class="grid grid-cols-2 gap-3">
       <div v-for="it in items" :key="it.id" class="card !p-3 flex flex-col">
-        <div class="aspect-square rounded-xl bg-gradient-to-br from-club-blue/10 to-club-green/10 flex items-center justify-center text-4xl mb-2.5">
-          <Gift class="w-9 h-9 text-club-blue" />
+        <div class="aspect-square rounded-xl bg-gradient-to-br from-club-gold/10 to-club-wellness/10 flex items-center justify-center text-4xl mb-2.5">
+          <Gift class="w-9 h-9 text-club-forest" />
         </div>
-        <h4 class="font-bold text-sm text-club-gray-900 leading-tight mb-0.5">{{ it.name }}</h4>
+        <h4 class="font-bold text-sm text-club-graphite leading-tight mb-0.5">{{ it.name }}</h4>
         <p v-if="it.description" class="text-[11px] text-club-gray-500 line-clamp-2 mb-2">{{ it.description }}</p>
         <div class="mt-auto flex items-center justify-between">
-          <span class="font-black text-club-amber">{{ it.points_cost }} pts</span>
+          <span class="font-black text-club-gold-dark">{{ it.points_cost }} pts</span>
           <button
             class="btn-primary !py-1.5 !px-2.5 !text-xs"
             :disabled="(auth.currentPoints || 0) < it.points_cost || loadingRedeem"

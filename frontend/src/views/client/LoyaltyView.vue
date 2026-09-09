@@ -1,7 +1,7 @@
 <template>
   <div class="page-padding space-y-4">
     <section class="rounded-2xl p-5 text-white relative overflow-hidden"
-             :style="{ background: `linear-gradient(135deg, ${tierColor || '#0ea5e9'}, #0f172a)` }">
+             :style="{ background: `linear-gradient(135deg, ${tierColor || '#174C3C'}, #232927)` }">
       <div class="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-white/10" />
       <div class="relative flex items-center gap-3">
         <div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-black border border-white/30">
@@ -41,22 +41,22 @@
     <section>
       <div class="flex items-center justify-between">
         <div class="section-title">Niveles de fidelidad</div>
-        <button class="text-xs font-bold text-club-blue hover:underline" @click="$router.push({ name: 'client-rewards' })">
+        <button class="text-xs font-bold text-club-forest hover:underline" @click="$router.push({ name: 'client-rewards' })">
           Canjear puntos
         </button>
       </div>
       <div class="space-y-2">
         <div v-for="t in tiers" :key="t.id"
              class="card flex items-center gap-3 !p-3"
-             :class="{ 'ring-2 ring-club-blue bg-club-blue/5': t.name === tierName }">
+             :class="{ 'ring-2 ring-club-forest bg-club-forest/5': t.name === tierName }">
           <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-black" :style="{ background: colorFor(t.name) }">
             {{ t.name.charAt(0) }}
           </div>
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-club-gray-900">{{ t.name }}</div>
+            <div class="font-bold text-club-graphite">{{ t.name }}</div>
             <div class="text-xs text-club-gray-500">Desde {{ t.min_points }} pts · {{ t.discount_percent }}% descuento</div>
           </div>
-          <component v-if="t.name === tierName" :is="CheckCircle2" class="w-5 h-5 text-club-blue" />
+          <component v-if="t.name === tierName" :is="CheckCircle2" class="w-5 h-5 text-club-forest" />
         </div>
       </div>
     </section>
@@ -65,8 +65,8 @@
       <div class="section-title">¿Cómo ganar puntos?</div>
       <div class="grid grid-cols-2 gap-3">
         <div v-for="r in rules" :key="r.id || r.action_type" class="card !p-3 flex flex-col gap-1">
-          <div class="text-xs font-bold text-club-blue uppercase">{{ r.action_type }}</div>
-          <div class="font-bold text-club-gray-900">{{ r.points_amount || 0 }} pts</div>
+          <div class="text-xs font-bold text-club-forest uppercase">{{ r.action_type }}</div>
+          <div class="font-bold text-club-graphite">{{ r.points_amount || 0 }} pts</div>
           <div class="text-[11px] text-club-gray-500 leading-snug">{{ r.description || '' }}</div>
         </div>
       </div>
@@ -79,15 +79,15 @@
       <div v-else class="space-y-2">
         <div v-for="t in txList" :key="t.id" class="card flex items-center gap-3 !p-3">
           <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-               :class="t.amount >= 0 ? 'bg-club-green/15 text-club-green' : 'bg-club-red/15 text-club-red'">
+               :class="t.amount >= 0 ? 'bg-club-wellness/15 text-club-wellness' : 'bg-club-red/15 text-club-red'">
             <TrendingUp v-if="t.amount >= 0" class="w-4 h-4" />
             <TrendingDown v-else class="w-4 h-4" />
           </div>
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-sm text-club-gray-900 truncate">{{ t.description || t.transaction_type }}</div>
+            <div class="font-bold text-sm text-club-graphite truncate">{{ t.description || t.transaction_type }}</div>
             <div class="text-[11px] text-club-gray-500">{{ formatDate(t.created_at) }}</div>
           </div>
-          <div class="font-black" :class="t.amount >= 0 ? 'text-club-green' : 'text-club-red'">
+          <div class="font-black" :class="t.amount >= 0 ? 'text-club-wellness-dark' : 'text-club-red'">
             {{ t.amount >= 0 ? '+' : '' }}{{ t.amount }}
           </div>
         </div>
@@ -119,10 +119,10 @@ const referrals = computed(() => auth.user?.loyalty?.referrals_count ?? auth.use
 const tierColor = computed(() => colorFor(tierName.value))
 function colorFor(name) {
   switch ((name || '').toLowerCase()) {
-    case 'plata': return '#94a3b8'
-    case 'oro': return '#eab308'
-    case 'diamante': return '#67e8f9'
-    default: return '#cd7f32'
+    case 'plata': return '#c0c0c0'
+    case 'oro': return '#D7AE58'
+    case 'diamante': return '#3B8064'
+    default: return '#174C3C'
   }
 }
 

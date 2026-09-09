@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-club-gray-100 flex flex-col max-w-2xl mx-auto">
+  <div class="min-h-screen bg-club-ivory flex flex-col max-w-2xl mx-auto">
     <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-club-gray-200 px-4 py-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2 min-w-0">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-club-blue to-club-green flex items-center justify-center text-white font-black text-lg shadow-sm">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-club-forest to-club-gold flex items-center justify-center text-white font-black text-lg shadow-sm">
             CF
           </div>
           <div class="min-w-0">
@@ -12,13 +12,13 @@
           </div>
         </div>
         <div class="flex items-center gap-1.5">
-          <button class="btn-ghost !p-2 !rounded-full relative" @click="$router.push(nameNotifications)">
+          <button class="btn-ghost !p-2 !rounded-full relative" @click="$router.push({ name: nameNotifications })">
             <Bell class="w-5 h-5 text-club-gray-700" />
             <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-club-red text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
               {{ unreadCount > 99 ? '99+' : unreadCount }}
             </span>
           </button>
-          <button class="btn-ghost !p-2 !rounded-full" @click="$router.push(nameProfile)">
+          <button class="btn-ghost !p-2 !rounded-full" @click="$router.push({ name: nameProfile })">
             <User class="w-5 h-5 text-club-gray-700" />
           </button>
         </div>
@@ -41,8 +41,8 @@
           @click="$router.push(item.to)"
           class="flex flex-col items-center justify-center py-2.5 px-1 gap-0.5 transition-colors"
           :class="activeRoute(item.to.name)
-            ? 'text-club-blue'
-            : 'text-club-gray-500 hover:text-club-gray-800'"
+            ? 'text-club-forest'
+            : 'text-club-gray-500 hover:text-club-graphite'"
         >
           <component :is="item.icon" class="w-5 h-5" :stroke-width="activeRoute(item.to.name) ? 2.6 : 2" />
           <span class="text-[10px] font-semibold truncate max-w-full px-1">{{ item.label }}</span>

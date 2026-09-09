@@ -14,13 +14,13 @@
     <EmptyState v-else-if="!filtered.length" icon="Users" title="Sin clientes" description="Invita a nuevos clientes a registrarse." />
     <div v-else class="space-y-2">
       <div v-for="c in filtered" :key="c.id" class="card !p-3 flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-club-blue to-club-green text-white font-black flex items-center justify-center text-sm shrink-0">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-club-forest to-club-gold text-white font-black flex items-center justify-center text-sm shrink-0">
           {{ initials(c) }}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-2">
-            <div class="font-bold text-sm text-club-gray-900 truncate">{{ c.first_name }} {{ c.last_name }}</div>
-            <span class="chip" :class="c.is_active ? 'bg-club-green/15 text-club-green-dark' : 'bg-club-red/15 text-club-red'">
+            <div class="font-bold text-sm text-club-graphite truncate">{{ c.first_name }} {{ c.last_name }}</div>
+            <span class="chip" :class="c.is_active ? 'bg-club-wellness/15 text-club-wellness-dark' : 'bg-club-red/15 text-club-red'">
               {{ c.is_active ? 'Activo' : 'Inactivo' }}
             </span>
           </div>
@@ -28,11 +28,11 @@
             @{{ c.username }} · {{ c.document_type || '' }} {{ c.document_number || '' }}
           </div>
           <div class="text-xs text-club-gray-600 mt-1 flex flex-wrap gap-1.5">
-            <span class="chip bg-club-blue/10 text-club-blue-dark">{{ c.membership_type || 'Básica' }}</span>
-            <span v-if="c.loyalty_profile?.tier" class="chip bg-club-amber/15 text-[#b45309]">
+            <span class="chip bg-club-forest/10 text-club-forest-dark">{{ c.membership_type || 'Básica' }}</span>
+            <span v-if="c.loyalty_profile?.tier" class="chip bg-club-gold/15 text-club-gold-dark">
               {{ c.loyalty_profile.tier.name || c.loyalty_profile.tier }}
             </span>
-            <span class="chip bg-club-gray-100 text-club-gray-700">{{ c.phone || c.email }}</span>
+            <span class="chip bg-club-ivory-dark text-club-gray-700">{{ c.phone || c.email }}</span>
           </div>
         </div>
       </div>

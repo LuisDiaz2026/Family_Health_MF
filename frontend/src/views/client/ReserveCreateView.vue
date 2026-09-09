@@ -1,6 +1,6 @@
 <template>
   <div class="page-padding space-y-4">
-    <button class="inline-flex items-center gap-1 text-club-blue font-bold text-sm hover:underline" @click="$router.back()">
+    <button class="inline-flex items-center gap-1 text-club-forest font-bold text-sm hover:underline" @click="$router.back()">
       <ArrowLeft class="w-4 h-4" /> Volver
     </button>
 
@@ -18,21 +18,21 @@
           v-for="s in spaces" :key="s.id"
           class="card !p-3 text-left transition-all"
           :class="selectedSpace?.id === s.id
-            ? 'ring-2 ring-club-blue bg-club-blue/5'
-            : 'hover:bg-club-gray-50'"
+            ? 'ring-2 ring-club-forest bg-club-forest/5'
+            : 'hover:bg-club-ivory'"
           @click="selectSpace(s)"
         >
           <div class="flex items-center gap-2 mb-1.5">
-            <div class="w-9 h-9 rounded-lg bg-club-blue/10 text-club-blue flex items-center justify-center shrink-0">
+            <div class="w-9 h-9 rounded-lg bg-club-forest/10 text-club-forest flex items-center justify-center shrink-0">
               <MapPin class="w-4 h-4" />
             </div>
-            <div class="font-bold text-sm text-club-gray-900 leading-tight">{{ s.name }}</div>
+            <div class="font-bold text-sm text-club-graphite leading-tight">{{ s.name }}</div>
           </div>
           <div class="text-[11px] text-club-gray-500">{{ s.space_type?.name || '' }}</div>
           <div class="mt-2 flex items-center justify-between text-xs">
-            <span class="font-bold text-club-green">${{ Number(s.hourly_rate || 0).toLocaleString('es-CO') }}/h</span>
-            <span v-if="s.requires_employee_approval" class="chip bg-club-amber/15 text-[#b45309] !text-[10px]">Requiere aprobación</span>
-            <span v-else class="chip bg-club-green/15 text-club-green-dark !text-[10px]">Confirmación instantánea</span>
+            <span class="font-bold text-club-gold-dark">${{ Number(s.hourly_rate || 0).toLocaleString('es-CO') }}/h</span>
+            <span v-if="s.requires_employee_approval" class="chip bg-club-coral/15 text-club-coral-dark !text-[10px]">Requiere aprobación</span>
+            <span v-else class="chip bg-club-wellness/15 text-club-wellness-dark !text-[10px]">Confirmación instantánea</span>
           </div>
         </button>
       </div>
@@ -51,9 +51,9 @@
               :key="slot.start + slot.end"
               class="p-2.5 rounded-xl border text-xs font-semibold text-center transition-all"
               :class="selectedSlot?.start === slot.start && selectedSlot?.end === slot.end
-                ? 'bg-club-blue text-white border-club-blue'
-                : (slot.available ? 'border-club-gray-200 bg-white text-club-gray-800 hover:border-club-blue hover:text-club-blue'
-                    : 'bg-club-gray-100 text-club-gray-400 line-through cursor-not-allowed')"
+                ? 'bg-club-forest text-white border-club-forest'
+                : (slot.available ? 'border-club-gray-200 bg-white text-club-graphite-light hover:border-club-forest hover:text-club-forest'
+                    : 'bg-club-ivory-dark text-club-gray-400 line-through cursor-not-allowed')"
               :disabled="!slot.available"
               @click="selectedSlot = slot"
             >
@@ -64,7 +64,7 @@
         </template>
 
         <template v-if="selectedSlot">
-          <div class="card mt-2 bg-gradient-to-br from-club-gray-50 to-white">
+          <div class="card mt-2 bg-gradient-to-br from-club-ivory-light to-white">
             <div class="section-title !mb-3">Resumen</div>
             <div class="space-y-2 text-sm">
               <Row label="Espacio" :value="selectedSpace.name" />
@@ -78,7 +78,7 @@
               <Row label="Valor total" :value="`$${total.toLocaleString('es-CO')}`" highlight />
             </div>
             <button
-              class="btn-success w-full mt-4 !py-3"
+              class="btn-primary w-full mt-4 !py-3"
               :disabled="loadingSubmit"
               @click="doReserve"
             >
@@ -106,7 +106,7 @@ const Row = {
   template: `
     <div class="flex items-center justify-between">
       <span class="text-club-gray-500">{{ label }}</span>
-      <span :class="highlight ? 'font-black text-lg text-club-green' : 'font-semibold text-club-gray-900'">{{ value }}</span>
+      <span :class="highlight ? 'font-black text-lg text-club-gold-dark' : 'font-semibold text-club-graphite'">{{ value }}</span>
     </div>
   `,
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-full bg-gradient-to-b from-club-blue via-sky-600 to-club-green flex items-center justify-center px-5 py-10">
+  <div class="min-h-screen w-full bg-gradient-to-b from-club-forest via-club-forest-dark to-club-wellness flex items-center justify-center px-5 py-10">
     <div class="w-full max-w-md">
       <div class="text-center mb-7 text-white">
         <div class="mx-auto w-20 h-20 rounded-3xl bg-white/15 backdrop-blur flex items-center justify-center text-3xl font-black border border-white/30 shadow-xl">
@@ -41,17 +41,17 @@
                 required
                 minlength="6"
               />
-              <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-club-gray-400 hover:text-club-blue" @click="showPass = !showPass">
+              <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-club-gray-400 hover:text-club-forest" @click="showPass = !showPass">
                 <Eye v-if="!showPass" class="w-4 h-4" />
                 <EyeOff v-else class="w-4 h-4" />
               </button>
             </div>
           </div>
           <label class="flex items-center gap-2 text-sm text-club-gray-700 select-none cursor-pointer">
-            <input type="checkbox" v-model="remember" class="w-4 h-4 rounded border-club-gray-300 text-club-blue focus:ring-club-blue" />
+            <input type="checkbox" v-model="remember" class="w-4 h-4 rounded border-club-gray-300 text-club-forest focus:ring-club-forest" />
             Recordarme en este equipo
           </label>
-          <button class="btn-success w-full !py-3 !text-base" :disabled="loading">
+          <button class="btn-primary w-full !py-3 !text-base" :disabled="loading">
             <Loader2 v-if="loading" class="w-4 h-4 animate-spin" />
             Ingresar
           </button>
@@ -60,7 +60,7 @@
         <div class="mt-6 pt-5 border-t border-club-gray-100 flex flex-col gap-2 text-sm">
           <div class="flex items-center justify-between">
             <span class="text-club-gray-500">¿Eres nuevo?</span>
-            <button class="text-club-blue font-bold hover:underline" @click="$router.push({ name: 'register' })">
+            <button class="text-club-forest font-bold hover:underline" @click="$router.push({ name: 'register' })">
               Crear cuenta
             </button>
           </div>

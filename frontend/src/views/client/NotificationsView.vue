@@ -12,7 +12,7 @@
         v-for="n in list"
         :key="n.id"
         class="card !p-3 flex gap-3 cursor-pointer transition-all"
-        :class="{ 'ring-2 ring-club-blue/30 bg-club-blue/5': !n.is_read }"
+        :class="{ 'ring-2 ring-club-forest/30 bg-club-forest/5': !n.is_read }"
         @click="markRead(n)"
       >
         <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" :class="styleFor(n.type).bg">
@@ -20,13 +20,13 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-start justify-between gap-2">
-            <div class="font-bold text-sm text-club-gray-900 truncate">{{ n.title || n.type }}</div>
-            <div class="flex items-center gap-1.5 shrink-0">
-              <span v-if="!n.is_read" class="w-2 h-2 rounded-full bg-club-blue"></span>
+            <div class="font-bold text-sm text-club-graphite truncate">{{ n.title || n.type }}</div>
+            <div class="flex items-center justify-between gap-2 shrink-0">
+              <span v-if="!n.is_read" class="w-2 h-2 rounded-full bg-club-forest"></span>
               <span class="text-[10px] text-club-gray-500 whitespace-nowrap">{{ formatDate(n.created_at) }}</span>
             </div>
           </div>
-          <p class="text-xs text-club-gray-700 mt-1 leading-snug">{{ n.message || n.body }}</p>
+          <p class="text-xs text-club-graphite-light mt-1 leading-snug">{{ n.message || n.body }}</p>
         </div>
       </div>
     </div>
@@ -45,13 +45,13 @@ const loading = computed(() => store.loading)
 const list = ref([])
 
 const TYPES = {
-  RESERVATION: { icon: Calendar, bg: 'bg-club-blue/15', text: 'text-club-blue' },
-  ORDER: { icon: DollarSign, bg: 'bg-club-green/15', text: 'text-club-green' },
-  REWARD: { icon: Gift, bg: 'bg-club-amber/15', text: 'text-[#b45309]' },
-  POINTS: { icon: Award, bg: 'bg-club-purple/15', text: 'text-club-purple' },
-  INFO: { icon: Info, bg: 'bg-club-gray-200', text: 'text-club-gray-700' },
+  RESERVATION: { icon: Calendar, bg: 'bg-club-forest/15', text: 'text-club-forest' },
+  ORDER: { icon: DollarSign, bg: 'bg-club-wellness/15', text: 'text-club-wellness-dark' },
+  REWARD: { icon: Gift, bg: 'bg-club-gold/15', text: 'text-club-gold-dark' },
+  POINTS: { icon: Award, bg: 'bg-club-coral/15', text: 'text-club-coral-dark' },
+  INFO: { icon: Info, bg: 'bg-club-gray-200', text: 'text-club-graphite-light' },
   WARNING: { icon: AlertTriangle, bg: 'bg-club-red/15', text: 'text-club-red' },
-  GENERAL: { icon: BellRing, bg: 'bg-club-blue/10', text: 'text-club-blue' },
+  GENERAL: { icon: BellRing, bg: 'bg-club-forest/10', text: 'text-club-forest' },
 }
 function styleFor(t) { return TYPES[t] || TYPES.GENERAL }
 function formatDate(iso) {

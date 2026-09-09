@@ -6,22 +6,22 @@
     </div>
 
     <section class="card flex items-center gap-3">
-      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-club-blue to-sky-700 text-white text-2xl font-black flex items-center justify-center shadow-md">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-club-forest to-club-gold text-white text-2xl font-black flex items-center justify-center shadow-md">
         {{ initials }}
       </div>
       <div class="flex-1 min-w-0">
-        <div class="font-extrabold text-club-gray-900 truncate">{{ auth.displayName }}</div>
+        <div class="font-extrabold text-club-graphite truncate">{{ auth.displayName }}</div>
         <div class="text-xs text-club-gray-500 mt-0.5 truncate">{{ auth.user?.email || auth.user?.username }}</div>
         <div class="mt-2 flex flex-wrap gap-1.5">
-          <span class="chip bg-club-blue/15 text-club-blue-dark">{{ roleLabel }}</span>
-          <span v-if="auth.user?.is_staff || auth.isAdmin" class="chip bg-club-amber/15 text-[#b45309]">Staff</span>
-          <span v-if="auth.user?.is_verified" class="chip bg-club-green/15 text-club-green-dark">Verificado</span>
+          <span class="chip bg-club-forest/15 text-club-forest-dark">{{ roleLabel }}</span>
+          <span v-if="auth.user?.is_staff || auth.isAdmin" class="chip bg-club-gold/15 text-club-gold-dark">Staff</span>
+          <span v-if="auth.user?.is_verified" class="chip bg-club-wellness/15 text-club-wellness-dark">Verificado</span>
         </div>
       </div>
     </section>
 
     <section class="card space-y-3">
-      <div class="section-title"><User class="w-4 h-4 text-club-blue" /> Datos de acceso</div>
+      <div class="section-title"><User class="w-4 h-4 text-club-forest" /> Datos de acceso</div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Field label="Usuario" :value="auth.user?.username || '-'" />
         <Field label="Rol" :value="roleLabel" />
@@ -32,8 +32,8 @@
     </section>
 
     <section class="card space-y-3">
-      <div class="section-title"><ShieldCheck class="w-4 h-4 text-club-green" /> Seguridad</div>
-      <p class="text-xs text-club-gray-600 bg-club-gray-50 p-3 rounded-xl border border-club-gray-200">
+      <div class="section-title"><ShieldCheck class="w-4 h-4 text-club-wellness" /> Seguridad</div>
+      <p class="text-xs text-club-gray-600 bg-club-ivory-light p-3 rounded-xl border border-club-gray-200">
         El panel administrativo solo permite acceso a personal autorizado (ADMIN / EMPLOYEE).
         Todas las acciones se registran en el sistema de auditoría del club.
       </p>
@@ -66,7 +66,7 @@ const Field = {
   template: `
     <div>
       <div class="text-[11px] uppercase tracking-wide font-bold text-club-gray-500">{{ label }}</div>
-      <div class="text-sm font-semibold text-club-gray-900 mt-0.5">{{ value }}</div>
+      <div class="text-sm font-semibold text-club-graphite mt-0.5">{{ value }}</div>
     </div>
   `,
 }

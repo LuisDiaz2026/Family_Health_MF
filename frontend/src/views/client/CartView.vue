@@ -1,6 +1,6 @@
 <template>
   <div class="page-padding space-y-4">
-    <button class="inline-flex items-center gap-1 text-club-blue font-bold text-sm hover:underline" @click="$router.back()">
+    <button class="inline-flex items-center gap-1 text-club-forest font-bold text-sm hover:underline" @click="$router.back()">
       <ArrowLeft class="w-4 h-4" /> Volver a catálogo
     </button>
 
@@ -26,11 +26,11 @@
     <template v-else>
       <div class="space-y-3">
         <div v-for="it in rf.cart" :key="it.product_id" class="card flex items-center gap-3">
-          <div class="w-14 h-14 rounded-lg bg-club-gray-100 flex items-center justify-center">
+          <div class="w-14 h-14 rounded-lg bg-club-ivory flex items-center justify-center">
             <Package class="w-6 h-6 text-club-gray-400" />
           </div>
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-sm text-club-gray-900 truncate">{{ it.name }}</div>
+            <div class="font-bold text-sm text-club-graphite truncate">{{ it.name }}</div>
             <div class="text-xs text-club-gray-500">Precio: ${{ Number(it.price).toLocaleString('es-CO') }}</div>
           </div>
           <div class="flex items-center gap-1.5">
@@ -38,20 +38,20 @@
             <span class="w-6 text-center font-bold">{{ it.quantity }}</span>
             <button class="btn-ghost !p-1.5" @click="rf.updateQuantity(it.product_id, it.quantity + 1)"><Plus class="w-4 h-4" /></button>
           </div>
-          <div class="w-20 text-right font-black text-club-gray-900 text-sm">
+          <div class="w-20 text-right font-black text-club-graphite text-sm">
             ${{ (it.price * it.quantity).toLocaleString('es-CO') }}
           </div>
         </div>
       </div>
 
-      <div class="card bg-gradient-to-br from-club-gray-50 to-white">
+      <div class="card bg-gradient-to-br from-club-ivory-light to-white">
         <div class="section-title !mb-3">Resumen del pedido</div>
         <div class="space-y-1.5 text-sm">
           <div class="flex justify-between text-club-gray-600"><span>Subtotal</span><span>${{ rf.cartSubtotal.toLocaleString('es-CO') }}</span></div>
           <div class="flex justify-between text-club-gray-600"><span>Servicio</span><span>$0</span></div>
           <div class="flex justify-between text-club-gray-600"><span>Descuento membresía</span><span>${{ discountAmount.toLocaleString('es-CO') }}</span></div>
           <hr class="my-2" />
-          <div class="flex justify-between text-lg font-black text-club-green"><span>Total</span><span>${{ total.toLocaleString('es-CO') }}</span></div>
+          <div class="flex justify-between text-lg font-black text-club-gold-dark"><span>Total</span><span>${{ total.toLocaleString('es-CO') }}</span></div>
         </div>
 
         <div class="mt-4">
@@ -65,7 +65,7 @@
         </div>
         <textarea v-model="notes" rows="2" placeholder="Notas para la barra (opcional)" class="input mt-3 resize-none" />
 
-        <button class="btn-success w-full mt-4 !py-3" :disabled="submitting" @click="submit">
+        <button class="btn-primary w-full mt-4 !py-3" :disabled="submitting" @click="submit">
           <Loader2 v-if="submitting" class="w-4 h-4 animate-spin" />
           Confirmar pedido (retiro en barra)
         </button>
