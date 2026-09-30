@@ -449,14 +449,18 @@ class Reservation(models.Model):
         if self.total_amount == 0 and self.space_id:
             hours = self.total_minutes / 60.0
             self.total_amount = round(hours * float(self.space.hourly_rate), 2)
-        if self.space_id:
-            if not self.space.is_available_at(
-                self.start_time, self.end_time, self.pk
-            ):
-                raise ValidationError(
-                    _("Conflicto: Espacio no disponible en horario solicitado")
-                )
         with transaction.atomic():
+            if self.space_id:
+                try:
+                    _space = Space.objects.select_for_update().get(pk=self.space_id)
+                except Exception:
+                    _space = self.space
+                if not _space.is_available_at(
+                    self.start_time, self.end_time, self.pk
+                ):
+                    raise ValidationError(
+                        _("Conflicto: Espacio no disponible en horario solicitado")
+                    )
             return super().save(*args, **kwargs)
 
     @property

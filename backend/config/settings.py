@@ -18,6 +18,7 @@ env = environ.Env(
     DJANGO_DEBUG=(bool, False),
     DJANGO_SECRET_KEY=(str, ""),
     DJANGO_ALLOWED_HOSTS=(list, []),
+    DATABASE_URL=(str, ""),
     DB_ENGINE=(str, "django.db.backends.sqlite3"),
     DB_NAME=(str, "db.sqlite3"),
     DB_USER=(str, ""),
@@ -29,6 +30,7 @@ env = environ.Env(
     REFRESH_TOKEN_LIFETIME_DAYS=(int, 7),
     CORS_ALLOWED_ORIGINS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
+    RAILWAY_VOLUME_MOUNT_PATH=(str, ""),
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,9 +44,19 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env("DJANGO_DEBUG")
 ALLOWED_HOSTS = list(env("DJANGO_ALLOWED_HOSTS") or [])
 if DEBUG:
-    for host in ["127.0.0.1", "localhost", "testserver"]:
+    LAN_HOSTS = [
+        "127.0.0.1", "localhost", "testserver",
+        "192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12",
+    ]
+    for host in LAN_HOSTS:
         if host not in ALLOWED_HOSTS:
             ALLOWED_HOSTS.append(host)
+
+RAILWAY_DOMAIN = os.getenv("RAILWAY_PUBLIC_DOMAIN", "").strip()
+if RAILWAY_DOMAIN and RAILWAY_DOMAIN not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RAILWAY_DOMAIN)
+    if f"*.{RAILWAY_DOMAIN}" not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(f"*.{RAILWAY_DOMAIN}")
 
 # --- Aplicaciones instaladas ---
 DJANGO_APPS = [
@@ -121,19 +133,49 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # --- Base de Datos ---
-DATABASES = {
-    "default": {
-        "ENGINE": env("DB_ENGINE"),
-        "NAME": env("DB_NAME") if env("DB_ENGINE") != "django.db.backends.sqlite3"
-        else str(BASE_DIR / env("DB_NAME")),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT"),
-        "ATOMIC_REQUESTS": True,
-        "CONN_MAX_AGE": 60,
+RAILWAY_DB_URL = env("DATABASE_URL") or os.getenv("DATABASE_URL", "")
+if RAILWAY_DB_URL and RAILWAY_DB_URL.startswith("postgres"):
+    try:
+        import dj_database_url  # noqa: WPS433
+    except ImportError:  # pragma: no cover - Railway build lo instala desde requirements
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": str(BASE_DIR / "fallback.sqlite3"),
+                "ATOMIC_REQUESTS": True,
+                "CONN_MAX_AGE": 60,
+            }
+        }
+    else:
+        DATABASES = {
+            "default": dj_database_url.parse(
+                RAILWAY_DB_URL,
+                conn_max_age=600,
+                ssl_require=False,
+            )
+        }
+        DATABASES["default"]["ATOMIC_REQUESTS"] = True
+        if "OPTIONS" not in DATABASES["default"]:
+            DATABASES["default"]["OPTIONS"] = {}
+else:
+    VOLUME_PATH = env("RAILWAY_VOLUME_MOUNT_PATH") or os.getenv("RAILWAY_VOLUME_MOUNT_PATH", "")
+    _db_name = env("DB_NAME")
+    if env("DB_ENGINE") == "django.db.backends.sqlite3" and VOLUME_PATH:
+        _db_name = str(Path(VOLUME_PATH) / _db_name)
+    elif env("DB_ENGINE") == "django.db.backends.sqlite3":
+        _db_name = str(BASE_DIR / _db_name)
+    DATABASES = {
+        "default": {
+            "ENGINE": env("DB_ENGINE"),
+            "NAME": _db_name,
+            "USER": env("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD"),
+            "HOST": env("DB_HOST"),
+            "PORT": env("DB_PORT"),
+            "ATOMIC_REQUESTS": True,
+            "CONN_MAX_AGE": 60,
+        }
     }
-}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -170,11 +212,18 @@ USE_TZ = True
 # --- Static y Media ---
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+SPA_BUILD_DIR = PROJECT_ROOT / "frontend" / "dist"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+if SPA_BUILD_DIR.exists():
+    STATICFILES_DIRS.append(SPA_BUILD_DIR)
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+VOLUME_MEDIA = env("RAILWAY_VOLUME_MOUNT_PATH") or os.getenv("RAILWAY_VOLUME_MOUNT_PATH", "")
+if VOLUME_MEDIA:
+    MEDIA_ROOT = Path(VOLUME_MEDIA) / "media"
+else:
+    MEDIA_ROOT = BASE_DIR / "media"
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
@@ -245,8 +294,13 @@ SIMPLE_JWT = {
 }
 
 # --- CORS ---
-CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
+CORS_ALLOWED_ORIGINS = list(env("CORS_ALLOWED_ORIGINS") or [])
 CORS_ALLOW_CREDENTIALS = True
+if RAILWAY_DOMAIN:
+    for proto in ("https://", "http://"):
+        _url = f"{proto}{RAILWAY_DOMAIN}"
+        if _url not in CORS_ALLOWED_ORIGINS:
+            CORS_ALLOWED_ORIGINS.append(_url)
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -268,7 +322,12 @@ CORS_ALLOW_HEADERS = [
 ]
 
 # --- CSRF ---
-CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
+CSRF_TRUSTED_ORIGINS = list(env("CSRF_TRUSTED_ORIGINS") or [])
+if RAILWAY_DOMAIN:
+    for proto in ("https://", "http://"):
+        _url = f"{proto}{RAILWAY_DOMAIN}"
+        if _url not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(_url)
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"

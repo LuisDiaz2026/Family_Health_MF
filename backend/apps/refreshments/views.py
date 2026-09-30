@@ -78,10 +78,20 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "destroy":
-            self.permission_classes = [IsAuthenticated & IsAdmin]
+            perms = [IsAuthenticated & IsAdmin]
+        elif self.action in ("list", "retrieve", "my_orders"):
+            perms = [IsAuthenticated]
+        elif self.action == "create":
+            perms = [IsAuthenticated & (IsClient | IsAdminOrEmployee)]
+        elif self.action in ("update", "partial_update"):
+            perms = [IsAuthenticated & IsAdminOrEmployee]
+        elif self.action in ("next_status", "mark_paid"):
+            perms = [IsAuthenticated & IsAdminOrEmployee]
+        elif self.action == "cancel":
+            perms = [IsAuthenticated & (IsClient | IsAdminOrEmployee)]
         else:
-            self.permission_classes = [IsAuthenticated]
-        return super().get_permissions()
+            perms = [IsAuthenticated]
+        return [p() for p in perms]
 
     def get_queryset(self):
         user = self.request.user

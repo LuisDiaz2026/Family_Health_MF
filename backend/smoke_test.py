@@ -1,6 +1,11 @@
 """
 Smoke Test - Valida endpoints principales sin levantar servidor web.
 Usa Django test Client.
+
+NOTA DE SEGURIDAD: Credenciales de prueba parametrizables por variables
+DEMO_PASS_ADMIN, DEMO_PASS_EMP, DEMO_PASS_C1, DEMO_PASS_C2, DEMO_PASS_C3.
+Fallback a valores legacy para entornos con seed anterior.
+EXCLUSIVO para base de datos de prueba AISLADA.
 """
 import os
 import sys
@@ -20,6 +25,12 @@ from django.test import Client
 import json
 
 client = Client()
+
+PW_ADMIN = os.getenv("DEMO_PASS_ADMIN") or "AdminFH2026*!"
+PW_EMP = os.getenv("DEMO_PASS_EMP") or "RecepcionFH2026*!"
+PW_C1 = os.getenv("DEMO_PASS_C1") or "Cliente1FH*!"
+PW_C2 = os.getenv("DEMO_PASS_C2") or "Cliente2FH*!"
+PW_C3 = os.getenv("DEMO_PASS_C3") or "Cliente3FH*!"
 
 print("=" * 60)
 print("SMOKE TEST - CLUB FAMILY HEALTH MF")
@@ -61,7 +72,7 @@ def t2():
     global access_cliente
     resp = client.post(
         "/api/v1/auth/login/",
-        data=json.dumps({"username": "cliente1_fh", "password": "Cliente1FH*!"}),
+        data=json.dumps({"username": "cliente1_fh", "password": PW_C1}),
         content_type="application/json",
     )
     data = resp.json()
@@ -83,7 +94,7 @@ def t3():
     global access_admin
     resp = client.post(
         "/api/v1/auth/login/",
-        data=json.dumps({"username": "admin_fh", "password": "AdminFH2026*!"}),
+        data=json.dumps({"username": "admin_fh", "password": PW_ADMIN}),
         content_type="application/json",
     )
     data = resp.json()
@@ -220,7 +231,7 @@ do_test("Seguridad: acceso sin token a ruta admin", t11)
 def t12():
     resp_login = client.post(
         "/api/v1/auth/login/",
-        data=json.dumps({"username": "cliente1_fh", "password": "Cliente1FH*!"}),
+        data=json.dumps({"username": "cliente1_fh", "password": PW_C1}),
         content_type="application/json",
     )
     refresh = resp_login.json()["refresh"]
@@ -265,38 +276,71 @@ do_test("Registro: Política privacidad obligatoria", t13)
 
 # 14) RESERVAS: validar sin cruce (crear y chequear solapamiento devuelve 400)
 def t14():
-    from apps.reservations.models import Space
+    from apps.reservations.models import Space, Reservation
     from django.utils import timezone
     import datetime as dt
-    space = Space.objects.get(code="CANCHA-BASKET-01")
-    start = timezone.now().replace(second=0, microsecond=0) + dt.timedelta(days=1, hours=2)
+    space = Space.objects.get(code="CANCHA-F5-01")
+    base = timezone.now().replace(second=0, microsecond=0) + dt.timedelta(days=3)
+    start = base.replace(hour=18, minute=0, second=0, microsecond=0)
     end = start + dt.timedelta(hours=1)
-    payload = {
+    start2 = start + dt.timedelta(minutes=30)
+    end2 = start2 + dt.timedelta(hours=1)
+    payload1 = {
         "space_id": space.id,
         "start_time": start.isoformat(),
         "end_time": end.isoformat(),
         "guests": 5,
-        "notes": "Smoke test reserva",
+        "notes": "Smoke test reserva principal",
     }
-    resp = client.post(
+    resp1 = client.post(
         "/api/v1/reservations/reservations/",
-        data=json.dumps(payload),
+        data=json.dumps(payload1),
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {access_cliente}",
     )
-    assert resp.status_code in (200, 201, 400), f"status={resp.status_code} body={resp.content[:500]}"
-    if resp.status_code == 400:
-        return f"validacion negocio: {list(resp.json().keys())[:3]}"
-    res_id = resp.json().get("id")
-    # Ahora intentamos reserva igual (solapada)
+    assert resp1.status_code == 201, (
+        f"Esperaba 201 reserva exitosa, obtuvo {resp1.status_code} "
+        f"body={resp1.content[:800].decode('utf-8', errors='ignore')}"
+    )
+    res_id = resp1.json().get("id")
+    assert res_id, "No devolvió id de reserva tras 201"
+    cnt1 = Reservation.objects.filter(
+        space_id=space.id,
+        start_time__lt=end,
+        end_time__gt=start,
+        status__in=[Reservation.STATUS_PENDING, Reservation.STATUS_CONFIRMED],
+    ).count()
+    assert cnt1 == 1, f"Tras 1ª reserva count={cnt1}, esperaba 1"
+    payload2 = {
+        "space_id": space.id,
+        "start_time": start2.isoformat(),
+        "end_time": end2.isoformat(),
+        "guests": 5,
+        "notes": "Smoke test reserva solapada",
+    }
     resp2 = client.post(
         "/api/v1/reservations/reservations/",
-        data=json.dumps(payload),
+        data=json.dumps(payload2),
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {access_cliente}",
     )
-    assert resp2.status_code == 400, f"Esperaba 400 solape, obtuvo {resp2.status_code}"
-    return f"reserva #{res_id} OK + solapamiento bloqueado (400)"
+    assert resp2.status_code == 400, (
+        f"Esperaba 400 por solapamiento, obtuvo {resp2.status_code} "
+        f"body={resp2.content[:500].decode('utf-8', errors='ignore')}"
+    )
+    cnt2 = Reservation.objects.filter(
+        space_id=space.id,
+        start_time__lt=end,
+        end_time__gt=start,
+        status__in=[Reservation.STATUS_PENDING, Reservation.STATUS_CONFIRMED],
+    ).count()
+    assert cnt2 == 1, (
+        f"Tras intento solapado count={cnt2}, esperaba 1 (solo la 1ª)"
+    )
+    return (
+        f"reserva #{res_id} HTTP201 · solape rechazado HTTP400 · "
+        f"BD count={cnt2} (sin duplicado)"
+    )
 
 
 do_test("Reservas: creación + anti-solapamiento", t14)

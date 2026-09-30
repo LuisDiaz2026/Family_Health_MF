@@ -2,10 +2,26 @@
 Family Health MF - URL Configuration
 Trabajo de Grado - Universidad Antonio Nariño
 """
+from pathlib import Path
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.http import HttpResponse, Http404
+from django.urls import include, path, re_path
+
+
+def spa_index(request):
+    candidates = [
+        Path(settings.PROJECT_ROOT) / "frontend" / "dist" / "index.html",
+        Path(settings.BASE_DIR) / "staticfiles" / "index.html",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            content = candidate.read_text(encoding="utf-8")
+            return HttpResponse(content, content_type="text/html")
+    raise Http404("SPA build not found. Run `cd frontend && npm run build`.")
+
 
 urlpatterns = [
     # Django Admin
@@ -21,6 +37,9 @@ urlpatterns = [
 
     # Root health check
     path("api/v1/health/", include("apps.reports.urls_health")),
+
+    # SPA Vue (debe ir al final)
+    re_path(r"^(?!admin|api|media|static|robots\.txt|favicon\.ico).*$", spa_index, name="spa-index"),
 ]
 
 if settings.DEBUG:

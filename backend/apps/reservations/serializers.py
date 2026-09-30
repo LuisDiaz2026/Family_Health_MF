@@ -91,7 +91,14 @@ class ReservationSerializer(serializers.ModelSerializer):
             "completed_at", "points_awarded", "can_cancel",
             "is_upcoming", "is_active_now", "created_at", "updated_at",
         )
-        read_only_fields = ("total_minutes", "points_awarded",)
+        read_only_fields = (
+            "total_minutes", "points_awarded",
+            "status", "payment_status",
+            "approved_by", "payment_received_by", "payment_received_at",
+            "created_by", "completed_at",
+            "cancelled_by", "cancelled_at",
+            "total_amount",
+        )
 
     def validate(self, data):
         request = self.context.get("request")
@@ -104,10 +111,22 @@ class ReservationSerializer(serializers.ModelSerializer):
                 "start_time": "La reserva debe ser en el futuro"
             })
         if "user" in data and data["user"]:
-            pass
+            if request and request.user.role == User.ROLE_CLIENT:
+                if data["user"].pk != request.user.pk:
+                    raise serializers.ValidationError({
+                        "user_id": "Cliente no puede asignar otro usuario"
+                    })
         elif request and request.user.role == User.ROLE_CLIENT:
             data["user"] = request.user
             data["created_by"] = request.user
+        STAFF_FIELDS = (
+            "status", "payment_status", "approved_by",
+            "payment_received_by", "payment_received_at",
+            "completed_at", "points_awarded",
+        )
+        if request and request.user.role == User.ROLE_CLIENT:
+            for fld in STAFF_FIELDS:
+                data.pop(fld, None)
         return data
 
     def create(self, validated_data):

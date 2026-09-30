@@ -1,5 +1,5 @@
 # MANUAL DE USUARIO - Club Family Health MF
-### Versión 1.0 · TFM Universidad Antonio Nariño
+### Versión 1.0 · Trabajo de Grado - Ingeniería de Sistemas y Computación - Universidad Antonio Nariño - Periodo Académico 2026-2
 #### Por: Luis Fermín Díaz Choles
 
 ---
@@ -45,8 +45,9 @@ Todo **100% presencial** — no hay pagos online, tu pagas en recepción o barra
 
 ## 2. Primeros pasos: Iniciar la aplicación
 
-El software solo corre en el PC del club o de pruebas:
+El software corre localmente en el PC del club o de pruebas. **Para acceder desde un celular en la misma red Wi-Fi del club, usa la IP privada del PC (no 127.0.0.1).**
 
+### Opción A: En el mismo computador que ejecuta el servidor
 1. Abre la carpeta `C:\Family_Health_MF\`
 2. Haz **doble clic** en **`arrancar.bat`**
 3. Se abrirán dos ventanas negras de consola. **No las cierres** (son el backend y el frontend).
@@ -54,13 +55,30 @@ El software solo corre en el PC del club o de pruebas:
    - **Frontend (todos los usuarios):** http://127.0.0.1:5173/
    - **Panel Admin Django (solo personal):** http://127.0.0.1:8000/admin/
 
-> Si no carga: espera 10 segundos y actualiza (F5). Las dos ventanas CMD deben permanecer abiertas todo el tiempo.
+### Opción B: Desde tu celular o tablet en la MISMA RED WI-FI del club (Mobile-First)
+1. En el PC servidor, **averigua tu IP privada LAN**:
+   - Abre PowerShell y escribe: `ipconfig`
+   - Busca en "Adaptador Wi-Fi" la línea **Dirección IPv4**: suele ser `192.168.1.XX`, `192.168.0.XX` o `10.0.0.XX` (anótala, p.ej. `192.168.1.42`)
+2. En el PC servidor, **detén Vite y levántalo permitiendo conexiones externas** (solo la primera vez):
+   - En el archivo `frontend\vite.config.js`, modifica la sección `server` para que quede así:
+     ```js
+     server: { port: 5173, host: "0.0.0.0", strictPort: true }
+     ```
+   - Haz lo mismo con Django en `backend\config\settings.py` añadiendo tu IP a `ALLOWED_HOSTS`:
+     ```py
+     ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.1.42"]  # <- reemplaza por tu IP
+     ```
+3. Reinicia `arrancar.bat` (cierra las 2 ventanas y vuelve a dar doble clic).
+4. **En el celular, conectado al MISMO Wi-Fi del club**, abre Chrome/Safari y navega a:
+   - `http://192.168.1.42:5173/`  ← **reemplaza 192.168.1.42 por TU IP real**
+
+> Si no carga: espera 10 segundos y actualiza. Las dos ventanas CMD deben permanecer abiertas todo el tiempo. Si el firewall de Windows pregunta, marca "Permitir en redes privadas".
 
 ---
 
 ## 3. Crear una cuenta de Cliente
 
-1. Entra a http://127.0.0.1:5173/
+1. Entra a la URL del Frontend (127.0.0.1 en el PC o la IP LAN en el celular).
 2. Pulsa **Crear cuenta**.
 3. Rellena **TODOS** los campos (nombres, apellidos, usuario, email, tipo + número doc, celular, contraseña x2).
 4. ✅ Marca **Acepto Política de Privacidad Ley 1581** (OBLIGATORIO — sin esto no te deja registrarte).
@@ -70,20 +88,22 @@ El software solo corre en el PC del club o de pruebas:
 
 ## 4. Iniciar sesión
 
-Usuarios **DEMO** para pruebas (todos visibles en la pantalla login):
+> ⚠️ **ADVERTENCIA ENTORNO DE PRUEBAS:** Los usuarios que aparecen a continuación son **usuarios de demostración (seed data)** creados para evaluar el sistema en un entorno aislado. **Nunca utilices estas credenciales en un entorno de producción accesible por internet.** En el club real deberás crear cuentas con contraseñas propias y seguras, y jamás publicar las credenciales de administración en documentos, manuales o el código fuente.
 
-| Tipo de usuario | Usuario | Contraseña |
+| Tipo de usuario | Usuario DEMO | Contraseña DEMO (solo entorno pruebas) |
 |---|---|---|
-| 👑 Administrador Total | `admin_fh` | `AdminFH2026*!` |
-| 🧑‍💼 Recepción / Barra | `recepcion_fh` | `RecepcionFH2026*!` |
-| 🏋️ Cliente #1 | `cliente1_fh` | `Cliente1FH*!` |
-| 🏋️ Cliente #2 | `cliente2_fh` | `Cliente2FH*!` |
-| 🏋️ Cliente #3 | `cliente3_fh` | `Cliente3FH*!` |
+| 👑 Administrador Total | `admin_fh` | (configurar internamente en recepción) |
+| 🧑‍💼 Recepción / Barra | `recepcion_fh` | (configurar internamente en recepción) |
+| 🏋️ Cliente de prueba 1 | `cliente1_fh` | (solo pruebas internas) |
+| 🏋️ Cliente de prueba 2 | `cliente2_fh` | (solo pruebas internas) |
+| 🏋️ Cliente de prueba 3 | `cliente3_fh` | (solo pruebas internas) |
 
-**Paso a paso:**
+> Para ejecutar las pruebas humo del sistema (14 tests automáticos) y consultar los usuarios seed reales, consúltalo con el administrador del proyecto o revisa el script `backend/bootstrap_data.py` y `backend/smoke_test.py`. **La pantalla de login NO muestra credenciales públicas**, son solo para uso del equipo de desarrollo y validación.
+
+**Paso a paso inicio sesión:**
 1. Escribe tu **usuario** (no email).
 2. Escribe tu **contraseña** (usa el ojo 👁️ para mostrarla).
-3. (Opcional) Marca **Recordarme en este equipo** para no volver a ingresar la próxima vez.
+3. (Opcional) Marca **Recordarme en este equipo** para no volver a ingresar la próxima vez (solo en equipos privados, NO en celulares compartidos).
 4. Pulsa **Ingresar**.
 
 ---
@@ -226,7 +246,11 @@ Al iniciar con `admin_fh` o `recepcion_fh` → menú cambia automáticamente a:
 ➡️ Comunicate con recepción (admin) en el panel Django Admin para reestablecer.
 
 **❓ ¿Dos reservas quedaron al mismo tiempo en la misma cancha?**
-➡️ **Es IMPOSIBLE** — el sistema tiene protección anti-solape a nivel base de datos + `select_for_update`. Si el slot se veía libre y otra persona lo tomó al mismo tiempo, la segunda reserva recibe mensaje "Horario ocupado" automáticamente.
+➡️ El sistema implementa una **validación de disponibilidad a nivel de aplicación** mediante el método `Space.is_available_at()` (consulta de solapamiento `start_time < fin_solicitado AND end_time > inicio_solicitado`), combinado con una transacción atómica `transaction.atomic()` en el `save()` de la reserva (models.py línea 459). **Esta validación es efectiva en escenarios normales de uso en el club**, pero tiene dos limitaciones técnicas que deben conocerse para usarlo en producción:
+1. En **SQLite (entorno de desarrollo local)** el motor no implementa bloqueos de fila `SELECT ... FOR UPDATE` al mismo nivel que PostgreSQL; en escenarios de concurrencia EXTREMA (dos usuarios pulsando "Confirmar reserva" al milisexacto en el mismo slot) podría darse una ventana de solapamiento.
+2. Actualmente **no existe un Exclusion Constraint a nivel de base de datos** (ej: PostgreSQL `btree_gist` sobre `space, tstzrange(start_time, end_time)`) que bloquee a nivel motor cualquier solapamiento parcial. La protección actual se realiza en la capa de aplicación (Django ORM).
+➡️ **Recomendación para producción:** migrar a PostgreSQL 16 y añadir un Exclusion Constraint `USING gist (space_id WITH =, tstzrange(start_time, end_time) WITH &&)` para garantía al 100.00% incluso ante concurrencia extrema. Esto está contemplado como mejora para versiones posteriores.
+➡️ **Pruébalo ahora:** si intentas reservar dos veces el mismo espacio en el mismo horario, la segunda recibirá el mensaje "Conflicto: Espacio no disponible en horario solicitado".
 
 **❓ ¿Se pierde mi carrito si cierro la pestaña?**
 ➡️ No. Se guarda en `localStorage` del navegador (vuelve intacto).
@@ -242,27 +266,31 @@ Al iniciar con `admin_fh` o `recepcion_fh` → menú cambia automáticamente a:
 
 ---
 
-## 8. Contacto (TFM)
+## 8. Contacto y Datos del Proyecto
 
-| Datos | Valor |
+Este manual forma parte del **Trabajo de Grado en Ingeniería de Sistemas y Computación** de la **Universidad Antonio Nariño (UAN)**, sede Maicao, La Guajira, Colombia. El periodo académico de presentación es **2026-2**.
+
+| Datos Proyecto | Valor |
 |---|---|
-| Autor TFM | **Luis Fermín Díaz Choles** |
-| Correo institucional | `luis.diaz@uan.edu.co` (cambiar por el tuyo real) |
-| Programa | Ingeniería de Sistemas |
+| Autor | **Luis Fermín Díaz Choles** |
+| Correo | `luis.diaz@uan.edu.co` (institucional) |
+| Programa | Ingeniería de Sistemas y Computación |
 | Universidad | **Universidad Antonio Nariño (UAN)** - Maicao, La Guajira |
-| Empresa real | **Club Family Health** · NIT 32739028-5 · Maicao · La Guajira |
+| Empresa socia | **Club Family Health** · NIT 32739028-5 · Maicao · La Guajira |
+| Metodología | Scrum 4 Sprints · 12 semanas académicas |
+| Roles Scrum acordados (Anteproyecto Tabla 5) | PO = Club Family Health · SM = Director Tesis · Developer = L. F. Díaz |
 
 ---
 
-### Versiones y credenciales finales recordatorio:
+### Anexo: Accesos de Referencia (ENTORNO PRUEBAS LOCAL - NO PRODUCCIÓN)
 
-| Recurso | URL | Credencial |
+| Recurso | URL (Equipo local PC servidor) | Credencial DEMO |
 |---|---|---|
-| App Cliente/Staff | http://127.0.0.1:5173/ | `cliente1_fh` / `Cliente1FH*!` |
-| App Admin | http://127.0.0.1:5173/ | `admin_fh` / `AdminFH2026*!` |
-| Django Admin | http://127.0.0.1:8000/admin/ | `admin_fh` / `AdminFH2026*!` |
-| API Base URL | http://127.0.0.1:8000/api/v1/ | (JWT Bearer token) |
-| Health Check | http://127.0.0.1:8000/api/v1/health/ | Público, sin login |
+| App Web Cliente / Staff | http://127.0.0.1:5173/ | Cuenta propia de cada usuario |
+| Panel Admin Django | http://127.0.0.1:8000/admin/ | Solo personal autorizado por el club |
+| API REST Base | http://127.0.0.1:8000/api/v1/ | JWT Bearer token después de login |
+| Health Check (sin auth) | http://127.0.0.1:8000/api/v1/health/ | Público |
+| Acceso móvil red local | `http://[TU_IP_LAN]:5173/` | Igual que app web |
 
 ---
 

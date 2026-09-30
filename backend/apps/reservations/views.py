@@ -143,13 +143,21 @@ class ReservationViewSet(viewsets.ModelViewSet):
     serializer_class = ReservationSerializer
 
     def get_permissions(self):
-        if self.action in ("destroy",):
-            self.permission_classes = [IsAuthenticated & IsAdmin]
-        elif self.action in ("list", "retrieve"):
-            self.permission_classes = [IsAuthenticated]
+        if self.action == "destroy":
+            perms = [IsAuthenticated & IsAdmin]
+        elif self.action in ("list", "retrieve", "my_upcoming"):
+            perms = [IsAuthenticated]
+        elif self.action == "create":
+            perms = [IsAuthenticated & (IsClient | IsAdminOrEmployee)]
+        elif self.action in ("update", "partial_update"):
+            perms = [IsAuthenticated & IsAdminOrEmployee]
+        elif self.action in ("approve", "reject", "mark_paid"):
+            perms = [IsAuthenticated & IsAdminOrEmployee]
+        elif self.action == "cancel":
+            perms = [IsAuthenticated & (IsClient | IsAdminOrEmployee)]
         else:
-            self.permission_classes = [IsAuthenticated]
-        return super().get_permissions()
+            perms = [IsAuthenticated]
+        return [p() for p in perms]
 
     def get_queryset(self):
         user = self.request.user

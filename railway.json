@@ -1,0 +1,28 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksPlan": {
+      "providers": ["node", "python"]
+    },
+    "buildCommand": "bash ./scripts/railway_build.sh",
+    "watchPatterns": [
+      "/backend/**",
+      "/frontend/src/**",
+      "/frontend/package*.json",
+      "/frontend/vite.config.js",
+      "/frontend/index.html",
+      "/frontend/tailwind.config.js",
+      "/frontend/postcss.config.js"
+    ]
+  },
+  "deploy": {
+    "startCommand": "bash ./scripts/railway_start.sh",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 5,
+    "healthcheckPath": "/api/v1/health/",
+    "healthcheckTimeout": 15,
+    "healthcheckInterval": 60,
+    "healthcheckRetries": 6
+  }
+}

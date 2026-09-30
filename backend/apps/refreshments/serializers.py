@@ -85,13 +85,32 @@ class OrderSerializer(serializers.ModelSerializer):
             "points_awarded", "items",
             "created_at", "updated_at",
         )
-        read_only_fields = ("order_number", "subtotal", "tax_amount",
-                            "discount_amount", "total_amount", "created_at")
+        read_only_fields = (
+            "order_number", "subtotal", "tax_amount",
+            "discount_amount", "total_amount", "created_at",
+            "status", "payment_method",
+            "paid_amount", "paid_at", "paid_by",
+            "delivered_at", "points_awarded",
+            "taken_by",
+            "cancelled_at", "cancelled_by",
+        )
 
     def validate(self, data):
         request = self.context.get("request")
-        if request and request.user.role == User.ROLE_CLIENT and "client" not in data:
-            data["client"] = request.user
+        if request and request.user.role == User.ROLE_CLIENT:
+            if "client" not in data:
+                data["client"] = request.user
+            elif data["client"].pk != request.user.pk:
+                raise serializers.ValidationError({
+                    "client_id": "Cliente no puede asignar otro usuario"
+                })
+            STAFF_FIELDS = (
+                "status", "payment_method", "paid_amount", "paid_at", "paid_by",
+                "delivered_at", "points_awarded", "taken_by",
+                "cancelled_at", "cancelled_by", "discount_percent", "tax_percent",
+            )
+            for fld in STAFF_FIELDS:
+                data.pop(fld, None)
         return data
 
     def create(self, validated_data):

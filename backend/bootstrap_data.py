@@ -3,13 +3,29 @@ Script Bootstrap - Crea superusuario + datos demo
 Ejecución:
   cd backend
   python bootstrap_data.py
+
+NOTA DE SEGURIDAD: Credenciales de demostración parametrizables por variables
+DEMO_PASS_ADMIN, DEMO_PASS_EMP, DEMO_PASS_C1, DEMO_PASS_C2, DEMO_PASS_C3.
+Si no están definidas se generan contraseñas aleatorias de un solo uso.
+Este script es EXCLUSIVO para entornos de prueba AISLADOS.
 """
 import os
 import sys
+import secrets
+import string
 import django
 from datetime import timedelta, time
 from decimal import Decimal
 from django.utils.text import slugify
+
+
+def _demo_pass(env_key: str, label: str):
+    val = os.getenv(env_key)
+    if val:
+        return val, False
+    alphabet = string.ascii_letters + string.digits + "!*#$@%"
+    rnd = "".join(secrets.choice(alphabet) for _ in range(16))
+    return rnd, True
 
 # UTF-8 seguro para Windows
 if sys.platform.startswith("win"):
@@ -34,15 +50,27 @@ from apps.gym.models import MuscleGroup, Equipment, Exercise, Routine, RoutineEx
 
 
 def run():
+    pw_admin, gen_admin = _demo_pass("DEMO_PASS_ADMIN", "admin")
+    pw_emp, gen_emp = _demo_pass("DEMO_PASS_EMP", "empleado")
+    pw_c1, gen_c1 = _demo_pass("DEMO_PASS_C1", "cliente1")
+    pw_c2, gen_c2 = _demo_pass("DEMO_PASS_C2", "cliente2")
+    pw_c3, gen_c3 = _demo_pass("DEMO_PASS_C3", "cliente3")
+    creds = {
+        "admin_fh": (pw_admin, gen_admin),
+        "recepcion_fh": (pw_emp, gen_emp),
+        "cliente1_fh": (pw_c1, gen_c1),
+        "cliente2_fh": (pw_c2, gen_c2),
+        "cliente3_fh": (pw_c3, gen_c3),
+    }
     with transaction.atomic():
         # ============================================================
         # 1) SUPERUSUARIO ADMIN
         # ============================================================
         if not User.objects.filter(username="admin_fh").exists():
-            admin = User.objects.create_superuser(
+            User.objects.create_superuser(
                 username="admin_fh",
                 email="admin.familyhealth@gmail.com",
-                password="AdminFH2026*!",
+                password=pw_admin,
                 first_name="Luis Fermín",
                 last_name="Díaz Choles",
                 document_type="CC",
@@ -58,7 +86,8 @@ def run():
                 membership_type="Premium",
                 membership_expires_at=(timezone.now() + timedelta(days=365)),
             )
-            print(f"✅ Superusuario Creado: admin_fh / AdminFH2026*!")
+            suffix = " [auto-generada]" if creds["admin_fh"][1] else ""
+            print(f"✅ Superusuario Creado: admin_fh / *****{suffix}")
         else:
             print("ℹ️  Superusuario admin_fh ya existe.")
 
@@ -69,7 +98,7 @@ def run():
             User.objects.create_user(
                 username="recepcion_fh",
                 email="recepcion.familyhealth@gmail.com",
-                password="RecepcionFH2026*!",
+                password=pw_emp,
                 first_name="Martha Isabel",
                 last_name="Pinto Carrillo",
                 document_type="CC",
@@ -85,7 +114,8 @@ def run():
                 membership_type="Empleado",
                 membership_expires_at=(timezone.now() + timedelta(days=365)),
             )
-            print(f"✅ Empleado Creado: recepcion_fh / RecepcionFH2026*!")
+            suffix = " [auto-generada]" if creds["recepcion_fh"][1] else ""
+            print(f"✅ Empleado Creado: recepcion_fh / *****{suffix}")
         else:
             print("ℹ️  Empleado recepcion_fh ya existe.")
 
@@ -93,13 +123,13 @@ def run():
         # 3) CLIENTES DEMO
         # ============================================================
         clientes = [
-            {"u": "cliente1_fh", "e": "luisf_diaz1990@hotmail.com", "p": "Cliente1FH*!",
+            {"u": "cliente1_fh", "e": "luisf_diaz1990@hotmail.com", "p": pw_c1,
              "n": "Juan Carlos", "a": "Gómez Romero", "cc": "52345678", "cel": "+573011112222",
              "f_nac": "1988-03-10", "g": "M"},
-            {"u": "cliente2_fh", "e": "valeria_23@gmail.com", "p": "Cliente2FH*!",
+            {"u": "cliente2_fh", "e": "valeria_23@gmail.com", "p": pw_c2,
              "n": "Valeria Sofía", "a": "Martínez López", "cc": "52345679", "cel": "+573013334444",
              "f_nac": "1998-11-25", "g": "F"},
-            {"u": "cliente3_fh", "e": "carlos.m@outlook.com", "p": "Cliente3FH*!",
+            {"u": "cliente3_fh", "e": "carlos.m@outlook.com", "p": pw_c3,
              "n": "Carlos Alberto", "a": "Muñoz Sánchez", "cc": "52345680", "cel": "+573015556666",
              "f_nac": "1992-07-14", "g": "M"},
         ]
@@ -115,7 +145,8 @@ def run():
                     membership_type="Básica",
                     membership_expires_at=(timezone.now() + timedelta(days=90)),
                 )
-                print(f"✅ Cliente Creado: {c['u']} / {c['p']}")
+                suffix = " [auto-generada]" if creds[c["u"]][1] else ""
+                print(f"✅ Cliente Creado: {c['u']} / *****{suffix}")
             else:
                 print(f"ℹ️  Cliente {c['u']} ya existe.")
 
@@ -760,14 +791,16 @@ def run():
                 print(f"  ✔ Rutina: {r['name']} ({len(r['ejercicios'])} ej.)")
 
     print("\n" + "=" * 60)
-    print("🌮 SEED DATA COMPLETADO - BASE DE DATOS LISTA 🌮")
+    print(" SEED DATA COMPLETADO - BASE DE DATOS LISTA ")
     print("=" * 60)
+    print("ENTORNO DE PRUEBA AISLADO EXCLUSIVAMENTE.")
     print("Accesos de prueba:")
-    print("  Admin    : admin_fh / AdminFH2026*!")
-    print("  Empleado : recepcion_fh / RecepcionFH2026*!")
-    print("  Cliente 1: cliente1_fh / Cliente1FH*!")
-    print("  Cliente 2: cliente2_fh / Cliente2FH*!")
-    print("  Cliente 3: cliente3_fh / Cliente3FH*!")
+    print("  Admin    : admin_fh      | password vía DEMO_PASS_ADMIN")
+    print("  Empleado : recepcion_fh  | password vía DEMO_PASS_EMP")
+    print("  Clientes : cliente1_fh, cliente2_fh, cliente3_fh")
+    print("             | passwords vía DEMO_PASS_C1 / C2 / C3")
+    print("  Si variables .env no existen, passwords fueron")
+    print("  generadas aleatoriamente (marcadas [auto-generada]).")
     print("=" * 60)
     print("Panel Admin Django:", "http://127.0.0.1:8000/admin/")
     print("API Base URL       :", "http://127.0.0.1:8000/api/v1/")

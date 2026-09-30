@@ -9,9 +9,17 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  base: '/',
+  build: {
+    outDir: path.resolve(__dirname, './dist'),
+    assetsDir: 'assets',
+    emptyOutDir: true,
+    sourcemap: false,
+  },
   server: {
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     port: 5173,
+    strictPort: true,
     historyApiFallback: true,
     proxy: {
       '/api': {
