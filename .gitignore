@@ -111,6 +111,11 @@ coverage.xml
 docs/_build/
 docs/build/
 
+# --- Scripts locales generación documentos TFM (NO subir a GitHub - NO necesarios para despliegue) ---
+generar_docs_word*.py
+generar_excel*.py
+leer_anteproyecto*.py
+
 # --- Caché ---
 .cache/
 .temp/
