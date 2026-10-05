@@ -13,7 +13,10 @@
       "/frontend/vite.config.js",
       "/frontend/index.html",
       "/frontend/tailwind.config.js",
-      "/frontend/postcss.config.js"
+      "/frontend/postcss.config.js",
+      "/scripts/**",
+      "/railway.json",
+      "/.env.example"
     ]
   },
   "deploy": {
@@ -23,6 +26,18 @@
     "healthcheckPath": "/api/v1/health/",
     "healthcheckTimeout": 15,
     "healthcheckInterval": 60,
-    "healthcheckRetries": 6
+    "healthcheckRetries": 6,
+    "configVariables": {
+      "DJANGO_DEBUG": "False",
+      "DJANGO_ALLOWED_HOSTS": "*",
+      "LOGIN_MAX_ATTEMPTS": "5",
+      "LOGIN_COOLDOWN_MINUTES": "15",
+      "ACCESS_TOKEN_LIFETIME_MINUTES": "60",
+      "REFRESH_TOKEN_LIFETIME_DAYS": "7",
+      "WEB_CONCURRENCY": "2",
+      "GUNICORN_THREADS": "4",
+      "GUNICORN_TIMEOUT": "120",
+      "RAILWAY_SEED_BOOTSTRAP": "1"
+    }
   }
 }

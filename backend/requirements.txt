@@ -1,10 +1,9 @@
 # ============================================
 # FAMILY HEALTH MF - Backend Dependencies
-# Python 3.10.x EXCLUSIVO (Compatibilidad estricta)
+# Compatibilidad Python: >=3.10, <3.13 (Django 5.0.7)
+# NOTA: Railway Nixpacks usa Python 3.11/3.12 por defecto.
 # Trabajo de Grado - Universidad Antonio Nariño
 # Autor: Luis Fermín Díaz Choles
-# ============================================
-# Python: >=3.10,<3.11
 # ============================================
 
 # --- Core Django ---

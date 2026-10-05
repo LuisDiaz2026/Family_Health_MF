@@ -115,6 +115,21 @@ docs/build/
 generar_docs_word*.py
 generar_excel*.py
 leer_anteproyecto*.py
+_generar_*.py
+_fusionar_*.py
+_maestro_*.py
+_corregir_*.py
+_limpiar_*.py
+_listar_*.py
+_analizar_*.py
+_fase2_*.py
+_run_maestro*.bat
+correccion_ortotipografica.py
+_salida_maestro*.log
+_temp_docx_*.xml
+_reporte_fase2*.json
+# --- Scripts temporales de Windows para GitHub ---
+scripts/github_push_con_token.bat
 
 # --- Caché ---
 .cache/

@@ -25,12 +25,17 @@ env = environ.Env(
     DB_PASSWORD=(str, ""),
     DB_HOST=(str, ""),
     DB_PORT=(str, ""),
-    HASHID_FIELD_SALT=(str, "change-me"),
+    HASHID_FIELD_SALT=(str, "change-me-please-32-characters-or-more"),
     ACCESS_TOKEN_LIFETIME_MINUTES=(int, 60),
     REFRESH_TOKEN_LIFETIME_DAYS=(int, 7),
     CORS_ALLOWED_ORIGINS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
     RAILWAY_VOLUME_MOUNT_PATH=(str, ""),
+    LOGIN_MAX_ATTEMPTS=(int, 5),
+    LOGIN_COOLDOWN_MINUTES=(int, 15),
+    CLUB_NAME=(str, "Club Family Health"),
+    CLUB_NIT=(str, "32739028-5"),
+    CLUB_CITY=(str, "Maicao, La Guajira"),
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +47,24 @@ if ENV_FILE.exists():
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env("DJANGO_DEBUG")
+
+# --- Seguridad SECRET_KEY: si es producción (DEBUG=False) y NO hay SECRET_KEY, fallar
+#     con mensaje claro. En desarrollo local (DEBUG=True), si no hay, autogenerar.
+if not SECRET_KEY:
+    if DEBUG:
+        from django.core.management.utils import get_random_secret_key  # noqa: WPS433
+        SECRET_KEY = "dev-insecure-" + get_random_secret_key()
+        import warnings  # noqa: WPS433
+        warnings.warn(
+            "ATENCIÓN: estás usando DJANGO_SECRET_KEY AUTOGENERADA (solo desarrollo). "
+            "Para producción configúrela como variable de entorno.",
+            stacklevel=2,
+        )
+    else:
+        raise RuntimeError(
+            "ERROR CRÍTICO PRODUCCIÓN: la variable DJANGO_SECRET_KEY NO está configurada. "
+            "Configúrela en Railway Variables / .env. Nunca use la clave autogenerada en producción."
+        )
 ALLOWED_HOSTS = list(env("DJANGO_ALLOWED_HOSTS") or [])
 if DEBUG:
     LAN_HOSTS = [
@@ -133,8 +156,18 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # --- Base de Datos ---
-RAILWAY_DB_URL = env("DATABASE_URL") or os.getenv("DATABASE_URL", "")
-if RAILWAY_DB_URL and RAILWAY_DB_URL.startswith("postgres"):
+# LECTURA DATABASE_URL: en DEBUG=TRUE (desarrollo local) SÓLO se lee desde el
+# archivo .env con django-environ, IGNORANDO por completo la variable global
+# de sistema de Windows (que podría pertenecer a OTRO proyecto, ej: SENA).
+# En producción (DEBUG=False) sí se permite DATABASE_URL global de Railway.
+if DEBUG:
+    _DATABASE_URL_FROM_ENV = env("DATABASE_URL", default="")
+else:
+    _DATABASE_URL_FROM_ENV = env("DATABASE_URL", default="") or os.getenv(
+        "DATABASE_URL", ""
+    )
+
+if _DATABASE_URL_FROM_ENV and _DATABASE_URL_FROM_ENV.startswith("postgres"):
     try:
         import dj_database_url  # noqa: WPS433
     except ImportError:  # pragma: no cover - Railway build lo instala desde requirements
@@ -149,7 +182,7 @@ if RAILWAY_DB_URL and RAILWAY_DB_URL.startswith("postgres"):
     else:
         DATABASES = {
             "default": dj_database_url.parse(
-                RAILWAY_DB_URL,
+                _DATABASE_URL_FROM_ENV,
                 conn_max_age=600,
                 ssl_require=False,
             )
@@ -158,7 +191,9 @@ if RAILWAY_DB_URL and RAILWAY_DB_URL.startswith("postgres"):
         if "OPTIONS" not in DATABASES["default"]:
             DATABASES["default"]["OPTIONS"] = {}
 else:
-    VOLUME_PATH = env("RAILWAY_VOLUME_MOUNT_PATH") or os.getenv("RAILWAY_VOLUME_MOUNT_PATH", "")
+    VOLUME_PATH = env("RAILWAY_VOLUME_MOUNT_PATH", default="") or os.getenv(
+        "RAILWAY_VOLUME_MOUNT_PATH", ""
+    )
     _db_name = env("DB_NAME")
     if env("DB_ENGINE") == "django.db.backends.sqlite3" and VOLUME_PATH:
         _db_name = str(Path(VOLUME_PATH) / _db_name)
@@ -296,6 +331,11 @@ SIMPLE_JWT = {
 # --- CORS ---
 CORS_ALLOWED_ORIGINS = list(env("CORS_ALLOWED_ORIGINS") or [])
 CORS_ALLOW_CREDENTIALS = True
+# Permitir todos los orígenes SÓLO en desarrollo local (DEBUG=True), así el
+# móvil/celular en LAN (192.168.x.x:5173 / 10.x.x.x:5173) funciona sin bloqueos.
+# En producción (DEBUG=False) se respeta estrictamente CORS_ALLOWED_ORIGINS.
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
 if RAILWAY_DOMAIN:
     for proto in ("https://", "http://"):
         _url = f"{proto}{RAILWAY_DOMAIN}"
@@ -356,8 +396,8 @@ else:
     X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # --- Django Axes (Bloqueo por intentos fallidos) ---
-AXES_FAILURE_LIMIT = int(env("LOGIN_MAX_ATTEMPTS"))
-AXES_COOLOFF_TIME = timedelta(minutes=int(env("LOGIN_COOLDOWN_MINUTES")))
+AXES_FAILURE_LIMIT = int(env("LOGIN_MAX_ATTEMPTS", default=5))
+AXES_COOLOFF_TIME = timedelta(minutes=int(env("LOGIN_COOLDOWN_MINUTES", default=15)))
 AXES_LOCK_OUT_AT_FAILURE = True
 AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_PARAMETERS = ["username", "ip_address", "user_agent"]
