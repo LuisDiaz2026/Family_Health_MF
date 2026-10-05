@@ -1,0 +1,38 @@
+﻿..\.venv\Scripts\python.exe : INFO 2026-10-05 09:45:45,090 AXES: BEGIN version 6.3.0, blocking by username or 
+ip_address or user_agent
+En línea: 15 Carácter: 4905
++ ... h_MF\backend ; ..\.venv\Scripts\python.exe smoke_test.py 2>&1 | Tee-O ...
++                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO 2026-10-05...s or user_agent:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+C:\Family_Health_MF\.venv\lib\site-packages\rest_framework\fields.py:992: UserWarning: min_value should be a Decimal 
+instance.
+  warnings.warn("min_value should be a Decimal instance.")
+C:\Family_Health_MF\.venv\lib\site-packages\django\db\models\fields\__init__.py:1600: RuntimeWarning: DateTimeField 
+Order.created_at received a naive datetime (2026-10-01 00:00:00) while time zone support is active.
+  warnings.warn(
+C:\Family_Health_MF\.venv\lib\site-packages\django\db\models\fields\__init__.py:1600: RuntimeWarning: DateTimeField 
+Reservation.start_time received a naive datetime (2026-10-01 00:00:00) while time zone support is active.
+  warnings.warn(
+============================================================
+SMOKE TEST - CLUB FAMILY HEALTH MF
+============================================================
+[OK] Health Check -> status: ok, club: Club Family Health
+[OK] Login cliente1_fh -> JWT válido | Rol: CLIENT | Puntos: 0 | Tier: Bronce
+[OK] Login admin_fh -> JWT válido | Rol: ADMIN
+[OK] Listar espacios reservas -> 10 espacios disponibles
+[OK] Consulta disponibilidad espacio -> Cancha de Fútbol 5 2026-10-07 -> 0 slots libres (verificado)
+[OK] Catálogo refresquería -> 23 productos en catálogo
+[OK] Perfil Cliente + Loyalty -> tier=Bronce, current_points=0
+[OK] Listar rutinas gimnasio -> 5 rutinas visibles
+[OK] Dashboard Admin Summary -> total_users=5, spaces_total=10
+[OK] Top Clientes (Admin) -> 3 clientes en ranking
+[OK] Seguridad: acceso sin token a ruta admin -> bloqueado correctamente (401)
+[OK] JWT Refresh Token -> nuevo access token generado
+[OK] Registro: Política privacidad obligatoria -> rechazo correcto por política priv (400)
+[OK] Reservas: creación + anti-solapamiento -> reserva #5 HTTP201 · solape rechazado HTTP400 · BD count=1 (sin duplicado)
+
+============================================================
+RESULTADOS FINALES: 14 OK | 0 FALLIDOS
+============================================================

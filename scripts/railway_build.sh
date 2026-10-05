@@ -9,9 +9,64 @@ PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 FRONTEND_DIR="$PROJECT_ROOT/frontend"
 
+# ============================================================
+# FIX RAILWAY: asegurar que Node.js (npm/npx) está disponible.
+# Nixpacks a veces NO pone node/node_modules/.bin en el PATH
+# si el package.json no está en la RAÍZ del repo.
+# ============================================================
+fix_node_path() {
+    local found=0
+
+    # 1) Nixpacks Node provider (ruta estándar)
+    if [[ -d "/nix/var/nix/profiles/default/bin" ]] && [[ -x "/nix/var/nix/profiles/default/bin/npm" ]]; then
+        export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+        found=1
+    fi
+
+    # 2) Nix profile user
+    if [[ -x "$HOME/.nix-profile/bin/npm" ]]; then
+        export PATH="$HOME/.nix-profile/bin:$PATH"
+        found=1
+    fi
+
+    # 3) NVM fallback
+    if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
+        # shellcheck disable=SC1091
+        source "$HOME/.nvm/nvm.sh" || true
+        command -v npm >/dev/null 2>&1 && found=1
+    fi
+
+    # 4) /opt/node (Railway legacy)
+    for d in /opt/node* /usr/local/node*; do
+        if [[ -d "$d/bin" && -x "$d/bin/npm" ]]; then
+            export PATH="$d/bin:$PATH"
+            found=1
+            break
+        fi
+    done
+
+    # Si después de TODO no encontramos npm, salimos con error CLARO.
+    if [[ $found -eq 0 ]]; then
+        echo ""
+        echo "============================================"
+        echo "ERROR CRÍTICO RAILWAY: npm (Node.js) NO ENCONTRADO."
+        echo "============================================"
+        echo "Solución: en el servicio Family_Health_MF → Variables,"
+        echo "AGREGA esta variable RAW y haz Redeploy:"
+        echo "    NIXPACKS_NODE_VERSION = 20"
+        echo "============================================"
+        exit 127
+    fi
+
+    echo "[PRE-CHECK] Node.js detectado OK:"
+    echo "  node: $(command -v node) ($(node -v 2>/dev/null || echo "v??"))"
+    echo "  npm:  $(command -v npm) ($(npm -v 2>/dev/null || echo "??"))"
+}
+fix_node_path
+
 echo "[1/5] Instalando dependencias NPM (frontend)..."
 cd "$FRONTEND_DIR"
-npm ci --no-audit --no-fund --loglevel=error
+npm ci --no-audit --no-fund --loglevel=error || npm install --no-audit --no-fund --loglevel=error
 
 echo "[2/5] Compilando SPA Vue 3 (Vite build)..."
 npm run build -- --logLevel warn

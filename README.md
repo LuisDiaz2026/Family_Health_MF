@@ -164,19 +164,19 @@ npm.cmd run dev
 - Axios interceptor `client.js` con **queue refresh token** (evita race conditions).
 - Perfil personal: datos, membresía, tarjeta fidelidad, seguridad.
 
-### 4.2 Reservas Dinámicas (anti-solape a nivel aplicación + transacciones)
+### 4.2 Reservas Dinámicas (anti-solape a nivel aplicación + transacciones + bloqueo de filas)
 - 10 espacios precargados: 3 canchas fútbol 5, piscina, 3 salones multiusos, tennis, gimnasio, squash.
 - Disponibilidad horaria calculada desde `OperatingHours` + `Holiday`.
 - Wizard 3 pasos (selecciona espacio → fecha → slot horario).
 - Precio final: `minutos / 60 * hourly_rate`.
-- **Protección anti-solape actual (capa aplicación + transacción atómica):**
+- **Protección anti-solape actual (3 niveles de defensa):**
   1. `Space.is_available_at(start, end)` en [models.py:L163-L180](file:///c:/Family_Health_MF/backend/apps/reservations/models.py#L163-L180) — consulta `start_time < fin AND end_time > inicio` detecta solape PARCIAL (p. ej. 10:00-11:00 vs 10:30-11:30).
-  2. `Reservation.save()` en [models.py:L447-L460](file:///c:/Family_Health_MF/backend/apps/reservations/models.py#L447-L460) invoca la validación anterior dentro de un bloque `with transaction.atomic()`.
+  2. `Reservation.save()` en [models.py:L447-L460](file:///c:/Family_Health_MF/backend/apps/reservations/models.py#L447-L460) invoca la validación anterior **dentro de un bloque `with transaction.atomic()`**.
+  3. **Bloqueo explícito `Space.objects.select_for_update().get(pk=self.space_id)`** en [models.py:L455](file:///c:/Family_Health_MF/backend/apps/reservations/models.py#L455) — obtiene bloqueo exclusivo de fila del espacio ANTES de verificar disponibilidad, evitando race conditions TOCTOU (Time-of-Check / Time-of-Use) en PostgreSQL.
 - **Limitaciones conocidas y acciones pendientes (revisión profesor):**
-  1. **SQLite (dev):** no implementa bloqueo de filas `SELECT FOR UPDATE` ni exclusion constraints. En escenarios de concurrencia extrema la validación en capa de aplicación es suficiente para uso habitual del club, pero no ofrece garantía matemática 100%.
-  2. **PostgreSQL (producción):** para garantía 100.00% en producción se **RECOMIENDA AÑADIR una Exclusion Constraint** con extensión `btree_gist`: `ALTER TABLE reservations ADD CONSTRAINT no_overlap_reservations EXCLUDE USING gist (space_id WITH =, tstzrange(start_time, end_time) WITH &&)`. Esta mejora está documentada pero aún no implementada en el esquema actual.
-  3. Actualmente el modelo NO invoca explícitamente `select_for_update()`; la concurrencia depende del bloque `transaction.atomic()` + validación `is_available_at`. Para fortalecerlo en PostgreSQL, añadir antes de la consulta `Space.objects.select_for_update().get(pk=...)` en la vista create reserva.
-- **Pruebas:** Smoke test [14] ejecuta el flujo "crear reserva + intento solapado → 2ª reserva rechazada" correctamente → ver archivo `SCRUM_DOCS\EVIDENCIA_SMOKE_TEST_14_OK.txt`.
+  1. **SQLite (dev):** emula `SELECT FOR UPDATE` pero sin garantía a nivel motor (no implementa bloqueo real de filas ni exclusion constraints). Para el uso habitual del club (flujo de trabajo serial) es válido, pero en producción se recomienda PostgreSQL.
+  2. **PostgreSQL (producción):** para garantía 100.00% y evitar solapes incluso por fallos de aplicación, se **RECOMIENDA AÑADIR una Exclusion Constraint** con extensión `btree_gist`: `ALTER TABLE reservations ADD CONSTRAINT no_overlap_reservations EXCLUDE USING gist (space_id WITH =, tstzrange(start_time, end_time) WITH &&)`. Esta mejora es responsabilidad del DBA en despliegue final.
+- **Pruebas:** Smoke test [14] ejecuta el flujo "crear reserva + intento solapado → 2ª reserva rechazada HTTP400 + BD count=1 SIN duplicados" correctamente → ver archivo [`SCRUM_DOCS\05_EVIDENCIA_SMOKE_TEST_20261005.txt`](file:///c:/Users/gusta/OneDrive%20-%20UNIR/TRABAJOS%20DE%20GRADO/TRABAJOS%20DE%20GRADO/UAN/LUIS/SCRUM_DOCS/05_EVIDENCIA_SMOKE_TEST_20261005.txt).
 
 ### 4.3 Gestión Pedidos Refresquería
 - 23 productos SKU en 5 categorías (Bebidas frías, Calientes, Snacks, Comidas rápidas, Postres).
@@ -217,7 +217,7 @@ npm.cmd run dev
 | `CSRF_TRUSTED_ORIGINS` explícitos | ✅ Equivalente a CORS |
 | Política **Ley 1581/2012** (protección datos Habeas Data) | ✅ Registro cliente con 2 checkboxes + fecha aceptación `privacy_policy_accepted_at` · Smoke test [13] |
 | Auditoría acciones (login, registro, ops) | ✅ `AuditLog.objects.create(...)` · código autenticación app |
-| Anti-solape reservas (capa aplicación) | ⚠️ Validación `is_available_at()` + `transaction.atomic()` (funcional). No hay Exclusion Constraint PostgreSQL ni `select_for_update()` aún. Pendiente para producción. Ver sección 4.2. |
+| Anti-solape reservas (3 niveles) | ✅ Validación `is_available_at()` + `transaction.atomic()` + `Space.objects.select_for_update()` bloqueo exclusivo de fila. Smoke test [14] VERIFICA rechazo HTTP400 solape + count=1 BD sin duplicados. Exclusion Constraint PostgreSQL recomendada en despliegue (opcional). |
 | Stock atómico `F()` | ✅ `Product.objects.filter(pk=...).update(stock=F('stock')-qty)` · código refreshments views |
 
 ---
@@ -230,10 +230,10 @@ cd backend
 ```
 
 **Resultado ejecución real:** `14 OK · 0 FALLIDOS` ✅
-- **Fecha y hora de ejecución:** 2026-09-20 18:57:55 (formato ISO).
+- **Fecha y hora de ejecución:** 2026-10-05 09:45 (formato ISO).
 - **Entorno de pruebas:** backend/db.sqlite3 (seed data 10 espacios / 23 productos / 5 rutinas / 5 usuarios demo).
-- **Evidencia archivo original guardada en:** [`SCRUM_DOCS\EVIDENCIA_SMOKE_TEST_14_OK.txt`](file:///c:/Users/gusta/OneDrive%20-%20UNIR/TRABAJOS%20DE%20GRADO/TRABAJOS%20DE%20GRADO/UAN/LUIS/SCRUM_DOCS/EVIDENCIA_SMOKE_TEST_14_OK.txt)
-- **Escenarios probados en la suite 14 humos:** [01] Health → [02] Login Cliente → [03] Login Admin → [04] Listar 10 Espacios → [05] Consulta disponibilidad → [06] 23 Productos → [07] Perfil + Fidelidad → [08] 5 Rutinas Gym → [09] Dashboard KPI → [10] Top3 Clientes → [11] Bloqueo 401 sin Token → [12] Refresh Token → [13] Registro sin Política (rechazo 400) → [14] Reserva + Anti-solapamiento.
+- **Evidencia archivo original guardada en:** [`SCRUM_DOCS\05_EVIDENCIA_SMOKE_TEST_20261005.txt`](file:///c:/Users/gusta/OneDrive%20-%20UNIR/TRABAJOS%20DE%20GRADO/TRABAJOS%20DE%20GRADO/UAN/LUIS/SCRUM_DOCS/05_EVIDENCIA_SMOKE_TEST_20261005.txt)
+- **Escenarios probados en la suite 14 humos:** [01] Health → [02] Login Cliente → [03] Login Admin → [04] Listar 10 Espacios → [05] Consulta disponibilidad → [06] 23 Productos → [07] Perfil + Fidelidad → [08] 5 Rutinas Gym → [09] Dashboard KPI → [10] Top3 Clientes → [11] Bloqueo 401 sin Token → [12] Refresh Token → [13] Registro sin Política (rechazo 400) → [14] Reserva + Anti-solapamiento (HTTP201 + HTTP400 + count=1 BD VERIFICADO).
 
 > **Pruebas unitarias / integración / aceptación (restante para validación formal):** Las pruebas complementarias (31 UT + 12 IT + 30 AT usuarios reales club) están planificadas, pero **aún no cuentan con registro de ejecución ni firma de acta de validación formal por el Product Owner Club Family Health**. Una vez disponibles, se incorporarán los certificados y actas al anexo de la monografía.
 
@@ -241,25 +241,23 @@ cd backend
 
 ## 6.1 Acceso Mobile-First Real desde dispositivos en RED WI-FI local
 
-Por defecto arrancar.bat publica el frontend en `127.0.0.1` (solo el propio PC). **Para probar el diseño Mobile-First en celulares reales:**
+**✅ CONFIGURACIÓN PREDETERMINADA (arrancar.bat):**
+Ahora los servidores publican automáticamente en `0.0.0.0` para acceso LAN sin editar archivos:
+- Django Backend: `0.0.0.0:8000` (vía [arrancar.bat](file:///c:/Family_Health_MF/arrancar.bat))
+- Vite Frontend: `0.0.0.0:5173` (vía [package.json](file:///c:/Family_Health_MF/frontend/package.json) scripts `dev`)
+- CORS: Permite todos los orígenes SÓLO si `DJANGO_DEBUG=True` en el `.env` ([settings.py#L311-L315](file:///c:/Family_Health_MF/backend/config/settings.py#L311-L315))
+- ALLOWED_HOSTS: Incluye rangos CIDR LAN 192.168.0.0/16 · 10.0.0.0/8 · 172.16.0.0/12 ([settings.py#L46-L53](file:///c:/Family_Health_MF/backend/config/settings.py#L46-L53))
+
+**Pasos para probar en móvil/celular REAL WiFi (Chrome/Safari):**
 
 1. **En el PC servidor**: averigua tu IP LAN → PowerShell: `ipconfig` → "Dirección IPv4" (p. ej. `192.168.1.42`)
-2. **Edita `frontend\vite.config.js`** sección `server`:
-   ```js
-   server: {
-     port: 5173,
-     host: "0.0.0.0",       // <- permite conexiones desde cualquier IP de la LAN
-     strictPort: true
-   }
-   ```
-3. **Edita `backend\config\settings.py`** ALLOWED_HOSTS:
-   ```py
-   ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.1.42"]  # <- reemplaza por tu IP
-   ```
-4. Reinicia `arrancar.bat`. **En Windows Defender, marca "Permitir redes privadas"** si aparece la ventana emergente.
-5. **En el celular** (Chrome / Safari): `http://192.168.1.42:5173/` (usa TU IP real).
+2. **Ejecuta** `arrancar.bat`. **En Windows Defender, marca "Permitir redes privadas"** si aparece la ventana emergente.
+3. **En el celular** (misma red WiFi que el PC): entra a `http://192.168.1.42:5173/` (reemplaza `192.168.1.42` por TU IP real).
+4. Para probar el Backend directo: `http://192.168.1.42:8000/api/v1/health/`
 
 Resultado esperado: todas las pantallas con sticky header + bottom nav safe-area renderizan correctamente en 320-430 px y tiempos de agenda <3s.
+
+> ⚠️ **Producción (Railway / DEBUG=False)**: La configuración se cierra automáticamente a CORS/ALLOWED_HOSTS estrictos según dominio Railway. NO se expone 0.0.0.0 ni CORS abierto.
 
 ---
 

@@ -5,9 +5,9 @@
   "type": "module",
   "description": "Club Family Health Maicao - Frontend Mobile-First (Vue 3 + Vite + Tailwind 3)",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 5173",
+   "dev": "vite --host 0.0.0.0 --port 5173",
     "build": "vite build",
-    "preview": "vite preview --port 4173",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
     "lint": "echo 'Sin linter configurado'"
   },
   "dependencies": {

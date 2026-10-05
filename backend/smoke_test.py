@@ -279,68 +279,92 @@ def t14():
     from apps.reservations.models import Space, Reservation
     from django.utils import timezone
     import datetime as dt
+    from django.db import transaction
+
     space = Space.objects.get(code="CANCHA-F5-01")
     base = timezone.now().replace(second=0, microsecond=0) + dt.timedelta(days=3)
     start = base.replace(hour=18, minute=0, second=0, microsecond=0)
     end = start + dt.timedelta(hours=1)
     start2 = start + dt.timedelta(minutes=30)
     end2 = start2 + dt.timedelta(hours=1)
-    payload1 = {
-        "space_id": space.id,
-        "start_time": start.isoformat(),
-        "end_time": end.isoformat(),
-        "guests": 5,
-        "notes": "Smoke test reserva principal",
-    }
-    resp1 = client.post(
-        "/api/v1/reservations/reservations/",
-        data=json.dumps(payload1),
-        content_type="application/json",
-        HTTP_AUTHORIZATION=f"Bearer {access_cliente}",
-    )
-    assert resp1.status_code == 201, (
-        f"Esperaba 201 reserva exitosa, obtuvo {resp1.status_code} "
-        f"body={resp1.content[:800].decode('utf-8', errors='ignore')}"
-    )
-    res_id = resp1.json().get("id")
-    assert res_id, "No devolvió id de reserva tras 201"
-    cnt1 = Reservation.objects.filter(
-        space_id=space.id,
-        start_time__lt=end,
-        end_time__gt=start,
-        status__in=[Reservation.STATUS_PENDING, Reservation.STATUS_CONFIRMED],
-    ).count()
-    assert cnt1 == 1, f"Tras 1ª reserva count={cnt1}, esperaba 1"
-    payload2 = {
-        "space_id": space.id,
-        "start_time": start2.isoformat(),
-        "end_time": end2.isoformat(),
-        "guests": 5,
-        "notes": "Smoke test reserva solapada",
-    }
-    resp2 = client.post(
-        "/api/v1/reservations/reservations/",
-        data=json.dumps(payload2),
-        content_type="application/json",
-        HTTP_AUTHORIZATION=f"Bearer {access_cliente}",
-    )
-    assert resp2.status_code == 400, (
-        f"Esperaba 400 por solapamiento, obtuvo {resp2.status_code} "
-        f"body={resp2.content[:500].decode('utf-8', errors='ignore')}"
-    )
-    cnt2 = Reservation.objects.filter(
-        space_id=space.id,
-        start_time__lt=end,
-        end_time__gt=start,
-        status__in=[Reservation.STATUS_PENDING, Reservation.STATUS_CONFIRMED],
-    ).count()
-    assert cnt2 == 1, (
-        f"Tras intento solapado count={cnt2}, esperaba 1 (solo la 1ª)"
-    )
-    return (
-        f"reserva #{res_id} HTTP201 · solape rechazado HTTP400 · "
-        f"BD count={cnt2} (sin duplicado)"
-    )
+
+    # ---------- IDEMPOTENCIA: LIMPIAR huellas de ejecuciones PREVIAS ----------
+    # (Asi se puede correr smoke_test.py N veces sin error por reserva que ya existe.)
+    with transaction.atomic():
+        Reservation.objects.filter(
+            space_id=space.id,
+            start_time__lt=end + dt.timedelta(hours=2),
+            end_time__gt=start - dt.timedelta(hours=2),
+            notes__icontains="Smoke test reserva",
+        ).delete()
+
+    res_id = None
+    try:
+        payload1 = {
+            "space_id": space.id,
+            "start_time": start.isoformat(),
+            "end_time": end.isoformat(),
+            "guests": 5,
+            "notes": "Smoke test reserva principal",
+        }
+        resp1 = client.post(
+            "/api/v1/reservations/reservations/",
+            data=json.dumps(payload1),
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {access_cliente}",
+        )
+        assert resp1.status_code == 201, (
+            f"Esperaba 201 reserva exitosa, obtuvo {resp1.status_code} "
+            f"body={resp1.content[:800].decode('utf-8', errors='ignore')}"
+        )
+        res_id = resp1.json().get("id")
+        assert res_id, "No devolvió id de reserva tras 201"
+        cnt1 = Reservation.objects.filter(
+            space_id=space.id,
+            start_time__lt=end,
+            end_time__gt=start,
+            status__in=[Reservation.STATUS_PENDING, Reservation.STATUS_CONFIRMED],
+        ).count()
+        assert cnt1 == 1, f"Tras 1ª reserva count={cnt1}, esperaba 1"
+        payload2 = {
+            "space_id": space.id,
+            "start_time": start2.isoformat(),
+            "end_time": end2.isoformat(),
+            "guests": 5,
+            "notes": "Smoke test reserva solapada",
+        }
+        resp2 = client.post(
+            "/api/v1/reservations/reservations/",
+            data=json.dumps(payload2),
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {access_cliente}",
+        )
+        assert resp2.status_code == 400, (
+            f"Esperaba 400 por solapamiento, obtuvo {resp2.status_code} "
+            f"body={resp2.content[:500].decode('utf-8', errors='ignore')}"
+        )
+        cnt2 = Reservation.objects.filter(
+            space_id=space.id,
+            start_time__lt=end,
+            end_time__gt=start,
+            status__in=[Reservation.STATUS_PENDING, Reservation.STATUS_CONFIRMED],
+        ).count()
+        assert cnt2 == 1, (
+            f"Tras intento solapado count={cnt2}, esperaba 1 (solo la 1ª)"
+        )
+        result_msg = (
+            f"reserva #{res_id} HTTP201 · solape rechazado HTTP400 · "
+            f"BD count={cnt2} (sin duplicado)"
+        )
+    finally:
+        # ---------- CLEANUP OBLIGATORIO: borra la reserva creada en el test ----------
+        # Asi la BD no se va llenando de basura "Smoke test reserva..."
+        if res_id is not None:
+            try:
+                Reservation.objects.filter(pk=res_id).delete()
+            except Exception:  # pragma: no cover - cleanup fallido no rompe el test
+                pass
+    return result_msg
 
 
 do_test("Reservas: creación + anti-solapamiento", t14)
