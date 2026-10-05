@@ -64,14 +64,6 @@
               Crear cuenta
             </button>
           </div>
-          <div class="rounded-xl bg-club-gray-50 border border-club-gray-200 p-3 text-xs">
-            <div class="font-bold text-club-gray-700 mb-1">Accesos de demo:</div>
-            <div class="grid grid-cols-1 gap-0.5 text-club-gray-600">
-              <div><b>Admin:</b> admin_fh / AdminFH2026*!</div>
-              <div><b>Recepción:</b> recepcion_fh / RecepcionFH2026*!</div>
-              <div><b>Cliente:</b> cliente1_fh / Cliente1FH*!</div>
-            </div>
-          </div>
         </div>
       </div>
 
