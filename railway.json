@@ -16,6 +16,7 @@
       "/frontend/postcss.config.js",
       "/scripts/**",
       "/railway.json",
+      "/package.json",
       "/.env.example"
     ]
   },
@@ -30,6 +31,7 @@
     "configVariables": {
       "DJANGO_DEBUG": "False",
       "DJANGO_ALLOWED_HOSTS": "*",
+      "NIXPACKS_NODE_VERSION": "20",
       "LOGIN_MAX_ATTEMPTS": "5",
       "LOGIN_COOLDOWN_MINUTES": "15",
       "ACCESS_TOKEN_LIFETIME_MINUTES": "60",

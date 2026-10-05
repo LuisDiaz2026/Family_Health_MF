@@ -1,0 +1,13 @@
+{
+  "name": "family-health-mf-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sentinel package.json for Railway Nixpacks to detect Node.js provider (frontend lives in ./frontend)",
+  "scripts": {
+    "build": "echo 'Build real del frontend se ejecuta via scripts/railway_build.sh (./frontend)'",
+    "install": "echo 'Instalacion real se ejecuta via scripts/railway_build.sh (./frontend)'"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
