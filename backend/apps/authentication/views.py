@@ -184,6 +184,23 @@ class UserAdminViewSet(viewsets.ModelViewSet):
         user.save(update_fields=["is_active"])
         return Response({"is_active": user.is_active})
 
+    @action(detail=True, methods=["post"], url_path="set-password")
+    def set_password(self, request, pk=None):
+        """Administrador asigna una nueva contraseña a un usuario existente."""
+        user = self.get_object()
+        new_password = request.data.get("new_password", "")
+        if len(new_password) < 8:
+            return Response({"error": "La nueva contraseña debe tener al menos 8 caracteres"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(new_password)
+        user.save(update_fields=["password"])
+        AuditLog.objects.create(
+            user=request.user,
+            action=AuditLog.ACTION_PROFILE_EDIT,
+            detail=f"Administrador actualizó contraseña de usuario #{user.id} ({user.username})",
+        )
+        return Response({"message": "Contraseña actualizada exitosamente"})
+
 
 class EmployeeClientViewSet(viewsets.ReadOnlyModelViewSet):
     """Empleados pueden consultar datos de clientes."""
