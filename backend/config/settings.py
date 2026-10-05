@@ -76,8 +76,19 @@ if DEBUG:
             ALLOWED_HOSTS.append(host)
 
 RAILWAY_DOMAIN = os.getenv("RAILWAY_PUBLIC_DOMAIN", "").strip()
+# Railway Docker NO inyecta RAILWAY_PUBLIC_DOMAIN dentro del container siempre.
+# Variable manual fallback para usuario principiante (solo copia/pega su dominio 1 vez):
+DJANGO_PUBLIC_DOMAIN = os.getenv("DJANGO_PUBLIC_DOMAIN", "").strip()
+if DJANGO_PUBLIC_DOMAIN and not RAILWAY_DOMAIN:
+    RAILWAY_DOMAIN = DJANGO_PUBLIC_DOMAIN
+
 if RAILWAY_DOMAIN and RAILWAY_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(RAILWAY_DOMAIN)
+# También el wildcard .railway.app para futuros redeploys (railway cambia subdominio a veces):
+if ".railway.app" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".railway.app")
+if ".up.railway.app" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".up.railway.app")
     if f"*.{RAILWAY_DOMAIN}" not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(f"*.{RAILWAY_DOMAIN}")
 
