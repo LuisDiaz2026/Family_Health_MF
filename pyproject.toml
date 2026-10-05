@@ -1,3 +1,0 @@
-# Python runtime for Railway Nixpacks detection
-# Real requirements: /backend/requirements.txt (installed via scripts/railway_build.sh)
-python_version = "3.11"

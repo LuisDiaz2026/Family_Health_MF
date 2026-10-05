@@ -1,28 +1,41 @@
-# Ignorar carpetas al build de Docker (más rápido y no sube cosas innecesarias)
 .git
 .github
-node_modules
-frontend/node_modules
-frontend/dist
-backend/staticfiles
-backend/__pycache__
-**/__pycache__
-**/*.pyc
+.gitignore
 .venv
 venv*
+__pycache__
+**/__pycache__
+**/*.pyc
 .env
 .env.*
 *.log
 logs/
-# Scripts locales TFM (no necesarios para despliegue)
+# Build caches local
+frontend/node_modules
+frontend/dist
+backend/staticfiles
+backend/db.sqlite3
+backend/media/*
+!backend/media/.gitkeep
+# Scripts TFM locales (NO se usan en prod)
 _generar_*.py
 _fusionar_*.py
 _maestro_*.py
 _corregir_*.py
 correccion_ortotipografica.py
-# Documentos TFM
 *.docx
 *.pdf
 SCRUM_DOCS/
 02. TESIS/
 01. PROPUESTA DE TRABAJO DE GRADO/
+# Nixpacks / Node / caches
+node_modules
+.cache
+.temp
+.tmp
+nixpacks.toml
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+runtime.txt
+pyproject.toml

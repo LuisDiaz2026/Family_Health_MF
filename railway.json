@@ -1,11 +1,11 @@
+# Railway - Docker builder
+# No necesitamos NIXPACKS. El Dockerfile construye TODO.
+# Variable: DATABASE_URL viene REFERENCIADA del Postgres service.
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "nixpacksPlan": {
-      "providers": ["node", "python"]
-    },
-    "buildCommand": "bash ./scripts/railway_build.sh",
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile",
     "watchPatterns": [
       "/backend/**",
       "/frontend/src/**",
@@ -14,14 +14,11 @@
       "/frontend/index.html",
       "/frontend/tailwind.config.js",
       "/frontend/postcss.config.js",
-      "/scripts/**",
-      "/railway.json",
-      "/package.json",
-      "/.env.example"
+      "/Dockerfile",
+      "/.dockerignore"
     ]
   },
   "deploy": {
-    "startCommand": "bash ./scripts/railway_start.sh",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5,
     "healthcheckPath": "/api/v1/health/",
@@ -31,8 +28,6 @@
     "configVariables": {
       "DJANGO_DEBUG": "False",
       "DJANGO_ALLOWED_HOSTS": "*",
-      "NIXPACKS_NODE_VERSION": "20",
-      "NIXPACKS_PYTHON_VERSION": "3.11",
       "LOGIN_MAX_ATTEMPTS": "5",
       "LOGIN_COOLDOWN_MINUTES": "15",
       "ACCESS_TOKEN_LIFETIME_MINUTES": "60",
