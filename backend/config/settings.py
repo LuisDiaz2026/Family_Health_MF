@@ -391,6 +391,13 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
 
 # --- Seguridad adicional (Solo HTTPS en producción) ---
+# RAILWAY PROXY: Railway (y todos los PaaS modernos) terminan TLS en su proxy
+# y envian el header HTTP_X_FORWARDED_PROTO=https. SI NO LO CONFIGURAS,
+# Django no sabe que viene por HTTPS -> SECURE_SSL_REDIRECT redirige en bucle (ERR_TOO_MANY_REDIRECTS).
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
