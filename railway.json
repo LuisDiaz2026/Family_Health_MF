@@ -1,6 +1,3 @@
-# Railway - Docker builder
-# No necesitamos NIXPACKS. El Dockerfile construye TODO.
-# Variable: DATABASE_URL viene REFERENCIADA del Postgres service.
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
