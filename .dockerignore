@@ -1,0 +1,28 @@
+# Ignorar carpetas al build de Docker (más rápido y no sube cosas innecesarias)
+.git
+.github
+node_modules
+frontend/node_modules
+frontend/dist
+backend/staticfiles
+backend/__pycache__
+**/__pycache__
+**/*.pyc
+.venv
+venv*
+.env
+.env.*
+*.log
+logs/
+# Scripts locales TFM (no necesarios para despliegue)
+_generar_*.py
+_fusionar_*.py
+_maestro_*.py
+_corregir_*.py
+correccion_ortotipografica.py
+# Documentos TFM
+*.docx
+*.pdf
+SCRUM_DOCS/
+02. TESIS/
+01. PROPUESTA DE TRABAJO DE GRADO/
