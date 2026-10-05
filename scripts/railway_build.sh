@@ -63,6 +63,59 @@ fix_node_path() {
     echo "  npm:  $(command -v npm) ($(npm -v 2>/dev/null || echo "??"))"
 }
 fix_node_path
+# ============================================================
+# FIX RAILWAY: asegurar que python/pip disponibles.
+# Railway/Nixpacks a veces solo crea `python3` sin alias `python`.
+# ============================================================
+fix_python_path() {
+    local pybin=""
+
+    # 1) Busca python en rutas Nixpacks estándar
+    for d in \
+        /nix/var/nix/profiles/default/bin \
+        "$HOME/.nix-profile/bin" \
+        /opt/nix/*/bin \
+        /usr/local/bin \
+        /usr/bin; do
+
+        if [[ -x "$d/python" ]]; then
+            pybin="$d/python"; break
+        elif [[ -z "$pybin" && -x "$d/python3" ]]; then
+            pybin="$d/python3"
+        fi
+    done
+
+    # 2) Si solo tenemos python3, crea alias `python` en un temp PATH
+    if [[ -n "$pybin" && "$(basename "$pybin")" == "python3" ]]; then
+        local tmpdir
+        tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t pybin)"
+        ln -sf "$pybin" "$tmpdir/python"
+        ln -sf "${pybin}3-config" "$tmpdir/python-config" 2>/dev/null || true
+        export PATH="$tmpdir:$PATH"
+        # Alias shell por si acaso
+        python() { "$pybin" "$@"; }
+        export -f python 2>/dev/null || true
+    elif [[ -n "$pybin" ]]; then
+        export PATH="$(dirname "$pybin"):$PATH"
+    fi
+
+    if ! command -v python >/dev/null 2>&1; then
+        echo ""
+        echo "============================================"
+        echo "ERROR CRÍTICO RAILWAY: python NO ENCONTRADO."
+        echo "============================================"
+        echo "Solución: agrega NIXPACKS_PYTHON_VERSION=3.11 en Variables"
+        echo "y haz Redeploy."
+        echo "============================================"
+        exit 127
+    fi
+
+    echo "[PRE-CHECK] Python detectado OK:"
+    echo "  python: $(command -v python)"
+    echo "  version: $(python -c 'import sys; print(sys.version.split()[0])' 2>/dev/null || echo '??')"
+    echo "  pip:    $(python -m pip --version 2>/dev/null | head -1 || echo 'no pip')"
+}
+fix_python_path
 
 echo "[1/5] Instalando dependencias NPM (frontend)..."
 cd "$FRONTEND_DIR"
