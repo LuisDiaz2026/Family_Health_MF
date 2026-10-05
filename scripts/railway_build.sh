@@ -45,6 +45,15 @@ fix_node_path() {
         fi
     done
 
+    # 5) Última medida: si Nixpacks instaló node pero el provider python no
+    #    encontró npm, buscamos con which -a en TODAS las rutas
+    local n
+    n="$(which -a npm node 2>/dev/null | head -1 || true)"
+    if [[ -n "$n" ]]; then
+        export PATH="$(dirname "$n"):$PATH"
+        found=1
+    fi
+
     # Si después de TODO no encontramos npm, salimos con error CLARO.
     if [[ $found -eq 0 ]]; then
         echo ""
@@ -75,8 +84,10 @@ fix_python_path() {
         /nix/var/nix/profiles/default/bin \
         "$HOME/.nix-profile/bin" \
         /opt/nix/*/bin \
+        /pkg/nix/*/bin \
         /usr/local/bin \
-        /usr/bin; do
+        /usr/bin \
+        /app; do
 
         if [[ -x "$d/python" ]]; then
             pybin="$d/python"; break
@@ -84,6 +95,16 @@ fix_python_path() {
             pybin="$d/python3"
         fi
     done
+
+    # 1b) Busca con `which -a python3 python` por si PATH no contiene las rutas Nix
+    if [[ -z "$pybin" ]]; then
+        local w
+        w="$(which -a python python3 2>/dev/null | head -1 || true)"
+        if [[ -n "$w" ]]; then
+            pybin="$w"
+            export PATH="$(dirname "$w"):$PATH"
+        fi
+    fi
 
     # 2) Si solo tenemos python3, crea alias `python` en un temp PATH
     if [[ -n "$pybin" && "$(basename "$pybin")" == "python3" ]]; then
