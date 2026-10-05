@@ -7,12 +7,12 @@ from .models import User
 
 
 class IsAdmin(BasePermission):
-    """Solo rol ADMIN."""
+    """Solo rol ADMIN (RBAC) o is_superuser=True por compatibilidad createsuperuser."""
     def has_permission(self, request, view):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.role == User.ROLE_ADMIN
+            and (request.user.role == User.ROLE_ADMIN or request.user.is_superuser)
         )
 
 
@@ -37,12 +37,16 @@ class IsClient(BasePermission):
 
 
 class IsAdminOrEmployee(BasePermission):
-    """Staff operativo: ADMIN o EMPLOYEE."""
+    """Staff operativo: ADMIN o EMPLOYEE (RBAC) / is_staff=True por compatibilidad."""
     def has_permission(self, request, view):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.role in (User.ROLE_ADMIN, User.ROLE_EMPLOYEE)
+            and (
+                request.user.role in (User.ROLE_ADMIN, User.ROLE_EMPLOYEE)
+                or request.user.is_staff
+                or request.user.is_superuser
+            )
         )
 
 

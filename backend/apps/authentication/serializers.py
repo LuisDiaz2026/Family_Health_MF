@@ -34,6 +34,10 @@ class CustomTokenObtainPairSerializer(BaseTokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         user = self.user
+        if not user.is_active:
+            raise serializers.ValidationError(
+                "Tu cuenta está pendiente de activación por el Administrador del Club Family Health. Contáctate con recepción."
+            )
         AuditLog.objects.create(
             user=user,
             action=AuditLog.ACTION_LOGIN,
@@ -98,6 +102,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         validated_data.pop("password_confirm")
         validated_data["password"] = make_password(validated_data["password"])
         validated_data["role"] = User.ROLE_CLIENT
+        validated_data["is_active"] = False  # Admin debe aprobar/activar el cliente manualmente
         validated_data["privacy_policy_accepted_at"] = timezone.now()
         return super().create(validated_data)
 
