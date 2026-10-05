@@ -165,7 +165,8 @@ class UserAdminViewSet(viewsets.ModelViewSet):
         role = self.request.query_params.get("role")
         q = self.request.query_params.get("q")
         if role:
-            qs = qs.filter(role=role)
+            role_upper = role.strip().upper()
+            qs = qs.filter(role__iexact=role_upper)
         if q:
             qs = qs.filter(
                 Q(username__icontains=q) | Q(email__icontains=q)

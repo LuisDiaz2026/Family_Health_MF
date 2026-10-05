@@ -38,6 +38,11 @@
     </div>
 
     <SkeletonLoader v-if="loading" />
+    <EmptyState v-else-if="errorMsg && !list.length" icon="AlertTriangle" title="Error al cargar clientes" :description="errorMsg">
+      <button class="btn-primary mt-3" @click="load">
+        <RefreshCw class="w-4 h-4" /> Reintentar
+      </button>
+    </EmptyState>
     <EmptyState v-else-if="!filtered.length" icon="Users" title="Sin clientes" description="Invita a nuevos clientes a registrarse o crea uno nuevo." />
     <div v-else class="space-y-2">
       <div v-for="c in filtered" :key="c.id" class="card !p-3 flex items-start gap-3">
@@ -263,22 +268,24 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
-  Plus, Search, Users, Pencil, PowerOff, Play, Trash2, X, Loader2, AlertTriangle
+  Plus, Search, Users, Pencil, PowerOff, Play, Trash2, X, Loader2, AlertTriangle, RefreshCw
 } from 'lucide-vue-next'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { showToast } from '@/utils/toast'
-import { useUsersStore } from '@/stores/users'
+import api, { extractError } from '@/api/client'
 
-const store = useUsersStore()
-const { loading, list } = store
+const API_BASE = '/auth/admin/users'
 
+const list = ref([])
+const loading = ref(false)
+const submitting = ref(false)
+const errorMsg = ref('')
 const q = ref('')
 const filterStatus = ref('')
 
 const showForm = ref(false)
 const editing = ref(false)
-const submitting = ref(false)
 const defaultForm = () => ({
   id: null,
   first_name: '',
@@ -299,11 +306,11 @@ const confirmToggle = ref(null)
 const confirmDeleteTarget = ref(null)
 const deleteConfirmText = ref('')
 
-const activeCount = computed(() => list.value.filter(c => c.is_active).length)
-const inactiveCount = computed(() => list.value.filter(c => !c.is_active).length)
+const activeCount = computed(() => (list.value || []).filter(c => c.is_active).length)
+const inactiveCount = computed(() => (list.value || []).filter(c => !c.is_active).length)
 
 const filtered = computed(() => {
-  let data = list.value.slice()
+  let data = (list.value || []).slice()
   if (filterStatus.value === 'active') data = data.filter(c => c.is_active)
   if (filterStatus.value === 'inactive') data = data.filter(c => !c.is_active)
   const s = q.value.trim().toLowerCase()
@@ -320,6 +327,46 @@ const filtered = computed(() => {
 
 function initials(c) {
   return ((c.first_name?.[0] || 'U') + (c.last_name?.[0] || '')).toUpperCase()
+}
+
+async function load() {
+  loading.value = true
+  errorMsg.value = ''
+  try {
+    const resp = await api.get(API_BASE + '/', {
+      params: { role: 'CLIENT', page_size: 500 },
+    })
+    const raw = resp.data?.results || resp.data
+    const data = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : [])
+    list.value = data.filter(x => !!x && typeof x === 'object')
+    return list.value
+  } catch (e) {
+    const status = e?.response?.status
+    if (status === 401 || status === 403) {
+      try {
+        const { useAuthStore } = await import('@/stores/auth')
+        const auth = useAuthStore()
+        auth.clearSession()
+        if (window?.location) {
+          window.location.href = '/#/login'
+        }
+      } catch (_) {}
+      const msg = status === 403
+        ? 'No tienes permisos de Administrador para gestionar clientes. Por favor inicia sesión con cuenta Admin.'
+        : 'Tu sesión venció. Por favor vuelve a iniciar sesión.'
+      errorMsg.value = msg
+      showToast(msg, 'error')
+      list.value = []
+      return []
+    }
+    const msg = extractError(e, 'No se pudo cargar el listado de clientes.')
+    errorMsg.value = msg
+    showToast(msg, 'error')
+    list.value = []
+    return []
+  } finally {
+    loading.value = false
+  }
 }
 
 function openCreate() {
@@ -353,29 +400,23 @@ function closeForm() {
 
 async function submitForm() {
   if (!form.first_name.trim() || !form.last_name.trim()) {
-    showToast('Debes ingresar nombres y apellidos.', 'error')
-    return
+    showToast('Debes ingresar nombres y apellidos.', 'error'); return
   }
   if (!form.username.trim()) {
-    showToast('Debes ingresar un nombre de usuario.', 'error')
-    return
+    showToast('Debes ingresar un nombre de usuario.', 'error'); return
   }
   if (!form.email.trim()) {
-    showToast('Debes ingresar un correo electrónico.', 'error')
-    return
+    showToast('Debes ingresar un correo electrónico.', 'error'); return
   }
   if (!editing.value) {
     if (!form.password) {
-      showToast('Debes ingresar una contraseña (mínimo 8 caracteres).', 'error')
-      return
+      showToast('Debes ingresar una contraseña (mínimo 8 caracteres).', 'error'); return
     }
     if (form.password.length < 8) {
-      showToast('La contraseña debe tener al menos 8 caracteres.', 'error')
-      return
+      showToast('La contraseña debe tener al menos 8 caracteres.', 'error'); return
     }
     if (form.password !== form.password_confirm) {
-      showToast('Las contraseñas no coinciden.', 'error')
-      return
+      showToast('Las contraseñas no coinciden.', 'error'); return
     }
   }
 
@@ -393,17 +434,16 @@ async function submitForm() {
         membership_type: form.membership_type || '',
         is_active: !!form.is_active,
       }
-      await store.updateClient(form.id, payload)
+      await api.patch(`${API_BASE}/${form.id}/`, payload)
       if (form.password.trim()) {
         if (form.password.length < 8) {
-          showToast('La nueva contraseña debe tener mínimo 8 caracteres.', 'error')
-          return
+          showToast('La nueva contraseña debe tener mínimo 8 caracteres.', 'error'); return
         }
-        await store.setClientPassword(form.id, form.password.trim())
+        await api.post(`${API_BASE}/${form.id}/set-password/`, { new_password: form.password.trim() })
       }
       showToast('Cliente actualizado exitosamente.', 'success')
     } else {
-      await store.createClient({
+      await api.post(API_BASE + '/', {
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
         username: form.username.trim(),
@@ -413,14 +453,16 @@ async function submitForm() {
         phone: form.phone.trim() || '',
         membership_type: form.membership_type || '',
         password: form.password,
+        role: 'CLIENT',
         is_active: true,
       })
       showToast('Cliente creado exitosamente.', 'success')
     }
     closeForm()
-    await store.fetchClients()
+    await load()
   } catch (err) {
-    showToast(err || 'Ocurrió un error al guardar el cliente.', 'error')
+    const msg = extractError(err, 'Ocurrió un error al guardar el cliente.')
+    showToast(msg, 'error')
   } finally {
     submitting.value = false
   }
@@ -435,12 +477,13 @@ async function executeToggleActive() {
   if (!c) return
   submitting.value = true
   try {
-    await store.toggleClientActive(c.id)
+    await api.post(`${API_BASE}/${c.id}/toggle-active/`)
     showToast(c.is_active ? 'Cliente inactivado exitosamente.' : 'Cliente activado exitosamente.', 'success')
     confirmToggle.value = null
-    await store.fetchClients()
+    await load()
   } catch (err) {
-    showToast(err || 'No se pudo actualizar el estado del cliente.', 'error')
+    const msg = extractError(err, 'No se pudo actualizar el estado del cliente.')
+    showToast(msg, 'error')
   } finally {
     submitting.value = false
   }
@@ -456,23 +499,20 @@ async function executeDelete() {
   if (!c) return
   submitting.value = true
   try {
-    await store.deleteClient(c.id)
+    await api.delete(`${API_BASE}/${c.id}/`)
     showToast('Cliente eliminado permanentemente.', 'success')
     confirmDeleteTarget.value = null
     deleteConfirmText.value = ''
-    await store.fetchClients()
+    await load()
   } catch (err) {
-    showToast(err || 'No se pudo eliminar el cliente.', 'error')
+    const msg = extractError(err, 'No se pudo eliminar el cliente.')
+    showToast(msg, 'error')
   } finally {
     submitting.value = false
   }
 }
 
-onMounted(async () => {
-  try {
-    await store.fetchClients()
-  } catch (err) {
-    showToast(err || 'No se pudo cargar el listado de clientes.', 'error')
-  }
+onMounted(() => {
+  load()
 })
 </script>
