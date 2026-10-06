@@ -274,13 +274,15 @@ import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { showToast } from '@/utils/toast'
 import api, { extractError } from '@/api/client'
+import { useUsersStore } from '@/stores/users'
 
-const API_BASE = '/auth/admin/users'
+const usersStore = useUsersStore()
 
-const list = ref([])
-const loading = ref(false)
+const list = computed(() => usersStore.list || [])
+const loading = computed(() => !!usersStore.loading)
+const errorMsg = computed(() => usersStore.error || '')
+
 const submitting = ref(false)
-const errorMsg = ref('')
 const q = ref('')
 const filterStatus = ref('')
 
@@ -306,11 +308,11 @@ const confirmToggle = ref(null)
 const confirmDeleteTarget = ref(null)
 const deleteConfirmText = ref('')
 
-const activeCount = computed(() => (list.value || []).filter(c => c.is_active).length)
-const inactiveCount = computed(() => (list.value || []).filter(c => !c.is_active).length)
+const activeCount = computed(() => list.value.filter(c => c.is_active).length)
+const inactiveCount = computed(() => list.value.filter(c => !c.is_active).length)
 
 const filtered = computed(() => {
-  let data = (list.value || []).slice()
+  let data = list.value.slice()
   if (filterStatus.value === 'active') data = data.filter(c => c.is_active)
   if (filterStatus.value === 'inactive') data = data.filter(c => !c.is_active)
   const s = q.value.trim().toLowerCase()
@@ -330,15 +332,8 @@ function initials(c) {
 }
 
 async function load() {
-  loading.value = true
-  errorMsg.value = ''
   try {
-    const resp = await api.get(API_BASE + '/', {
-      params: { role: 'CLIENT', page_size: 500 },
-    })
-    const raw = resp.data?.results || resp.data
-    const data = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : [])
-    list.value = data.filter(x => !!x && typeof x === 'object')
+    await usersStore.fetchClients({ role: 'client', page_size: 500 })
     return list.value
   } catch (e) {
     const status = e?.response?.status
@@ -354,18 +349,12 @@ async function load() {
       const msg = status === 403
         ? 'No tienes permisos de Administrador para gestionar clientes. Por favor inicia sesión con cuenta Admin.'
         : 'Tu sesión venció. Por favor vuelve a iniciar sesión.'
-      errorMsg.value = msg
       showToast(msg, 'error')
-      list.value = []
       return []
     }
     const msg = extractError(e, 'No se pudo cargar el listado de clientes.')
-    errorMsg.value = msg
     showToast(msg, 'error')
-    list.value = []
     return []
-  } finally {
-    loading.value = false
   }
 }
 
@@ -434,16 +423,16 @@ async function submitForm() {
         membership_type: form.membership_type || '',
         is_active: !!form.is_active,
       }
-      await api.patch(`${API_BASE}/${form.id}/`, payload)
+      await usersStore.updateClient(form.id, payload)
       if (form.password.trim()) {
         if (form.password.length < 8) {
           showToast('La nueva contraseña debe tener mínimo 8 caracteres.', 'error'); return
         }
-        await api.post(`${API_BASE}/${form.id}/set-password/`, { new_password: form.password.trim() })
+        await usersStore.setClientPassword(form.id, form.password.trim())
       }
       showToast('Cliente actualizado exitosamente.', 'success')
     } else {
-      await api.post(API_BASE + '/', {
+      const payload = {
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
         username: form.username.trim(),
@@ -455,11 +444,11 @@ async function submitForm() {
         password: form.password,
         role: 'CLIENT',
         is_active: true,
-      })
+      }
+      await usersStore.createClient(payload)
       showToast('Cliente creado exitosamente.', 'success')
     }
     closeForm()
-    await load()
   } catch (err) {
     const msg = extractError(err, 'Ocurrió un error al guardar el cliente.')
     showToast(msg, 'error')
@@ -477,10 +466,10 @@ async function executeToggleActive() {
   if (!c) return
   submitting.value = true
   try {
-    await api.post(`${API_BASE}/${c.id}/toggle-active/`)
-    showToast(c.is_active ? 'Cliente inactivado exitosamente.' : 'Cliente activado exitosamente.', 'success')
+    const wasActive = !!c.is_active
+    await usersStore.toggleClientActive(c.id)
+    showToast(wasActive ? 'Cliente inactivado exitosamente.' : 'Cliente activado exitosamente.', 'success')
     confirmToggle.value = null
-    await load()
   } catch (err) {
     const msg = extractError(err, 'No se pudo actualizar el estado del cliente.')
     showToast(msg, 'error')
@@ -499,11 +488,10 @@ async function executeDelete() {
   if (!c) return
   submitting.value = true
   try {
-    await api.delete(`${API_BASE}/${c.id}/`)
+    await usersStore.deleteClient(c.id)
     showToast('Cliente eliminado permanentemente.', 'success')
     confirmDeleteTarget.value = null
     deleteConfirmText.value = ''
-    await load()
   } catch (err) {
     const msg = extractError(err, 'No se pudo eliminar el cliente.')
     showToast(msg, 'error')

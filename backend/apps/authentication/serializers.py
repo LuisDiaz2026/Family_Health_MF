@@ -32,12 +32,17 @@ class CustomTokenObtainPairSerializer(BaseTokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
+        username_or_email = attrs.get(self.username_field, "").strip().lower()
+        pre_user = (
+            User.objects.filter(email__iexact=username_or_email).first()
+            or User.objects.filter(username__iexact=username_or_email).first()
+        )
+        if pre_user is not None and not pre_user.is_active:
+            raise serializers.ValidationError(
+                "Tu cuenta está INACTIVA o pendiente de aprobación por el Administrador del Club Family Health. Contáctate con recepción o con el administrador para activarla."
+            )
         data = super().validate(attrs)
         user = self.user
-        if not user.is_active:
-            raise serializers.ValidationError(
-                "Tu cuenta está pendiente de activación por el Administrador del Club Family Health. Contáctate con recepción."
-            )
         AuditLog.objects.create(
             user=user,
             action=AuditLog.ACTION_LOGIN,

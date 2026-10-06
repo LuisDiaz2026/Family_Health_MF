@@ -33,7 +33,9 @@ export const useUsersStore = defineStore('users', () => {
         role: 'client',
         is_active: payload.is_active !== false,
       })
-      return resp.data
+      const created = resp.data
+      await fetchClients()
+      return created
     } catch (e) {
       error.value = extractError(e)
       throw error.value
@@ -47,7 +49,9 @@ export const useUsersStore = defineStore('users', () => {
     error.value = ''
     try {
       const resp = await api.patch(`/auth/admin/users/${id}/`, payload)
-      return resp.data
+      const updated = resp.data
+      await fetchClients()
+      return updated
     } catch (e) {
       error.value = extractError(e)
       throw error.value
@@ -77,7 +81,9 @@ export const useUsersStore = defineStore('users', () => {
     error.value = ''
     try {
       const resp = await api.post(`/auth/admin/users/${id}/toggle-active/`)
-      return resp.data
+      const toggled = resp.data
+      await fetchClients()
+      return toggled
     } catch (e) {
       error.value = extractError(e)
       throw error.value
@@ -91,6 +97,7 @@ export const useUsersStore = defineStore('users', () => {
     error.value = ''
     try {
       await api.delete(`/auth/admin/users/${id}/`)
+      await fetchClients()
       return true
     } catch (e) {
       error.value = extractError(e)
