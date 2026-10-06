@@ -129,11 +129,11 @@ class UserMeSerializer(serializers.ModelSerializer):
             "gender", "birth_date", "address", "city", "department",
             "emergency_contact", "emergency_phone",
             "membership_type", "membership_expires_at", "membership_active",
-            "is_verified", "accepted_privacy_policy",
-            "created_at", "updated_at", "loyalty",
+            "is_verified", "is_active", "accepted_privacy_policy",
+            "created_at", "updated_at", "loyalty", "loyalty_profile",
             "unread_notifications_count",
         )
-        read_only_fields = ("id", "role", "email", "is_verified", "created_at")
+        read_only_fields = ("id", "role", "email", "is_verified", "is_active", "created_at")
 
     def get_loyalty(self, obj):
         if obj.role != User.ROLE_CLIENT:
