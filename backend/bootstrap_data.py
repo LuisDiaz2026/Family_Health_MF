@@ -5,8 +5,8 @@ Ejecución:
   python bootstrap_data.py
 
 NOTA DE SEGURIDAD: Credenciales de demostración parametrizables por variables
-DEMO_PASS_ADMIN, DEMO_PASS_EMP, DEMO_PASS_C1, DEMO_PASS_C2, DEMO_PASS_C3.
-Si no están definidas se generan contraseñas aleatorias de un solo uso.
+DEMO_PASS_ADMIN, DEMO_PASS_EMP, DEMO_PASS_CAF, DEMO_PASS_C1, DEMO_PASS_C2, DEMO_PASS_C3.
+Si no están definidas se usan contraseñas fijas de demostración (conocidas).
 Este script es EXCLUSIVO para entornos de prueba AISLADOS.
 """
 import os
@@ -19,13 +19,25 @@ from decimal import Decimal
 from django.utils.text import slugify
 
 
+# Fallback fijos (conocidos) cuando no hay variables DEMO_PASS_* configuradas.
+# Coinciden con los valores legacy de smoke_test.py para que las pruebas pasen
+# tanto en local como en Railway sin configuración adicional.
+_DEMO_PASS_FALLBACK = {
+    "DEMO_PASS_ADMIN": "AdminFH2026*!",
+    "DEMO_PASS_EMP": "RecepcionFH2026*!",
+    "DEMO_PASS_CAF": "CafeteriaFH2026*!",
+    "DEMO_PASS_C1": "Cliente1FH*!",
+    "DEMO_PASS_C2": "Cliente2FH*!",
+    "DEMO_PASS_C3": "Cliente3FH*!",
+}
+
+
 def _demo_pass(env_key: str, label: str):
     val = os.getenv(env_key)
     if val:
         return val, False
-    alphabet = string.ascii_letters + string.digits + "!*#$@%"
-    rnd = "".join(secrets.choice(alphabet) for _ in range(16))
-    return rnd, True
+    # Fallback fijo conocido (no aleatorio) para entornos Railway sin variables.
+    return _DEMO_PASS_FALLBACK.get(env_key, f"{label}FH2026*!"), False
 
 # UTF-8 seguro para Windows
 if sys.platform.startswith("win"):
@@ -98,7 +110,10 @@ def run():
             suffix = " [auto-generada]" if creds["admin_fh"][1] else ""
             print(f"✅ Superusuario Creado: admin_fh / *****{suffix}")
         else:
-            print("ℹ️  Superusuario admin_fh ya existe.")
+            admin = User.objects.get(username="admin_fh")
+            admin.set_password(pw_admin)
+            admin.save(update_fields=["password"])
+            print("ℹ️  Superusuario admin_fh ya existe. Contraseña sincronizada.")
 
         # ============================================================
         # 2) EMPLEADO RECEPCIÓN
@@ -134,6 +149,10 @@ def run():
                 print("ℹ️  recepcion_fh migrado de EMPLOYEE a RECEPCION.")
             else:
                 print("ℹ️  Recepción recepcion_fh ya existe.")
+            # Sincronizar contraseña con DEMO_PASS_EMP (o fallback fijo)
+            r.set_password(pw_emp)
+            r.save(update_fields=["password"])
+            print("ℹ️  recepcion_fh contraseña sincronizada.")
 
         # ============================================================
         # 2b) EMPLEADO CAFETERÍA
@@ -169,6 +188,10 @@ def run():
                 print("ℹ️  cafeteria_fh migrado de EMPLOYEE a CAFETERIA.")
             else:
                 print("ℹ️  Cafetería cafeteria_fh ya existe.")
+            # Sincronizar contraseña con DEMO_PASS_CAF (o fallback fijo)
+            c.set_password(pw_caf)
+            c.save(update_fields=["password"])
+            print("ℹ️  cafeteria_fh contraseña sincronizada.")
 
         # ============================================================
         # 3) CLIENTES DEMO
@@ -199,7 +222,11 @@ def run():
                 suffix = " [auto-generada]" if creds[c["u"]][1] else ""
                 print(f"✅ Cliente Creado: {c['u']} / *****{suffix}")
             else:
-                print(f"ℹ️  Cliente {c['u']} ya existe.")
+                # Sincronizar contraseña con DEMO_PASS_C* (o fallback fijo)
+                cli = User.objects.get(username=c["u"])
+                cli.set_password(c["p"])
+                cli.save(update_fields=["password"])
+                print(f"ℹ️  Cliente {c['u']} ya existe. Contraseña sincronizada.")
 
         # ============================================================
         # 4) RESERVATIONS - TIPOS DE ESPACIO
