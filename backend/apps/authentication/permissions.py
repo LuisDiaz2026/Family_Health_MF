@@ -75,7 +75,8 @@ class IsAdminOrEmployee(BasePermission):
 
 
 class IsAdminOrReception(BasePermission):
-    """ADMIN o RECEPCION (para reservas, espacios, clientes)."""
+    """ADMIN o RECEPCION (para reservas, espacios, clientes).
+    No incluye is_staff para evitar acceso cruzado entre roles."""
     def has_permission(self, request, view):
         return bool(
             request.user
