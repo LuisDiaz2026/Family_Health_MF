@@ -228,6 +228,10 @@ def run():
                 cli.save(update_fields=["password"])
                 print(f"ℹ️  Cliente {c['u']} ya existe. Contraseña sincronizada.")
 
+    # === FIN TRANSACCIÓN 1: Usuarios y contraseñas (independiente) ===
+    # Las contraseñas quedan persistidas aunque el catálogo falle.
+
+    with transaction.atomic():
         # ============================================================
         # 4) RESERVATIONS - TIPOS DE ESPACIO
         # ============================================================
