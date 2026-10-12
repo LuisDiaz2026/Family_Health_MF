@@ -145,12 +145,16 @@ onMounted(async () => {
   try {
     const list = await reservations.listMyReservations()
     recent.value = (list || []).slice(0, 3)
+  } catch (_) {
+    recent.value = []
   } finally {
     loadingReservations.value = false
   }
   try {
     const routines = await gym.listMyRoutines()
     featuredRoutine.value = (routines || [])[0] || null
+  } catch (_) {
+    featuredRoutine.value = null
   } finally {
     loadingRoutines.value = false
   }
