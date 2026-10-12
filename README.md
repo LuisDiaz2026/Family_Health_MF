@@ -7,19 +7,24 @@
 
 **Proyecto:** Sistema integral de gestión y reservas mobile-first para **Club Family Health**, una organización deportiva y recreativa en Maicao.
 
+**🚀 Despliegue en producción (Railway):** <https://familyhealthmf-production.up.railway.app/>
+**Repositorio GitHub:** <https://github.com/LuisDiaz2026/Family_Health_MF>
+**Health Check API:** <https://familyhealthmf-production.up.railway.app/api/v1/health/>
+
 ---
 
 ## 1. Stack Tecnológico
 
 | Capa | Tecnologías (versiones pinneadas) |
 |---|---|
-| **Backend** | Python 3.10.x, Django 5.0.7, Django REST Framework 3.15, SimpleJWT (HS512) |
+| **Backend** | Python 3.10.x (local) · Python 3.11-slim (Railway) · Django 5.0.7, Django REST Framework 3.15, SimpleJWT (HS512) |
 | **Frontend** | Vue 3.4 (Composition API + script setup), Vite 5, Pinia 2.1, Vue Router 4.2, Axios 1.6, Tailwind 3.4, Lucide Vue |
-| **Base de datos** | SQLite 3 (desarrollo) · PostgreSQL psycopg2-binary (producción lista) |
+| **Base de datos** | SQLite 3 (desarrollo local) · **PostgreSQL (Railway, producción activa)** · psycopg2-binary |
+| **Servidor app** | Gunicorn (Railway) · WhiteNoise (static files) · Docker multistage |
 | **Seguridad** | Argon2-Cffi password hashing · django-axes rate limit (5 fallos/login) · JWT rotate + blacklist · CORS CSRF whitelist · Ley 1581/2012 protección datos |
 | **Linting/tests** | black 24.3 · flake8 7 · mypy 1.9 · pytest + pytest-django + pytest-cov · 14 smoke tests |
 
-> ⚠️ **Importante:** Todo el proyecto **funciona EXCLUSIVAMENTE con Python 3.10.x** (no Python 3.11, 3.12, 3.14). El entorno virtual `.venv` se creó con Python 3.10.11.
+> ⚠️ **Versión de Python:** El entorno local (`.venv`) se creó con **Python 3.10.11**. La imagen de producción en Railway usa **python:3.11-slim-bookworm**. `requirements.txt` es compatible con ambas.
 
 ---
 
@@ -63,13 +68,20 @@ c:\Family_Health_MF\
 ├── .env.example
 ├── .env                <- Variables de entorno (cargadas por django-environ)
 ├── .gitignore
-├── arrancar.bat        <- Doble clic: levanta Django 8000 + Vite 5173
+├── Dockerfile          <- Multistage: build Vite + runtime Django/Gunicorn (Railway)
+├── railway.json        <- Config Railway: builder DOCKERFILE + healthcheck
+├── arrancar.bat        <- Doble clic: levanta Django 8000 + Vite 5173 (SOLO LOCAL)
+├── scripts/
+│   ├── railway_build.sh <- Build script (legacy, reemplazado por Dockerfile)
+│   └── railway_start.sh <- Start: migrate + collectstatic + bootstrap + gunicorn
 └── README.md           <- Este archivo
 ```
 
 ---
 
 ## 3. Instalación y puesta en marcha (PASO A PASO)
+
+> 🔒 **Esta sección es solo para entorno de desarrollo local.** El sistema ya está desplegado en producción en Railway: <https://familyhealthmf-production.up.railway.app/>. Para ver el aplicativo en funcionamiento no necesitas instalar nada; abre la URL de producción en tu navegador.
 
 ### Prerrequisitos instalados en tu equipo
 1. **Python 3.10.x** (3.10.11 recomendado): descarga desde <https://www.python.org/downloads/release/python-31011/>.
@@ -129,12 +141,24 @@ npm.cmd run dev
 ```
 
 ### Paso 6 - Accesos
+
+**Entorno local (desarrollo):**
+
 | Recurso | URL |
 |---|---|
 | **Frontend Mobile-First** | http://127.0.0.1:5173/ |
 | **Panel Admin Django** | http://127.0.0.1:8000/admin/ |
 | **Base URL API REST** | http://127.0.0.1:8000/api/v1/ |
 | **Health Check API** | http://127.0.0.1:8000/api/v1/health/ (200 sin auth) |
+
+**Entorno producción (Railway):**
+
+| Recurso | URL |
+|---|---|
+| **Frontend Mobile-First** | https://familyhealthmf-production.up.railway.app/ |
+| **Panel Admin Django** | https://familyhealthmf-production.up.railway.app/admin/ |
+| **Base URL API REST** | https://familyhealthmf-production.up.railway.app/api/v1/ |
+| **Health Check API** | https://familyhealthmf-production.up.railway.app/api/v1/health/ (200 sin auth) |
 
 ### Usuarios DEMO precargados (seed data - SOLO ENTORNO PRUEBAS LOCAL)
 
@@ -248,12 +272,14 @@ Ahora los servidores publican automáticamente en `0.0.0.0` para acceso LAN sin 
 - CORS: Permite todos los orígenes SÓLO si `DJANGO_DEBUG=True` en el `.env` ([settings.py#L311-L315](file:///c:/Family_Health_MF/backend/config/settings.py#L311-L315))
 - ALLOWED_HOSTS: Incluye rangos CIDR LAN 192.168.0.0/16 · 10.0.0.0/8 · 172.16.0.0/12 ([settings.py#L46-L53](file:///c:/Family_Health_MF/backend/config/settings.py#L46-L53))
 
-**Pasos para probar en móvil/celular REAL WiFi (Chrome/Safari):**
+**Pasos para probar en móvil/celular REAL:**
 
-1. **En el PC servidor**: averigua tu IP LAN → PowerShell: `ipconfig` → "Dirección IPv4" (p. ej. `192.168.1.42`)
-2. **Ejecuta** `arrancar.bat`. **En Windows Defender, marca "Permitir redes privadas"** si aparece la ventana emergente.
-3. **En el celular** (misma red WiFi que el PC): entra a `http://192.168.1.42:5173/` (reemplaza `192.168.1.42` por TU IP real).
-4. Para probar el Backend directo: `http://192.168.1.42:8000/api/v1/health/`
+- **Producción (Railway):** Abre directamente <https://familyhealthmf-production.up.railway.app/> en el navegador del celular. No requiere configuración adicional.
+- **Desarrollo local (WiFi LAN):**
+  1. **En el PC servidor**: averigua tu IP LAN → PowerShell: `ipconfig` → "Dirección IPv4" (p. ej. `192.168.1.42`)
+  2. **Ejecuta** `arrancar.bat`. **En Windows Defender, marca "Permitir redes privadas"** si aparece la ventana emergente.
+  3. **En el celular** (misma red WiFi que el PC): entra a `http://192.168.1.42:5173/` (reemplaza `192.168.1.42` por TU IP real).
+  4. Para probar el Backend directo: `http://192.168.1.42:8000/api/v1/health/`
 
 Resultado esperado: todas las pantallas con sticky header + bottom nav safe-area renderizan correctamente en 320-430 px y tiempos de agenda <3s.
 
@@ -261,7 +287,67 @@ Resultado esperado: todas las pantallas con sticky header + bottom nav safe-area
 
 ---
 
-## 7. Build para producción (Frontend)
+## 7. Despliegue en Producción (Railway + Docker)
+
+El sistema está **desplegado en Railway** mediante un **Dockerfile multistage** (2 etapas) y desplegado automáticamente desde el repositorio de GitHub. No se usa `arrancar.bat` en producción.
+
+### 7.1 Arquitectura del despliegue
+
+| Componente | Detalle |
+|---|---|
+| **Proveedor** | Railway (contenedor Docker) |
+| **Origen** | GitHub `LuisDiaz2026/Family_Health_MF` (rama `main`) |
+| **URL producción** | https://familyhealthmf-production.up.railway.app/ |
+| **Builder** | `DOCKERFILE` (definido en `railway.json`) |
+| **Healthcheck** | `GET /api/v1/health/` (HTTP 200 + `database: ok`) |
+| **Reinicio** | `ON_FAILURE`, hasta 5 reintentos |
+
+### 7.2 Dockerfile (2 etapas)
+
+1. **Etapa 1 — Build frontend:** `node:20-bookworm-slim` → `npm ci` + `npm run build` → genera `frontend/dist/`.
+2. **Etapa 2 — Runtime backend:** `python:3.11-slim-bookworm` → instala `requirements.txt`, copia el código Django y el `dist/` de la etapa 1.
+3. **CMD del contenedor** (al arrancar):
+   1. `python manage.py migrate --noinput`
+   2. `python manage.py collectstatic --noinput --clear`
+   3. `python bootstrap_data.py` (seed demo, si `RAILWAY_SEED_BOOTSTRAP=1`)
+   4. `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
+
+> El `frontend/dist/` se sirve directamente por Django + **WhiteNoise** (no hay un servidor Nginx ni Vite en producción).
+
+### 7.3 Variables de entorno configuradas en Railway
+
+Estas variables están definidas en `railway.json` (no son secretas) o en el panel de Railway:
+
+| Variable | Valor | Propósito |
+|---|---|---|
+| `DJANGO_DEBUG` | `False` | Modo producción |
+| `DJANGO_ALLOWED_HOSTS` | `*` | Hosts permitidos (se restringe por dominio Railway) |
+| `DJANGO_SECRET_KEY` | *(secreta, panel Railway)* | Firma de sesiones/JWT |
+| `DATABASE_URL` | *(secreta, plugin PostgreSQL Railway)* | Conexión a PostgreSQL |
+| `RAILWAY_SEED_BOOTSTRAP` | `1` | Ejecuta `bootstrap_data.py` en el primer arranque |
+| `WEB_CONCURRENCY` | `2` | Workers Gunicorn |
+| `GUNICORN_THREADS` | `4` | Threads por worker |
+| `GUNICORN_TIMEOUT` | `120` | Timeout de request |
+| `ACCESS_TOKEN_LIFETIME_MINUTES` | `60` | Duración JWT access |
+| `REFRESH_TOKEN_LIFETIME_DAYS` | `7` | Duración JWT refresh |
+| `LOGIN_MAX_ATTEMPTS` | `5` | Intentos login antes de bloquear |
+| `LOGIN_COOLDOWN_MINUTES` | `15` | Tiempo de bloqueo |
+
+> ⚠️ `DJANGO_SECRET_KEY` y `DATABASE_URL` **NUNCA** se versionan. Se configuran en el panel de Railway → Variables.
+
+### 7.4 Cómo desplegar / redeployar
+
+1. **Push a la rama `main`** de GitHub: Railway detecta el cambio y construye + despliega automáticamente.
+   ```powershell
+   cd c:\Family_Health_MF
+   git add -A
+   git commit -m "feat: descripción del cambio"
+   git push origin main
+   ```
+2. Esperar a que Railway termine el build (logs en el dashboard de Railway).
+3. Verificar el **Health Check**: `GET https://familyhealthmf-production.up.railway.app/api/v1/health/` debe responder `200 OK` con `"database":"ok"`.
+
+### 7.5 Build local del frontend (solo para probar el bundle)
 
 ```powershell
 cd frontend
@@ -272,29 +358,32 @@ npm.cmd run preview   # Prueba local del build final
 
 ---
 
-## 8. Repositorio Git
+## 8. Repositorio Git y CI/CD
 
 ```powershell
 cd c:\Family_Health_MF
 git config user.name "Luis Fermín Díaz Choles"
 git config user.email "diazcholesl@gmail.com"
-git init
+```
+
+- **Remote:** `https://github.com/LuisDiaz2026/Family_Health_MF.git`
+- **Rama principal:** `main`
+- **Despliegue automático:** cada `push` a `main` dispara un build+deploy en Railway (vía `railway.json` + `Dockerfile`).
+
+```powershell
 git add -A
-git commit -m "Release 1.0: Sistema Integral Club Family Health MF.
-Backend Django 5 + DRF 6 apps + 14 smoke tests OK.
-Frontend Vue 3 Mobile-First 20+ vistas RBAC cliente/staff.
-Stack: Python 3.10 + Node 18 + SQLite + JWT HS512 + Argon2 + Axes."
+git commit -m "Release 1.0: Sistema Integral Club Family Health MF"
+git push origin main
 ```
 
 ---
 
-## 9. Soporte y Fuera de Alcance (explicítamente NO implementado)
+## 9. Soporte y Fuera de Alcance (explícitamente NO implementado)
 
 - ❌ Aplicaciones nativas iOS/Android.
 - ❌ Pasarelas de pago online (cobro 100% presencial).
 - ❌ Hardware externo (torniquetes, tarjetas RFID).
 - ❌ IA/ML.
-- ❌ Despliegue 24/7 con SLA.
 - ❌ Integraciones terceros (Wompi, PlaceToPay, WhatsApp, etc.).
 
-El prototipo desplegable se sirve en local ejecutando `.\arrancar.bat` como se explicó arriba.
+✅ El sistema está **desplegado en producción en Railway**: <https://familyhealthmf-production.up.railway.app/>. Para ejecutarlo en modo local de desarrollo, usa `.\arrancar.bat` (sección 3).
