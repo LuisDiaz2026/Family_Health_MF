@@ -47,6 +47,7 @@ const routes = [
       { path: 'pedidos', name: 'staff-orders', component: () => import('@/views/staff/OrdersView.vue') },
       { path: 'clientes', name: 'staff-clients', component: () => import('@/views/staff/ClientsView.vue') },
       { path: 'productos', name: 'staff-products', component: () => import('@/views/staff/ProductsView.vue') },
+      { path: 'ofertas', name: 'staff-offers', component: () => import('@/views/staff/OffersView.vue') },
       { path: 'espacios', name: 'staff-spaces', component: () => import('@/views/staff/SpacesView.vue') },
       { path: 'reportes', name: 'staff-reports', component: () => import('@/views/staff/ReportsView.vue') },
       { path: 'perfil', name: 'staff-profile', component: () => import('@/views/staff/ProfileView.vue') },

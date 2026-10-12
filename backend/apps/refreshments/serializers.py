@@ -4,7 +4,7 @@ Refreshments Serializers
 from rest_framework import serializers
 from django.utils import timezone
 from .models import (
-    ProductCategory, Product, Order, OrderItem,
+    ProductCategory, Product, Offer, Order, OrderItem,
 )
 from apps.authentication.models import User
 from apps.authentication.serializers import UserMeSerializer
@@ -40,6 +40,55 @@ class ProductSummarySerializer(serializers.ModelSerializer):
         model = Product
         fields = ("id", "name", "sku", "category_name", "price",
                   "stock", "is_available", "image")
+
+
+class OfferSerializer(serializers.ModelSerializer):
+    products = ProductSummarySerializer(many=True, read_only=True)
+    product_ids = serializers.PrimaryKeyRelatedField(
+        source="products", many=True, write_only=True,
+        queryset=Product.objects.all(), required=False,
+    )
+    is_valid_now = serializers.BooleanField(read_only=True)
+    discount_percent = serializers.IntegerField(read_only=True)
+    tag_display = serializers.CharField(source="get_tag_display", read_only=True)
+
+    class Meta:
+        model = Offer
+        fields = (
+            "id", "name", "tag", "tag_display", "description",
+            "products", "product_ids",
+            "regular_price", "offer_price", "discount_percent",
+            "start_date", "end_date", "is_active", "is_valid_now",
+            "image", "stock",
+            "created_at", "updated_at",
+        )
+
+    def validate(self, data):
+        regular = data.get("regular_price")
+        offer = data.get("offer_price")
+        if regular is not None and offer is not None and offer > regular:
+            raise serializers.ValidationError({
+                "offer_price": "El precio de oferta no puede ser mayor al precio regular."
+            })
+        return data
+
+
+class OfferSummarySerializer(serializers.ModelSerializer):
+    tag_display = serializers.CharField(source="get_tag_display", read_only=True)
+    discount_percent = serializers.IntegerField(read_only=True)
+    product_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Offer
+        fields = (
+            "id", "name", "tag", "tag_display", "description",
+            "regular_price", "offer_price", "discount_percent",
+            "start_date", "end_date", "is_active",
+            "image", "stock", "product_count",
+        )
+
+    def get_product_count(self, obj):
+        return obj.products.count()
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

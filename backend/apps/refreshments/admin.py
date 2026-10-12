@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ProductCategory, Product, Order, OrderItem
+from .models import ProductCategory, Product, Offer, Order, OrderItem
 
 
 @admin.register(ProductCategory)
@@ -22,6 +22,25 @@ class ProductAdmin(admin.ModelAdmin):
         return obj.stock <= obj.min_stock
     stock_low.boolean = True
     stock_low.short_description = "Stock Bajo"
+
+
+@admin.register(Offer)
+class OfferAdmin(admin.ModelAdmin):
+    list_display = ("name", "tag", "regular_price", "offer_price",
+                    "discount_percent", "start_date", "end_date",
+                    "is_active", "is_valid_now")
+    list_filter = ("tag", "is_active")
+    search_fields = ("name", "description")
+    filter_horizontal = ("products",)
+
+    def discount_percent(self, obj):
+        return f"{obj.discount_percent}%"
+    discount_percent.short_description = "Descuento"
+
+    def is_valid_now(self, obj):
+        return obj.is_valid_now
+    is_valid_now.boolean = True
+    is_valid_now.short_description = "Vigente ahora"
 
 
 class OrderItemInline(admin.TabularInline):

@@ -165,6 +165,129 @@ class Product(models.Model):
         return self.stock <= self.min_stock
 
 
+class Offer(models.Model):
+    """
+    Oferta / promoción de la refresquería.
+    Se basa en productos reales del inventario y tiene vigencia configurable.
+    """
+
+    TAG_COMBO = "COMBO"
+    TAG_2X1 = "2X1"
+    TAG_DISCOUNT = "DESCUENTO"
+    TAG_ENERGY = "ENERGIA"
+    TAG_PROMO = "PROMO"
+    TAG_CHOICES = (
+        (TAG_COMBO, "Combo"),
+        (TAG_2X1, "2x1"),
+        (TAG_DISCOUNT, "Descuento"),
+        (TAG_ENERGY, "Energía"),
+        (TAG_PROMO, "Promoción"),
+    )
+
+    name = models.CharField(
+        verbose_name=_("Nombre Oferta"),
+        max_length=120,
+        db_index=True,
+    )
+    tag = models.CharField(
+        verbose_name=_("Etiqueta"),
+        max_length=20,
+        choices=TAG_CHOICES,
+        default=TAG_PROMO,
+        db_index=True,
+    )
+    description = models.TextField(
+        verbose_name=_("Descripción"),
+        max_length=500,
+        null=True,
+        blank=True,
+    )
+    products = models.ManyToManyField(
+        Product,
+        related_name="offers",
+        verbose_name=_("Productos incluidos"),
+        blank=True,
+    )
+    regular_price = models.DecimalField(
+        verbose_name=_("Precio Regular (COP)"),
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text=_("Precio sin descuento (suma de productos o manual)."),
+    )
+    offer_price = models.DecimalField(
+        verbose_name=_("Precio Oferta (COP)"),
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text=_("Precio con descuento aplicado."),
+    )
+    start_date = models.DateTimeField(
+        verbose_name=_("Inicio vigencia"),
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text=_("Si se deja vacío, inicia inmediatamente."),
+    )
+    end_date = models.DateTimeField(
+        verbose_name=_("Fin vigencia"),
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text=_("Si se deja vacío, no caduca."),
+    )
+    is_active = models.BooleanField(
+        verbose_name=_("Activa"),
+        default=True,
+        db_index=True,
+    )
+    image = models.ImageField(
+        upload_to="offers/%Y/%m/",
+        null=True,
+        blank=True,
+        verbose_name=_("Foto Oferta"),
+    )
+    stock = models.PositiveIntegerField(
+        verbose_name=_("Stock disponible"),
+        default=0,
+        help_text=_("0 = sin límite de unidades."),
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("Oferta")
+        verbose_name_plural = _("Ofertas")
+        ordering = ["-is_active", "-created_at"]
+
+    def __str__(self):
+        return f"{self.name} (${self.offer_price:,.0f})"
+
+    @property
+    def is_valid_now(self) -> bool:
+        """Indica si la oferta está activa y dentro del rango de vigencia."""
+        if not self.is_active:
+            return False
+        now = timezone.now()
+        if self.start_date and now < self.start_date:
+            return False
+        if self.end_date and now > self.end_date:
+            return False
+        return True
+
+    @property
+    def discount_percent(self) -> int:
+        """Porcentaje de descuento calculado."""
+        if not self.regular_price or self.regular_price <= 0:
+            return 0
+        diff = float(self.regular_price) - float(self.offer_price)
+        if diff <= 0:
+            return 0
+        return round(diff * 100 / float(self.regular_price))
+
+
 class Order(models.Model):
     """
     Pedido de refresquería.

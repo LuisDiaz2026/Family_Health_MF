@@ -57,7 +57,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Home, Calendar, ShoppingBag, Award, Dumbbell, LayoutDashboard, UserPlus, Package, Bell, User, MapPin } from 'lucide-vue-next'
+import { Home, Calendar, ShoppingBag, Award, Dumbbell, LayoutDashboard, UserPlus, Package, Bell, User, MapPin, Tag } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useReportsStore } from '@/stores/reports'
 import GlobalToast from '@/components/GlobalToast.vue'
@@ -82,6 +82,8 @@ const adminNav = [
   { label: 'Panel', icon: LayoutDashboard, to: { name: 'admin-dashboard' } },
   { label: 'Reservas', icon: Calendar, to: { name: 'staff-reservations' } },
   { label: 'Pedidos', icon: Package, to: { name: 'staff-orders' } },
+  { label: 'Productos', icon: Package, to: { name: 'staff-products' } },
+  { label: 'Ofertas', icon: Tag, to: { name: 'staff-offers' } },
   { label: 'Clientes', icon: UserPlus, to: { name: 'staff-clients' } },
   { label: 'Reportes', icon: Award, to: { name: 'staff-reports' } },
 ]
@@ -97,6 +99,7 @@ const cafeteriaNav = [
   { label: 'Panel', icon: LayoutDashboard, to: { name: 'admin-dashboard' } },
   { label: 'Pedidos', icon: Package, to: { name: 'staff-orders' } },
   { label: 'Productos', icon: Package, to: { name: 'staff-products' } },
+  { label: 'Ofertas', icon: Tag, to: { name: 'staff-offers' } },
 ]
 
 const navItems = computed(() => {

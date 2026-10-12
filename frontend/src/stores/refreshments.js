@@ -6,6 +6,8 @@ export const useRefreshmentsStore = defineStore('refreshments', () => {
   const catalog = ref([])
   const cart = ref(loadCart())
   const orders = ref([])
+  const offers = ref([])
+  const activeOffers = ref([])
   const loading = ref(false)
   const error = ref('')
 
@@ -123,10 +125,94 @@ export const useRefreshmentsStore = defineStore('refreshments', () => {
     }
   }
 
+  // === Ofertas ===
+  async function listActiveOffers() {
+    loading.value = true
+    error.value = ''
+    try {
+      const resp = await api.get('/refreshments/offers/active-offers/')
+      activeOffers.value = resp.data?.results || resp.data || []
+      return activeOffers.value
+    } catch (e) {
+      error.value = extractError(e)
+      activeOffers.value = []
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function listOffers() {
+    loading.value = true
+    error.value = ''
+    try {
+      const all = []
+      let page = 1
+      while (true) {
+        const resp = await api.get(`/refreshments/offers/?page=${page}&page_size=100`)
+        const data = resp.data
+        const items = data?.results || data || []
+        all.push(...items)
+        if (!data?.next) break
+        page++
+      }
+      offers.value = all
+      return offers.value
+    } catch (e) {
+      error.value = extractError(e)
+      throw error.value
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function createOffer(payload) {
+    loading.value = true
+    error.value = ''
+    try {
+      const resp = await api.post('/refreshments/offers/', payload)
+      return resp.data
+    } catch (e) {
+      error.value = extractError(e)
+      throw error.value
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function updateOffer(id, payload) {
+    loading.value = true
+    error.value = ''
+    try {
+      const resp = await api.patch(`/refreshments/offers/${id}/`, payload)
+      return resp.data
+    } catch (e) {
+      error.value = extractError(e)
+      throw error.value
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function deleteOffer(id) {
+    loading.value = true
+    error.value = ''
+    try {
+      await api.delete(`/refreshments/offers/${id}/`)
+      return true
+    } catch (e) {
+      error.value = extractError(e)
+      throw error.value
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
-    catalog, cart, orders, loading, error,
+    catalog, cart, orders, offers, activeOffers, loading, error,
     cartCount, cartItemsCount, cartSubtotal,
     listCatalog, addToCart, updateQuantity, removeFromCart,
     clearCart, createOrder, listMyOrders, findInCart,
+    listActiveOffers, listOffers, createOffer, updateOffer, deleteOffer,
   }
 })

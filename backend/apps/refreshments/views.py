@@ -10,10 +10,11 @@ from rest_framework.response import Response
 
 from apps.authentication.models import User
 from apps.authentication.permissions import IsAdmin, IsAdminOrCafeteria, IsClient
-from .models import Order, OrderItem, Product, ProductCategory
+from .models import Order, OrderItem, Product, ProductCategory, Offer
 from .serializers import (
     OrderSerializer, OrderUpdateStatusSerializer,
     ProductCategorySerializer, ProductSerializer,
+    OfferSerializer, OfferSummarySerializer,
 )
 
 
@@ -70,6 +71,48 @@ class ProductViewSet(viewsets.ModelViewSet):
                 "category": ProductCategorySerializer(cat).data,
                 "products": prods,
             })
+        return Response(data)
+
+
+class OfferViewSet(viewsets.ModelViewSet):
+    """
+    Ofertas de la refresquería.
+    - CRUD: solo ADMIN / CAFETERIA.
+    - active-offers: disponible para cualquier usuario autenticado
+      (devuelve ofertas vigentes en el momento).
+    """
+    serializer_class = OfferSerializer
+
+    def get_permissions(self):
+        if self.action in ("list", "create", "retrieve",
+                           "update", "partial_update", "destroy"):
+            perms = [IsAuthenticated & IsAdminOrCafeteria]
+        else:
+            perms = [IsAuthenticated]
+        return [p() for p in perms]
+
+    def get_queryset(self):
+        qs = Offer.objects.prefetch_related("products", "products__category").all()
+        tag = self.request.query_params.get("tag")
+        active = self.request.query_params.get("is_active")
+        if tag:
+            qs = qs.filter(tag=tag)
+        if active is not None:
+            qs = qs.filter(is_active=(str(active).lower() in ("1", "true", "yes")))
+        return qs
+
+    @action(detail=False, methods=["get"], url_path="active-offers")
+    def active_offers(self, request):
+        """Ofertas vigentes en este momento (activas y dentro del rango de fechas)."""
+        now = timezone.now()
+        qs = Offer.objects.filter(is_active=True)
+        qs = qs.filter(
+            Q(start_date__isnull=True) | Q(start_date__lte=now)
+        ).filter(
+            Q(end_date__isnull=True) | Q(end_date__gte=now)
+        )
+        qs = qs.prefetch_related("products", "products__category")
+        data = OfferSummarySerializer(qs, many=True).data
         return Response(data)
 
 

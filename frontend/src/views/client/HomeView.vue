@@ -65,19 +65,26 @@
         <div class="section-title !mb-0">Ofertas refresquería</div>
         <button class="text-xs font-bold text-club-forest hover:underline" @click="$router.push({ name: 'client-refreshments' })">Ver catálogo</button>
       </div>
-      <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory">
+      <EmptyState
+        v-if="!featuredOffers.length"
+        icon="ShoppingBag"
+        title="Sin ofertas por ahora"
+        description="Pronto habrá promociones en la refresquería."
+      />
+      <div v-else class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory">
         <div
           v-for="offer in featuredOffers"
           :key="offer.id"
           class="card min-w-[220px] snap-start cursor-pointer hover:-translate-y-0.5 transition-all"
           @click="$router.push({ name: 'client-refreshments' })"
         >
-          <div class="text-[10px] font-bold uppercase chip bg-club-red/15 text-club-red">{{ offer.tag }}</div>
+          <div class="text-[10px] font-bold uppercase chip bg-club-red/15 text-club-red">{{ offer.tag_display || offer.tag }}</div>
           <h4 class="font-extrabold text-club-graphite mt-2">{{ offer.name }}</h4>
+          <div v-if="offer.description" class="text-[11px] text-club-gray-500 mt-1 line-clamp-2">{{ offer.description }}</div>
           <div class="flex items-end justify-between mt-3">
             <div>
-              <div class="text-xs text-club-gray-500 line-through">${{ offer.oldPrice.toLocaleString('es-CO') }}</div>
-              <div class="text-xl font-black text-club-gold-dark">${{ offer.price.toLocaleString('es-CO') }}</div>
+              <div class="text-xs text-club-gray-500 line-through">${{ Number(offer.regular_price).toLocaleString('es-CO') }}</div>
+              <div class="text-xl font-black text-club-gold-dark">${{ Number(offer.offer_price).toLocaleString('es-CO') }}</div>
             </div>
             <ShoppingBag class="w-7 h-7 text-club-forest" />
           </div>
@@ -101,6 +108,7 @@ import { Calendar, ShoppingBag, Award, Dumbbell, Bell, User, MapPin, Droplets, T
 import { useAuthStore } from '@/stores/auth'
 import { useReservationsStore } from '@/stores/reservations'
 import { useGymStore } from '@/stores/gym'
+import { useRefreshmentsStore } from '@/stores/refreshments'
 import ReservationCard from '@/components/ReservationCard.vue'
 import RoutineCard from '@/components/RoutineCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -110,11 +118,13 @@ const router = useRouter()
 const auth = useAuthStore()
 const reservations = useReservationsStore()
 const gym = useGymStore()
+const refreshments = useRefreshmentsStore()
 
 const loadingReservations = ref(true)
 const loadingRoutines = ref(true)
 const recent = ref([])
 const featuredRoutine = ref(null)
+const featuredOffers = ref([])
 
 const tierName = computed(() => auth.tierInfo?.name || 'Bronce')
 const membershipShort = computed(() => {
@@ -131,12 +141,6 @@ const shortcuts = [
   { label: 'Gimnasio', icon: Dumbbell, to: { name: 'client-gym' }, color: '#3B8064' },
 ]
 
-const featuredOffers = [
-  { id: 1, tag: 'Combo', name: 'Hamburguesa + Gaseosa 1.5L', oldPrice: 28000, price: 22000 },
-  { id: 2, tag: '2x1', name: 'Jarra de limonada x2', oldPrice: 16000, price: 10000 },
-  { id: 3, tag: 'Energía', name: 'Protein Shake Whey 500ml', oldPrice: 18000, price: 14000 },
-]
-
 onMounted(async () => {
   try {
     const list = await reservations.listMyReservations()
@@ -149,6 +153,11 @@ onMounted(async () => {
     featuredRoutine.value = (routines || [])[0] || null
   } finally {
     loadingRoutines.value = false
+  }
+  try {
+    featuredOffers.value = await refreshments.listActiveOffers()
+  } catch (_) {
+    featuredOffers.value = []
   }
 })
 </script>
