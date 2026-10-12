@@ -33,7 +33,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
 
     def get_permissions(self):
-        if self.action in ("create", "update", "partial_update", "destroy"):
+        if self.action in ("create", "update", "partial_update", "destroy", "list", "retrieve"):
             self.permission_classes = [IsAuthenticated & IsAdminOrCafeteria]
         else:
             self.permission_classes = [IsAuthenticated]
@@ -79,7 +79,9 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == "destroy":
             perms = [IsAuthenticated & IsAdmin]
-        elif self.action in ("list", "retrieve", "my_orders"):
+        elif self.action == "list":
+            perms = [IsAuthenticated & IsAdminOrCafeteria]
+        elif self.action in ("retrieve", "my_orders"):
             perms = [IsAuthenticated]
         elif self.action == "create":
             perms = [IsAuthenticated & (IsClient | IsAdminOrCafeteria)]

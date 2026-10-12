@@ -145,7 +145,9 @@ class ReservationViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == "destroy":
             perms = [IsAuthenticated & IsAdmin]
-        elif self.action in ("list", "retrieve", "my_upcoming"):
+        elif self.action == "list":
+            perms = [IsAuthenticated & IsAdminOrReception]
+        elif self.action in ("retrieve", "my_upcoming"):
             perms = [IsAuthenticated]
         elif self.action == "create":
             perms = [IsAuthenticated & (IsClient | IsAdminOrReception)]
