@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from apps.authentication.models import User
 from apps.authentication.permissions import (
-    IsAdmin, IsAdminOrEmployee, IsClient,
+    IsAdmin, IsAdminOrReception, IsClient,
 )
 from .models import (
     Holiday, OperatingHours, Reservation, Space, SpaceType,
@@ -148,13 +148,13 @@ class ReservationViewSet(viewsets.ModelViewSet):
         elif self.action in ("list", "retrieve", "my_upcoming"):
             perms = [IsAuthenticated]
         elif self.action == "create":
-            perms = [IsAuthenticated & (IsClient | IsAdminOrEmployee)]
+            perms = [IsAuthenticated & (IsClient | IsAdminOrReception)]
         elif self.action in ("update", "partial_update"):
-            perms = [IsAuthenticated & IsAdminOrEmployee]
+            perms = [IsAuthenticated & IsAdminOrReception]
         elif self.action in ("approve", "reject", "mark_paid"):
-            perms = [IsAuthenticated & IsAdminOrEmployee]
+            perms = [IsAuthenticated & IsAdminOrReception]
         elif self.action == "cancel":
-            perms = [IsAuthenticated & (IsClient | IsAdminOrEmployee)]
+            perms = [IsAuthenticated & (IsClient | IsAdminOrReception)]
         else:
             perms = [IsAuthenticated]
         return [p() for p in perms]
@@ -201,7 +201,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         return Response(ReservationSerializer(r, context={"request": request}).data)
 
     @action(detail=True, methods=["post"], url_path="approve",
-            permission_classes=[IsAuthenticated & IsAdminOrEmployee])
+            permission_classes=[IsAuthenticated & IsAdminOrReception])
     def approve(self, request, pk=None):
         r = self.get_object()
         r.status = Reservation.STATUS_CONFIRMED
@@ -210,7 +210,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         return Response(ReservationSerializer(r, context={"request": request}).data)
 
     @action(detail=True, methods=["post"], url_path="reject",
-            permission_classes=[IsAuthenticated & IsAdminOrEmployee])
+            permission_classes=[IsAuthenticated & IsAdminOrReception])
     def reject(self, request, pk=None):
         r = self.get_object()
         r.status = Reservation.STATUS_REJECTED
@@ -220,7 +220,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         return Response(ReservationSerializer(r, context={"request": request}).data)
 
     @action(detail=True, methods=["post"], url_path="mark-paid",
-            permission_classes=[IsAuthenticated & IsAdminOrEmployee])
+            permission_classes=[IsAuthenticated & IsAdminOrReception])
     def mark_paid(self, request, pk=None):
         r = self.get_object()
         r.payment_status = Reservation.PAYMENT_STATUS_PAID

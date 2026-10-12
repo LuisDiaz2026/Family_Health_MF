@@ -12,9 +12,13 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!accessToken.value && !!user.value)
   const role = computed(() => user.value?.role || null)
   const isAdmin = computed(() => role.value === 'ADMIN')
+  const isRecepcion = computed(() => role.value === 'RECEPCION')
+  const isCafeteria = computed(() => role.value === 'CAFETERIA')
   const isEmployee = computed(() => role.value === 'EMPLOYEE')
   const isClient = computed(() => role.value === 'CLIENT')
-  const isStaff = computed(() => isAdmin.value || isEmployee.value)
+  const isStaff = computed(() =>
+    isAdmin.value || isRecepcion.value || isCafeteria.value || isEmployee.value
+  )
   const displayName = computed(() =>
     user.value?.full_name || user.value?.username || 'Usuario'
   )
@@ -152,6 +156,8 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     role,
     isAdmin,
+    isRecepcion,
+    isCafeteria,
     isEmployee,
     isClient,
     isStaff,

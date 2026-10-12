@@ -55,11 +55,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
 
     ROLE_ADMIN = "ADMIN"
-    ROLE_EMPLOYEE = "EMPLOYEE"
+    ROLE_RECEPCION = "RECEPCION"
+    ROLE_CAFETERIA = "CAFETERIA"
     ROLE_CLIENT = "CLIENT"
+    # EMPLOYEE se mantiene por compatibilidad con datos existentes;
+    # los nuevos usuarios operativos se crean como RECEPCION o CAFETERIA.
+    ROLE_EMPLOYEE = "EMPLOYEE"
     ROLE_CHOICES = (
         (ROLE_ADMIN, _("Administrador")),
-        (ROLE_EMPLOYEE, _("Empleado / Recepción")),
+        (ROLE_RECEPCION, _("Recepción")),
+        (ROLE_CAFETERIA, _("Cafetería")),
+        (ROLE_EMPLOYEE, _("Empleado (compatibilidad)")),
         (ROLE_CLIENT, _("Cliente")),
     )
 

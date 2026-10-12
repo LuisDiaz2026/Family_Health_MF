@@ -58,13 +58,15 @@ def run():
         return
 
     pw_admin, gen_admin = _demo_pass("DEMO_PASS_ADMIN", "admin")
-    pw_emp, gen_emp = _demo_pass("DEMO_PASS_EMP", "empleado")
+    pw_emp, gen_emp = _demo_pass("DEMO_PASS_EMP", "recepcion")
+    pw_caf, gen_caf = _demo_pass("DEMO_PASS_CAF", "cafeteria")
     pw_c1, gen_c1 = _demo_pass("DEMO_PASS_C1", "cliente1")
     pw_c2, gen_c2 = _demo_pass("DEMO_PASS_C2", "cliente2")
     pw_c3, gen_c3 = _demo_pass("DEMO_PASS_C3", "cliente3")
     creds = {
         "admin_fh": (pw_admin, gen_admin),
         "recepcion_fh": (pw_emp, gen_emp),
+        "cafeteria_fh": (pw_caf, gen_caf),
         "cliente1_fh": (pw_c1, gen_c1),
         "cliente2_fh": (pw_c2, gen_c2),
         "cliente3_fh": (pw_c3, gen_c3),
@@ -113,7 +115,7 @@ def run():
                 phone="+573009876543",
                 address="Carrera 7 # 20-45, Maicao",
                 birth_date="1995-08-20",
-                role="EMPLOYEE",
+                role="RECEPCION",
                 gender="F",
                 accepted_privacy_policy=True,
                 privacy_policy_accepted_at=timezone.now(),
@@ -122,9 +124,51 @@ def run():
                 membership_expires_at=(timezone.now() + timedelta(days=365)),
             )
             suffix = " [auto-generada]" if creds["recepcion_fh"][1] else ""
-            print(f"✅ Empleado Creado: recepcion_fh / *****{suffix}")
+            print(f"✅ Recepción Creado: recepcion_fh / *****{suffix}")
         else:
-            print("ℹ️  Empleado recepcion_fh ya existe.")
+            # Migrar rol EMPLOYEE legacy a RECEPCION
+            r = User.objects.get(username="recepcion_fh")
+            if r.role == "EMPLOYEE":
+                r.role = "RECEPCION"
+                r.save(update_fields=["role"])
+                print("ℹ️  recepcion_fh migrado de EMPLOYEE a RECEPCION.")
+            else:
+                print("ℹ️  Recepción recepcion_fh ya existe.")
+
+        # ============================================================
+        # 2b) EMPLEADO CAFETERÍA
+        # ============================================================
+        if not User.objects.filter(username="cafeteria_fh").exists():
+            User.objects.create_user(
+                username="cafeteria_fh",
+                email="cafeteria.familyhealth@gmail.com",
+                password=pw_caf,
+                first_name="Carlos Andrés",
+                last_name="García Pacheco",
+                document_type="CC",
+                document_number="1098765433",
+                phone="+573009876544",
+                address="Calle 15 # 8-30, Maicao",
+                birth_date="1992-03-12",
+                role="CAFETERIA",
+                gender="M",
+                accepted_privacy_policy=True,
+                privacy_policy_accepted_at=timezone.now(),
+                is_verified=True,
+                membership_type="Empleado",
+                membership_expires_at=(timezone.now() + timedelta(days=365)),
+            )
+            suffix = " [auto-generada]" if creds["cafeteria_fh"][1] else ""
+            print(f"✅ Cafetería Creado: cafeteria_fh / *****{suffix}")
+        else:
+            # Migrar rol EMPLOYEE legacy a CAFETERIA si aplica
+            c = User.objects.get(username="cafeteria_fh")
+            if c.role == "EMPLOYEE":
+                c.role = "CAFETERIA"
+                c.save(update_fields=["role"])
+                print("ℹ️  cafeteria_fh migrado de EMPLOYEE a CAFETERIA.")
+            else:
+                print("ℹ️  Cafetería cafeteria_fh ya existe.")
 
         # ============================================================
         # 3) CLIENTES DEMO

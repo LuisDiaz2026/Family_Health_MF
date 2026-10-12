@@ -57,7 +57,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Home, Calendar, ShoppingBag, Award, Dumbbell, LayoutDashboard, UserPlus, Package, Bell, User } from 'lucide-vue-next'
+import { Home, Calendar, ShoppingBag, Award, Dumbbell, LayoutDashboard, UserPlus, Package, Bell, User, MapPin } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useReportsStore } from '@/stores/reports'
 import GlobalToast from '@/components/GlobalToast.vue'
@@ -77,7 +77,8 @@ const clientNav = [
   { label: 'Gimnasio', icon: Dumbbell, to: { name: 'client-gym' } },
 ]
 
-const staffNav = [
+// ADMIN ve TODO; RECEPCION y CAFETERIA ven solo su área
+const adminNav = [
   { label: 'Panel', icon: LayoutDashboard, to: { name: 'admin-dashboard' } },
   { label: 'Reservas', icon: Calendar, to: { name: 'staff-reservations' } },
   { label: 'Pedidos', icon: Package, to: { name: 'staff-orders' } },
@@ -85,10 +86,31 @@ const staffNav = [
   { label: 'Reportes', icon: Award, to: { name: 'staff-reports' } },
 ]
 
-const navItems = computed(() => auth.isStaff ? staffNav : clientNav)
+const recepcionNav = [
+  { label: 'Panel', icon: LayoutDashboard, to: { name: 'admin-dashboard' } },
+  { label: 'Reservas', icon: Calendar, to: { name: 'staff-reservations' } },
+  { label: 'Clientes', icon: UserPlus, to: { name: 'staff-clients' } },
+  { label: 'Espacios', icon: MapPin, to: { name: 'staff-spaces' } },
+]
+
+const cafeteriaNav = [
+  { label: 'Panel', icon: LayoutDashboard, to: { name: 'admin-dashboard' } },
+  { label: 'Pedidos', icon: Package, to: { name: 'staff-orders' } },
+  { label: 'Productos', icon: Package, to: { name: 'staff-products' } },
+]
+
+const navItems = computed(() => {
+  if (!auth.isStaff) return clientNav
+  if (auth.isAdmin) return adminNav
+  if (auth.isRecepcion || auth.isEmployee) return recepcionNav
+  if (auth.isCafeteria) return cafeteriaNav
+  return adminNav
+})
 
 const headerSubtitle = computed(() => {
-  if (auth.isStaff) return auth.isAdmin ? 'Panel Administrador' : 'Panel Recepción'
+  if (auth.isAdmin) return 'Panel Administrador'
+  if (auth.isRecepcion || auth.isEmployee) return 'Panel Recepción'
+  if (auth.isCafeteria) return 'Panel Cafetería'
   const parts = []
   if (auth.tierInfo?.name) parts.push(`${auth.tierInfo.name}`)
   if (auth.currentPoints != null) parts.push(`${auth.currentPoints} pts`)

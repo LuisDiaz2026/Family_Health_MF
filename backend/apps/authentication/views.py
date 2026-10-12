@@ -16,7 +16,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import AuditLog
 from .permissions import (
     IsAdmin,
-    IsAdminOrEmployee,
+    IsAdminOrReception,
     IsAdminOrOwner,
 )
 from .serializers import (
@@ -149,8 +149,8 @@ class MeViewSet(viewsets.ViewSet):
 
 
 class UserAdminViewSet(viewsets.ModelViewSet):
-    """Gestión de usuarios (solo ADMIN)."""
-    permission_classes = [IsAuthenticated & IsAdmin]
+    """Gestión de usuarios (ADMIN = todos; RECEPCION = solo clientes)."""
+    permission_classes = [IsAuthenticated & IsAdminOrReception]
     queryset = User.objects.all().order_by("-created_at")
 
     def get_serializer_class(self):
@@ -162,6 +162,10 @@ class UserAdminViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        user = self.request.user
+        # RECEPCION solo puede ver/gestionar clientes, no otros staff
+        if user.role != User.ROLE_ADMIN and not user.is_superuser:
+            qs = qs.filter(role=User.ROLE_CLIENT)
         role = self.request.query_params.get("role")
         q = self.request.query_params.get("q")
         if role:
@@ -204,8 +208,8 @@ class UserAdminViewSet(viewsets.ModelViewSet):
 
 
 class EmployeeClientViewSet(viewsets.ReadOnlyModelViewSet):
-    """Empleados pueden consultar datos de clientes."""
-    permission_classes = [IsAuthenticated & IsAdminOrEmployee]
+    """Recepción puede consultar datos de clientes."""
+    permission_classes = [IsAuthenticated & IsAdminOrReception]
     serializer_class = UserMeSerializer
     queryset = User.objects.filter(role=User.ROLE_CLIENT).order_by("-created_at")
 

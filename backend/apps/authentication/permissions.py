@@ -1,5 +1,6 @@
 """
-Authentication Permissions - RBAC para 3 roles.
+Authentication Permissions - RBAC para 4 roles.
+Roles: ADMIN, RECEPCION, CAFETERIA, CLIENT (EMPLOYEE por compatibilidad).
 """
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
@@ -17,12 +18,32 @@ class IsAdmin(BasePermission):
 
 
 class IsEmployee(BasePermission):
-    """Solo rol EMPLOYEE."""
+    """Solo rol EMPLOYEE (compatibilidad)."""
     def has_permission(self, request, view):
         return bool(
             request.user
             and request.user.is_authenticated
             and request.user.role == User.ROLE_EMPLOYEE
+        )
+
+
+class IsReception(BasePermission):
+    """Rol RECEPCION (o EMPLOYEE por compatibilidad)."""
+    def has_permission(self, request, view):
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and request.user.role in (User.ROLE_RECEPCION, User.ROLE_EMPLOYEE)
+        )
+
+
+class IsCafeteria(BasePermission):
+    """Rol CAFETERIA (o EMPLOYEE por compatibilidad)."""
+    def has_permission(self, request, view):
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and request.user.role in (User.ROLE_CAFETERIA, User.ROLE_EMPLOYEE)
         )
 
 
@@ -37,13 +58,48 @@ class IsClient(BasePermission):
 
 
 class IsAdminOrEmployee(BasePermission):
-    """Staff operativo: ADMIN o EMPLOYEE (RBAC) / is_staff=True por compatibilidad."""
+    """Staff operativo general: ADMIN, RECEPCION, CAFETERIA o EMPLOYEE (compat)."""
     def has_permission(self, request, view):
         return bool(
             request.user
             and request.user.is_authenticated
             and (
-                request.user.role in (User.ROLE_ADMIN, User.ROLE_EMPLOYEE)
+                request.user.role in (
+                    User.ROLE_ADMIN, User.ROLE_RECEPCION,
+                    User.ROLE_CAFETERIA, User.ROLE_EMPLOYEE,
+                )
+                or request.user.is_staff
+                or request.user.is_superuser
+            )
+        )
+
+
+class IsAdminOrReception(BasePermission):
+    """ADMIN o RECEPCION (para reservas, espacios, clientes)."""
+    def has_permission(self, request, view):
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and (
+                request.user.role in (
+                    User.ROLE_ADMIN, User.ROLE_RECEPCION, User.ROLE_EMPLOYEE,
+                )
+                or request.user.is_staff
+                or request.user.is_superuser
+            )
+        )
+
+
+class IsAdminOrCafeteria(BasePermission):
+    """ADMIN o CAFETERIA (para productos y pedidos)."""
+    def has_permission(self, request, view):
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and (
+                request.user.role in (
+                    User.ROLE_ADMIN, User.ROLE_CAFETERIA, User.ROLE_EMPLOYEE,
+                )
                 or request.user.is_staff
                 or request.user.is_superuser
             )
@@ -61,10 +117,13 @@ class IsAdminOrOwner(BasePermission):
 
 
 class IsStaffOrReadOnly(BasePermission):
-    """Lectura todos autenticados, escritura solo staff (admin/employee)."""
+    """Lectura todos autenticados, escritura solo staff (admin/recepcion/cafeteria)."""
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
         if request.method in SAFE_METHODS:
             return True
-        return request.user.role in (User.ROLE_ADMIN, User.ROLE_EMPLOYEE)
+        return request.user.role in (
+            User.ROLE_ADMIN, User.ROLE_RECEPCION,
+            User.ROLE_CAFETERIA, User.ROLE_EMPLOYEE,
+        )

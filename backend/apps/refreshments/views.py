@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.authentication.models import User
-from apps.authentication.permissions import IsAdmin, IsAdminOrEmployee, IsClient
+from apps.authentication.permissions import IsAdmin, IsAdminOrCafeteria, IsClient
 from .models import Order, OrderItem, Product, ProductCategory
 from .serializers import (
     OrderSerializer, OrderUpdateStatusSerializer,
@@ -34,7 +34,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ("create", "update", "partial_update", "destroy"):
-            self.permission_classes = [IsAuthenticated & IsAdminOrEmployee]
+            self.permission_classes = [IsAuthenticated & IsAdminOrCafeteria]
         else:
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
@@ -82,13 +82,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         elif self.action in ("list", "retrieve", "my_orders"):
             perms = [IsAuthenticated]
         elif self.action == "create":
-            perms = [IsAuthenticated & (IsClient | IsAdminOrEmployee)]
+            perms = [IsAuthenticated & (IsClient | IsAdminOrCafeteria)]
         elif self.action in ("update", "partial_update"):
-            perms = [IsAuthenticated & IsAdminOrEmployee]
+            perms = [IsAuthenticated & IsAdminOrCafeteria]
         elif self.action in ("next_status", "mark_paid"):
-            perms = [IsAuthenticated & IsAdminOrEmployee]
+            perms = [IsAuthenticated & IsAdminOrCafeteria]
         elif self.action == "cancel":
-            perms = [IsAuthenticated & (IsClient | IsAdminOrEmployee)]
+            perms = [IsAuthenticated & (IsClient | IsAdminOrCafeteria)]
         else:
             perms = [IsAuthenticated]
         return [p() for p in perms]
@@ -113,7 +113,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return qs.order_by("-created_at")
 
     @action(detail=True, methods=["post"], url_path="next-status",
-            permission_classes=[IsAuthenticated & IsAdminOrEmployee])
+            permission_classes=[IsAuthenticated & IsAdminOrCafeteria])
     def next_status(self, request, pk=None):
         order = self.get_object()
         order_map = {
@@ -129,7 +129,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(OrderSerializer(order, context={"request": request}).data)
 
     @action(detail=True, methods=["post"], url_path="mark-paid",
-            permission_classes=[IsAuthenticated & IsAdminOrEmployee])
+            permission_classes=[IsAuthenticated & IsAdminOrCafeteria])
     def mark_paid(self, request, pk=None):
         order = self.get_object()
         order.payment_method = request.data.get(
