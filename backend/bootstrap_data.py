@@ -291,6 +291,8 @@ def run():
 
         # Limpiar catálogo anterior para cargar únicamente el inventario real del club
         Product.objects.all().delete()
+        # Eliminar categorías obsoletas que ya no tienen productos asociados
+        ProductCategory.objects.exclude(name__in=[c[0] for c in categorias]).delete()
 
         # (nombre, categoría, precio, stock, sku)
         productos = [
