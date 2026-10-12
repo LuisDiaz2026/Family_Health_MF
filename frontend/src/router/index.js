@@ -9,6 +9,8 @@ const routes = [
       const auth = useAuthStore()
       if (!auth.isAuthenticated) return { name: 'login' }
       if (auth.isAdmin || auth.isEmployee) return { name: 'admin-dashboard' }
+      if (auth.isCafeteria) return { name: 'staff-orders' }
+      if (auth.isRecepcion) return { name: 'staff-reservations' }
       return { name: 'client-home' }
     },
   },
@@ -89,6 +91,18 @@ router.beforeEach(async (to) => {
   }
   if (to.meta.staff && !auth.isStaff) {
     return { name: 'client-home' }
+  }
+
+  // Restricciones por rol de staff
+  if (to.meta.staff) {
+    const cafeteriaAllowed = ['staff-orders', 'staff-products', 'staff-offers', 'staff-profile']
+    const recepcionAllowed = ['staff-reservations', 'staff-clients', 'staff-spaces', 'staff-profile']
+    if (auth.isCafeteria && !cafeteriaAllowed.includes(to.name)) {
+      return { name: 'staff-orders' }
+    }
+    if ((auth.isRecepcion || auth.isEmployee) && !recepcionAllowed.includes(to.name) && !auth.isAdmin) {
+      return { name: 'staff-reservations' }
+    }
   }
   return true
 })

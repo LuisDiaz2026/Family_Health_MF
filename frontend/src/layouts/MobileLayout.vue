@@ -96,7 +96,6 @@ const recepcionNav = [
 ]
 
 const cafeteriaNav = [
-  { label: 'Panel', icon: LayoutDashboard, to: { name: 'admin-dashboard' } },
   { label: 'Pedidos', icon: Package, to: { name: 'staff-orders' } },
   { label: 'Productos', icon: Package, to: { name: 'staff-products' } },
   { label: 'Ofertas', icon: Tag, to: { name: 'staff-offers' } },
