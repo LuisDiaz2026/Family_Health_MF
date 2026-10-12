@@ -50,17 +50,15 @@ WORKDIR /app/backend
 
 EXPOSE 8000
 
-# START: migrate + collectstatic + opcional seed + gunicorn
+# START: migrate + collectstatic + seed + gunicorn
 CMD ["bash", "-c", "\
 set -euo pipefail; \
 echo '[BOOT 1/3] Django migrate...'; \
 python manage.py migrate --noinput -v 0; \
 echo '[BOOT 2/3] Django collectstatic...'; \
 python manage.py collectstatic --noinput --clear -v 0 2>&1 | tail -3 || true; \
-if [ \"${RAILWAY_SEED_BOOTSTRAP:-0}\" = \"1\" ]; then \
-  echo '[BOOT EXTRA] Seed bootstrap_data.py'; \
-  python bootstrap_data.py || true; \
-fi; \
+echo '[BOOT EXTRA] Seed bootstrap_data.py (catalogo + datos demo)...'; \
+python bootstrap_data.py 2>&1 | tail -20 || echo '[BOOT EXTRA] ADVERTENCIA: bootstrap fallo pero se continua con el deploy'; \
 echo '[BOOT 3/3] Gunicorn on 0.0.0.0:'\"${PORT:-8000}\"' workers='\"${WEB_CONCURRENCY:-2}\"; \
 exec gunicorn config.wsgi:application \
   --bind 0.0.0.0:${PORT:-8000} \
