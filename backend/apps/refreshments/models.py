@@ -4,6 +4,7 @@ Pedidos de refresquería (productos, categorías, pedidos y detalle)
 Pago 100% presencial (sin integración pasarela)
 """
 import logging
+from decimal import Decimal
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -106,15 +107,15 @@ class Product(models.Model):
         verbose_name=_("Precio Venta (COP)"),
         max_digits=12,
         decimal_places=2,
-        default=0,
-        validators=[MinValueValidator(0)],
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0"))],
     )
     cost = models.DecimalField(
         verbose_name=_("Costo Unitario (COP)"),
         max_digits=12,
         decimal_places=2,
-        default=0,
-        validators=[MinValueValidator(0)],
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0"))],
     )
     stock = models.PositiveIntegerField(
         verbose_name=_("Stock Actual"),
@@ -252,8 +253,8 @@ class Order(models.Model):
         verbose_name=_("% Impuesto"),
         max_digits=5,
         decimal_places=2,
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("100"))],
     )
     tax_amount = models.DecimalField(
         verbose_name=_("Valor Impuesto"),
@@ -265,8 +266,8 @@ class Order(models.Model):
         verbose_name=_("% Descuento"),
         max_digits=5,
         decimal_places=2,
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("100"))],
     )
     discount_amount = models.DecimalField(
         verbose_name=_("Valor Descuento"),

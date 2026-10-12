@@ -47,9 +47,9 @@ class RewardRule(models.Model):
         verbose_name=_("Puntos por cada $1000 COP"),
         max_digits=8,
         decimal_places=2,
-        default=0,
+        default=Decimal("0"),
         help_text=_("Opcional: puntos adicionales por monto gastado"),
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal("0"))],
     )
     is_active = models.BooleanField(verbose_name=_("Activo"), default=True)
     description = models.TextField(
@@ -101,8 +101,8 @@ class LoyaltyTier(models.Model):
         verbose_name=_("% Descuento Base"),
         max_digits=5,
         decimal_places=2,
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(50)],
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("50"))],
     )
     benefits = models.TextField(
         verbose_name=_("Beneficios"),

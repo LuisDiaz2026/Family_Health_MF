@@ -5,6 +5,7 @@ Reservations Models - Club Family Health
 - Horarios de operación
 """
 import logging
+from decimal import Decimal
 
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -107,8 +108,8 @@ class Space(models.Model):
         verbose_name=_("Tarifa por Hora (COP)"),
         max_digits=12,
         decimal_places=2,
-        default=0,
-        validators=[MinValueValidator(0)],
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0"))],
     )
     requires_employee_approval = models.BooleanField(
         verbose_name=_("Requiere Aprobación Empleado"),
@@ -325,8 +326,8 @@ class Reservation(models.Model):
         verbose_name=_("Total a Pagar (COP)"),
         max_digits=14,
         decimal_places=2,
-        default=0,
-        validators=[MinValueValidator(0)],
+        default=Decimal("0"),
+        validators=[MinValueValidator(Decimal("0"))],
     )
     status = models.CharField(
         verbose_name=_("Estado Reserva"),

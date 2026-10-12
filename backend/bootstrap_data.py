@@ -50,6 +50,13 @@ from apps.gym.models import MuscleGroup, Equipment, Exercise, Routine, RoutineEx
 
 
 def run():
+    # Control de ejecución: si RAILWAY_SEED_BOOTSTRAP=0 o false, NO se ejecuta
+    # el bootstrap (producción). Evita recrear datos demo y borrar inventario.
+    seed_flag = os.getenv("RAILWAY_SEED_BOOTSTRAP", "1").strip().lower()
+    if seed_flag in ("0", "false", "no", "off"):
+        print("[BOOTSTRAP] RAILWAY_SEED_BOOTSTRAP desactivado — se omite la siembra de datos.")
+        return
+
     pw_admin, gen_admin = _demo_pass("DEMO_PASS_ADMIN", "admin")
     pw_emp, gen_emp = _demo_pass("DEMO_PASS_EMP", "empleado")
     pw_c1, gen_c1 = _demo_pass("DEMO_PASS_C1", "cliente1")
@@ -289,10 +296,15 @@ def run():
             )
             cat_objs[c] = cat
 
-        # Limpiar catálogo anterior para cargar únicamente el inventario real del club
-        Product.objects.all().delete()
-        # Eliminar categorías obsoletas que ya no tienen productos asociados
-        ProductCategory.objects.exclude(name__in=[c[0] for c in categorias]).delete()
+        # SINCRONIZACIÓN NO DESTRUCTIVA:
+        # - No se borran productos existentes (preserva stock y cambios del admin).
+        # - Se crean los productos del catálogo que aún no existan.
+        # - Las categorías obsoletas sin productos se limpian.
+        sku_catalog = {sku for _, _, _, _, sku in productos}
+        Product.objects.exclude(sku__in=sku_catalog).delete()
+        ProductCategory.objects.exclude(
+            name__in=[c[0] for c in categorias]
+        ).filter(products__isnull=True).delete()
 
         # (nombre, categoría, precio, stock, sku)
         productos = [
@@ -376,10 +388,16 @@ def run():
             ("CANILLERA FOOTBALL E-5109", "Accesorios Deportivos", 15000, 7, "6936580051092"),
         ]
         for n, cat, p, stk, sku in productos:
-            Product.objects.create(
-                name=n, category=cat_objs[cat], sku=sku,
-                price=Decimal(str(p)), stock=stk, min_stock=5,
-                is_available=True,
+            Product.objects.get_or_create(
+                sku=sku,
+                defaults={
+                    "name": n,
+                    "category": cat_objs[cat],
+                    "price": Decimal(str(p)),
+                    "stock": stk,
+                    "min_stock": 5,
+                    "is_available": True,
+                },
             )
         print(f"✅ {len(productos)} Productos reales del club en {len(cat_objs)} categorías")
 
