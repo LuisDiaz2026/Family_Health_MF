@@ -18,7 +18,7 @@
     <div class="grid grid-cols-3 gap-2 text-center text-sm">
       <div class="card !p-3">
         <div class="text-xs uppercase text-club-gray-500 font-bold">Total</div>
-        <div class="text-2xl font-black text-club-forest">{{ products.length }}</div>
+        <div class="text-2xl font-black text-club-forest">{{ totalProducts }}</div>
       </div>
       <div class="card !p-3">
         <div class="text-xs uppercase text-club-gray-500 font-bold">Stock bajo</div>
@@ -66,6 +66,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import { showToast } from '@/utils/toast'
 
 const products = ref([])
+const totalProducts = ref(0)
 const loading = ref(true)
 const q = ref('')
 
@@ -82,11 +83,27 @@ const outOfStock = computed(() => products.value.filter(p => (p.stock || 0) <= 0
 
 function formatMoney(n) { return Number(n || 0).toLocaleString('es-CO') }
 
+async function fetchAllProducts() {
+  const all = []
+  let page = 1
+  while (true) {
+    const resp = await api.get(`/refreshments/products/?page=${page}&page_size=100`)
+    const data = resp.data
+    const items = data?.results || data || []
+    all.push(...items)
+    if (!data?.next) break
+    page++
+  }
+  return all
+}
+
 onMounted(async () => {
   loading.value = true
   try {
-    const resp = await api.get('/refreshments/products/?page_size=300')
-    products.value = resp.data?.results || resp.data || []
+    const resp = await api.get('/refreshments/products/?page_size=100')
+    totalProducts.value = resp.data?.count || 0
+    const all = await fetchAllProducts()
+    products.value = all
   } finally { loading.value = false }
 })
 </script>
