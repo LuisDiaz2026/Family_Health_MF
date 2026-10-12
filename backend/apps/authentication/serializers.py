@@ -129,7 +129,8 @@ class UserMeSerializer(serializers.ModelSerializer):
             "gender", "birth_date", "address", "city", "department",
             "emergency_contact", "emergency_phone",
             "membership_type", "membership_expires_at", "membership_active",
-            "is_verified", "is_active", "accepted_privacy_policy",
+            "is_verified", "is_active", "is_staff", "is_superuser",
+            "accepted_privacy_policy",
             "created_at", "updated_at", "loyalty", "loyalty_profile",
             "unread_notifications_count",
         )
@@ -221,6 +222,7 @@ class AdminUserUpdateSerializer(serializers.ModelSerializer):
             "username", "email", "first_name", "last_name",
             "document_type", "document_number", "phone",
             "role", "is_active", "is_verified",
+            "is_staff", "is_superuser",
             "membership_type", "membership_expires_at",
             "gender", "birth_date", "address", "city", "department",
             "emergency_contact", "emergency_phone",
