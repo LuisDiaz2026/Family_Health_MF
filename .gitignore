@@ -131,6 +131,12 @@ _reporte_fase2*.json
 # --- Scripts temporales de Windows para GitHub ---
 scripts/github_push_con_token.bat
 
+# --- Scripts y datos de extracción de documentos (NO necesarios para despliegue) ---
+green_text_extractions.json
+scripts/debug_docx.py
+scripts/extract_green.py
+scripts/extract_green_stdlib.py
+
 # --- Caché ---
 .cache/
 .temp/
