@@ -272,15 +272,15 @@ def run():
                 space_objs[s["name"]] = Space.objects.get(name=s["name"])
 
         # ============================================================
-        # 6) REFRESHMENTS - CATEGORÍAS y PRODUCTOS
+        # 6) REFRESHMENTS - CATEGORÍAS y PRODUCTOS (Catálogo real del club)
         # ============================================================
         categorias = [
-            ("Bebidas Frías", "🥤", 1),
-            ("Bebidas Calientes", "☕", 2),
-            ("Snacks y Comida Rápida", "🍔", 3),
-            ("Postres y Helados", "🍰", 4),
+            ("Bebidas Frías e Hidratantes", "💧", 1),
+            ("Gaseosas y Jugos", "🥤", 2),
+            ("Snacks y Pasabocas", "🍟", 3),
+            ("Confitería", "🍫", 4),
             ("Cervezas y Licores", "🍺", 5),
-            ("Confitería", "🍫", 6),
+            ("Accesorios Deportivos", "🏋️", 6),
         ]
         cat_objs = {}
         for c, ic, orden in categorias:
@@ -289,46 +289,97 @@ def run():
             )
             cat_objs[c] = cat
 
+        # Limpiar catálogo anterior para cargar únicamente el inventario real del club
+        Product.objects.all().delete()
+
+        # (nombre, categoría, precio, stock, sku)
         productos = [
-            # Bebidas frías
-            ("Agua Mineral 600ml", "Bebidas Frías", 5000, 100, 10, 0, "SKU-AG-001"),
-            ("Gaseosa Personal 350ml", "Bebidas Frías", 7000, 80, 15, 140, "SKU-GA-001"),
-            ("Gaseosa Litro", "Bebidas Frías", 12000, 60, 10, 180, "SKU-GA-002"),
-            ("Jugo de Naranja Natural", "Bebidas Frías", 9000, 40, 10, 110, "SKU-JN-001"),
-            ("Cerveza Aguila 330ml", "Cervezas y Licores", 7500, 120, 20, 130, "SKU-CE-001"),
-            ("Michelada Club", "Cervezas y Licores", 14000, 50, 10, 200, "SKU-MC-001"),
-            # Bebidas calientes
-            ("Café Tinto", "Bebidas Calientes", 4000, 999, 0, 5, "SKU-CF-001"),
-            ("Café con Leche", "Bebidas Calientes", 6000, 999, 0, 60, "SKU-CL-001"),
-            ("Chocolate Caliente", "Bebidas Calientes", 7000, 80, 10, 150, "SKU-CH-001"),
-            ("Té de Frutas", "Bebidas Calientes", 5000, 50, 5, 30, "SKU-TF-001"),
-            # Snacks
-            ("Hamburguesa Sencilla", "Snacks y Comida Rápida", 18000, 60, 5, 450, "SKU-HB-001"),
-            ("Hamburguesa Doble Queso", "Snacks y Comida Rápida", 24000, 50, 5, 620, "SKU-HB-002"),
-            ("Perro Caliente", "Snacks y Comida Rápida", 14000, 60, 5, 350, "SKU-PC-001"),
-            ("Pizza Personal 6pz", "Snacks y Comida Rápida", 22000, 40, 5, 580, "SKU-PZ-001"),
-            ("Papas Fritas Chicas", "Snacks y Comida Rápida", 8000, 100, 10, 280, "SKU-PF-001"),
-            ("Sandwich de Pollo", "Snacks y Comida Rápida", 16000, 50, 5, 390, "SKU-SW-001"),
-            # Postres
-            ("Helado 1 Bola", "Postres y Helados", 7000, 80, 10, 160, "SKU-HE-001"),
-            ("Helado 3 Bolas + Cobertura", "Postres y Helados", 15000, 60, 10, 320, "SKU-HE-002"),
-            ("Torta de Chocolate", "Postres y Helados", 9000, 40, 5, 280, "SKU-TO-001"),
-            ("Cheesecake", "Postres y Helados", 11000, 30, 5, 310, "SKU-CK-001"),
+            # Bebidas Frías e Hidratantes
+            ("AGUA BRISA SABORIZADA CON GAS SABOR MARACUYA 600 ML", "Bebidas Frías e Hidratantes", 3000, 23, "7702535030660"),
+            ("AGUA CRISTAL 600 ML", "Bebidas Frías e Hidratantes", 3000, 15, "7702090022711"),
+            ("AGUA CIELO 1 LT", "Bebidas Frías e Hidratantes", 4000, 118, "7707244561283"),
+            ("GATORADE 500 ML", "Bebidas Frías e Hidratantes", 6000, 16, "7702192422051"),
+            ("AGUA CIELO LIMA LIMON 620 ML", "Bebidas Frías e Hidratantes", 3000, 25, "7708129732224"),
+            ("AGUA BRISA SABORIZADA CON GAS SABOR MANZANA 600 ML", "Bebidas Frías e Hidratantes", 4000, 10, "7702535013212"),
+            ("ELECTROLIT SUERO REHIDRATANTE COCO 625 ML", "Bebidas Frías e Hidratantes", 10000, 0, "7501125176456"),
+            ("POWERADE ROJO", "Bebidas Frías e Hidratantes", 5000, 2, "77702535009987"),
+            ("AGUA MANANTIAL 600 ML", "Bebidas Frías e Hidratantes", 4000, 8, "7702609005372"),
+            ("AGUA BRISA 600 ML", "Bebidas Frías e Hidratantes", 3000, 1, "7702535010327"),
+            ("SPEED MAX 310 ML", "Bebidas Frías e Hidratantes", 3000, 4, "7702090071849"),
+            # Gaseosas y Jugos
+            ("CAJITA HIT NECTAR 200 ML", "Gaseosas y Jugos", 3500, 0, "7707133077956"),
+            ("COLOMBIANA GASEOSA 3 LT", "Gaseosas y Jugos", 13000, 0, "7707151700768"),
+            ("JUGO DEL VALLLE 1.5 LT", "Gaseosas y Jugos", 8000, 2, "7702535022061"),
+            ("NECTAR CALIFORNIA", "Gaseosas y Jugos", 5000, 0, "07702617077293"),
+            ("COCA COLA 3 LT", "Gaseosas y Jugos", 13000, 3, "7702535024447"),
+            ("KOLA ROMAN 400ML", "Gaseosas y Jugos", 4000, 19, "7702609006508"),
+            ("CAJITA DEL VALLE 188 ML", "Gaseosas y Jugos", 3000, 133, "7702535030110"),
+            # Snacks y Pasabocas
+            ("NATUCHIPS PLATANO MADURO 38 GR", "Snacks y Pasabocas", 3000, 16, "7702189055484"),
+            ("DETODITO NATURAL 165 GR", "Snacks y Pasabocas", 12000, 4, "7702189057617"),
+            ("DETODITO LIMON 165 GR", "Snacks y Pasabocas", 12000, 0, "7702189057648"),
+            ("MANI MIX NUECES LA ESPECIAL 40 G", "Snacks y Pasabocas", 4000, 2, "7702007065640"),
+            ("MARGARITA BOLZASA POLLO 75 G", "Snacks y Pasabocas", 7000, 3, "7702189059666"),
+            ("MARGARITA BOLZASA LIMON 75 G", "Snacks y Pasabocas", 7000, 0, "7702189059659"),
+            ("NATUCHIPS YUCA 38G", "Snacks y Pasabocas", 4000, 0, "7702189060136"),
+            ("MINICHIPS FESTIVAL", "Snacks y Pasabocas", 3000, 0, "7702025142910"),
+            ("DETODITO MIX 50 GR", "Snacks y Pasabocas", 4000, 19, "7702189055569"),
+            ("CHEESE TRIS BOLSAZA 120 GR", "Snacks y Pasabocas", 9000, 0, "7702189059864"),
+            ("DETODITO MIX 165 GR", "Snacks y Pasabocas", 12000, 2, "7702189057631"),
+            ("CHEETOS BOLIQUESO 34 GR", "Snacks y Pasabocas", 4000, 10, "7702189057860"),
+            ("CHEESE TRIS QUESO 42 GR", "Snacks y Pasabocas", 4000, 19, "7702189056788"),
+            ("CHOCLITOS LIMON 45 GR", "Snacks y Pasabocas", 4000, 12, "7702189058546"),
+            ("DETODITO LIMON 50 GR", "Snacks y Pasabocas", 4000, 12, "7702189055583"),
+            ("MARGARITA LIMON 36 GR", "Snacks y Pasabocas", 4000, 17, "7702189056023"),
+            ("MARGARITA DE POLLO 36G", "Snacks y Pasabocas", 4000, 4, "7702189056047"),
+            ("MARGARITA ONDULADA TOMATE 35G", "Snacks y Pasabocas", 4000, 14, "7702189057822"),
+            ("MANI MOTO SAL 23 GR - SIN CUBIERTA", "Snacks y Pasabocas", 3000, 7, "7702189056429"),
+            ("NATUCHIPS PLATANO VERDE 38 GR", "Snacks y Pasabocas", 3000, 19, "7702189055453"),
+            ("DETODITO BBQ 50 GR", "Snacks y Pasabocas", 4000, 10, "7702189055545"),
             # Confitería
-            ("Chocolatina Jet", "Confitería", 3500, 200, 20, 80, "SKU-CJ-001"),
-            ("Galletas Oreo", "Confitería", 5500, 100, 15, 140, "SKU-GO-001"),
-            ("Bombon Bon Bon Bum", "Confitería", 1500, 300, 30, 50, "SKU-BB-001"),
+            ("WAFER BRIDGE RON PASA", "Confitería", 2000, 0, "7702011271718"),
+            ("GALLETA AVENA GRANOLA", "Confitería", 3000, 11, "7702011275332"),
+            ("RING POP", "Confitería", 3000, 2, "7798040464328"),
+            ("MINICHOSO BIMBO", "Confitería", 2000, 7, "7705326080578"),
+            ("WAFER MUUU CHOCOLATE", "Confitería", 1000, 8, "7702011052063"),
+            ("WAFER BRIDGE FRESA", "Confitería", 2000, 28, "7702011271730"),
+            ("YOGO YOGO ORIGINAL FRESA 150 G", "Confitería", 4000, 0, "770001047666"),
+            ("YOGO YOGO ORIGINAL MELOCOTON 150 G", "Confitería", 4000, 0, "7702001047680"),
+            ("YOGO YOGO ORIGINAL MORA 150 G", "Confitería", 4000, 1, "7702001047673"),
+            ("PONY MALTA MINI 200 CM3", "Confitería", 2000, 38, "7702004025784"),
+            ("HALLS EXTRA FUERTE", "Confitería", 3000, 9, "7622202015212"),
+            ("HALL MENTOL, CEREZA Y LYPTUS", "Confitería", 3000, 0, "7622210427045"),
+            ("GALLETA DUX ORIGINAL", "Confitería", 2000, 28, "7702025101290"),
+            ("CHOKIS CHOCOBASE 47 G", "Confitería", 3000, 12, "7702189056245"),
+            ("TRIDENT X5 MENTA", "Confitería", 2000, 10, "7622201776664"),
+            ("TRIDENT X5 MORA AZUL", "Confitería", 2000, 3, "7622201776695"),
+            ("GALLETAS OREO PEQUEÑA", "Confitería", 2000, 4, "20007590011251100"),
+            # Cervezas y Licores
+            ("HEINEKEN 310 CM3", "Cervezas y Licores", 7000, 4, "7707430870120"),
+            ("AGUILA LIGTH LATA", "Cervezas y Licores", 5000, 40, "7702004002624"),
+            ("CERVEZA BUDWEISER LATA", "Cervezas y Licores", 5000, 27, "7702004110596"),
+            ("AGUILA ORIGINAL LATA", "Cervezas y Licores", 5000, 82, "7702004025760"),
+            ("CERVEZA COSTEÑA 269 ML", "Cervezas y Licores", 5000, 45, "7702004005601"),
+            ("CERVEZA CORONA CERO 269 ML", "Cervezas y Licores", 5000, 16, "7707311662905"),
+            ("SMIRNOF ICE GREEN APPLE LATA 250 ML", "Cervezas y Licores", 8000, 0, "5410316945981"),
+            # Accesorios Deportivos
+            ("FAJAS CINTURA MUJERES", "Accesorios Deportivos", 35000, 7, "6941979008359"),
+            ("FAJAS CINTURA HOMBRES", "Accesorios Deportivos", 30000, 10, "69411979008298"),
+            ("MUÑEQUERA SAIBIKE", "Accesorios Deportivos", 7000, 12, "7453077235449"),
+            ("RODILLERA CLASSIC KNEE SUPPORT", "Accesorios Deportivos", 35000, 8, "691979008854"),
+            ("CANILLERA FOOTBALL E-5113", "Accesorios Deportivos", 15000, 6, "6936580051139"),
+            ("GUANTES PARA EJERCICIOS E-5124", "Accesorios Deportivos", 40000, 5, "6936580051245"),
+            ("GUANTES DE ARQUERO E-5130", "Accesorios Deportivos", 60000, 7, "6936580051306"),
+            ("CANILLERA FOOTBALL E-5114", "Accesorios Deportivos", 15000, 11, "6936580051146"),
+            ("CANILLERA FOOTBALL E-5109", "Accesorios Deportivos", 15000, 7, "6936580051092"),
         ]
-        for n, cat, p, stk, mstk, cal, sku in productos:
-            if not Product.objects.filter(sku=sku).exists():
-                Product.objects.create(
-                    name=n, category=cat_objs[cat], sku=sku,
-                    price=Decimal(str(p)), stock=stk, min_stock=mstk,
-                    calories=cal,
-                    allergens="Puede contener gluten, lácteos, huevo, soya, frutos secos (consultar producto)",
-                    is_available=True,
-                )
-        print(f"✅ {len(productos)} Productos en {len(cat_objs)} categorías")
+        for n, cat, p, stk, sku in productos:
+            Product.objects.create(
+                name=n, category=cat_objs[cat], sku=sku,
+                price=Decimal(str(p)), stock=stk, min_stock=5,
+                is_available=True,
+            )
+        print(f"✅ {len(productos)} Productos reales del club en {len(cat_objs)} categorías")
 
         # ============================================================
         # 7) REWARDS - NIVELES y REGLAS y CATÁLOGO
