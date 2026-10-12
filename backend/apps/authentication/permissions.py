@@ -84,7 +84,6 @@ class IsAdminOrReception(BasePermission):
                 request.user.role in (
                     User.ROLE_ADMIN, User.ROLE_RECEPCION, User.ROLE_EMPLOYEE,
                 )
-                or request.user.is_staff
                 or request.user.is_superuser
             )
         )
@@ -100,7 +99,6 @@ class IsAdminOrCafeteria(BasePermission):
                 request.user.role in (
                     User.ROLE_ADMIN, User.ROLE_CAFETERIA, User.ROLE_EMPLOYEE,
                 )
-                or request.user.is_staff
                 or request.user.is_superuser
             )
         )
