@@ -1,0 +1,96 @@
+﻿=== PRUEBA DE RESPALDO Y RESTAURACION - Family Health MF ===
+Fecha de ejecucion: 2026-10-19 23:11:11 -05:00
+
+--- PASO 1: Motor y nombre de base de datos local ---
+python.exe : INFO 2026-10-19 23:11:11,989 AXES: BEGIN version 6.3.0, blocking by username or ip_address or user_agent
+En C:\Users\gusta\AppData\Local\Temp\trae-agent-toolhost\jobs\job-0a93138e9b0541598f9b4e33dd7e2b17\command.ps1: 23 
+Carácter: 1
++ & "c:\Family_Health_MF\.venv\Scripts\python.exe" -c "import os,django ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO 2026-10-19...s or user_agent:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ENGINE= django.db.backends.sqlite3
+NAME= C:\Family_Health_MF\backend\db.sqlite3
+EXITCODE_PASO1=0
+
+--- PASO 2: Conteo de registros de la base de datos local ---
+python.exe : INFO 2026-10-19 23:11:26,786 AXES: BEGIN version 6.3.0, blocking by username or ip_address or user_agent
+En línea: 20 Carácter: 1
++ & "c:\Family_Health_MF\.venv\Scripts\python.exe" -c "import os,django ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO 2026-10-19...s or user_agent:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+usuarios= 6
+espacios= 10
+reservas= 0
+productos= 72
+EXITCODE_PASO2=0
+
+--- PASO 3: Prueba real de respaldo y restauracion (entorno local) ---
+3a. Carpeta de respaldo: c:\Family_Health_MF\evidencias\respaldo (creada)
+3b. Respaldo copiado: c:\Family_Health_MF\evidencias\respaldo\respaldo_local_20261019.sqlite3
+3c. Archivo de restauracion de prueba: c:\Family_Health_MF\evidencias\respaldo\restauracion_prueba.sqlite3
+3e. Hashes SHA-256:
+
+
+Algorithm : SHA256
+Hash      : 04797918D97F7F6A60EA919287A25C496CB0C1CECCED6329EAA2AFE6CBFB7807
+Path      : C:\Family_Health_MF\backend\db.sqlite3
+
+Algorithm : SHA256
+Hash      : 04797918D97F7F6A60EA919287A25C496CB0C1CECCED6329EAA2AFE6CBFB7807
+Path      : C:\Family_Health_MF\evidencias\respaldo\respaldo_local_20261019.sqlite3
+
+Algorithm : SHA256
+Hash      : 04797918D97F7F6A60EA919287A25C496CB0C1CECCED6329EAA2AFE6CBFB7807
+Path      : C:\Family_Health_MF\evidencias\respaldo\restauracion_prueba.sqlite3
+
+
+
+
+3d. Verificacion de conteos sobre el archivo RESTAURADO:
+python.exe : Traceback (most recent call last):
+En C:\Users\gusta\AppData\Local\Temp\trae-agent-toolhost\jobs\job-516cfeca28904b51b74930d5ac7775c0\command.ps1: 32 
+Carácter: 1
++ & "c:\Family_Health_MF\.venv\Scripts\python.exe" "c:\Family_Health_MF ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "c:\Family_Health_MF\evidencias\respaldo\_verificar_restauracion.py", line 17, in <module>
+    settings.DATABASES["default"]["NAME"] = ruta
+  File "C:\Family_Health_MF\.venv\lib\site-packages\django\conf\__init__.py", line 89, in __getattr__
+    self._setup(name)
+  File "C:\Family_Health_MF\.venv\lib\site-packages\django\conf\__init__.py", line 76, in _setup
+    self._wrapped = Settings(settings_module)
+  File "C:\Family_Health_MF\.venv\lib\site-packages\django\conf\__init__.py", line 190, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+  File "C:\Users\gusta\AppData\Local\Programs\Python\Python310\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'config'
+EXITCODE_VERIF=1
+
+3d(repeticion). Se corrigio el script agregando el directorio backend a sys.path.
+Verificacion de conteos sobre el archivo RESTAURADO:
+python.exe : INFO 2026-10-19 23:12:20,908 AXES: BEGIN version 6.3.0, blocking by username or ip_address or user_agent
+En línea: 22 Carácter: 1
++ & "c:\Family_Health_MF\.venv\Scripts\python.exe" "c:\Family_Health_MF ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO 2026-10-19...s or user_agent:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ARCHIVO_VERIFICADO= c:\Family_Health_MF\evidencias\respaldo\restauracion_prueba.sqlite3
+RESTAURADO usuarios= 6
+RESTAURADO espacios= 10
+RESTAURADO reservas= 0
+RESTAURADO productos= 72
+EXITCODE_VERIF2=0
