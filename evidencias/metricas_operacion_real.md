@@ -1,0 +1,80 @@
+# Métricas operativas reales - Club Family Health MF
+
+> Cierre técnico de la versión final · punto 6
+
+- **Fuente:** API pública de la versión desplegada (https://familyhealthmf-production.up.railway.app) consultada con
+  credenciales de administrador; la API lee directamente de PostgreSQL.
+- **Fecha/hora de la consulta (UTC):** 2026-10-20T04:21:48+00:00
+- **Indicadores calculados:** 42
+
+Todos los valores provienen de respuestas HTTP reales. Los indicadores que el
+software no registra (por ejemplo tiempos de atención) no se calculan y se
+documentan en la sección de limitaciones del informe final.
+
+> Nota: las cuentas creadas para pruebas (`*_fh`, `val_rw_*`, `t_*@prueba.local`)
+> son **datos de prueba/controlados** y NO se presentan como usuarios reales.
+> Las reservas con nota identificada como dato de prueba controlado se contabilizan
+> por separado (M26/M27).
+
+| ID | Indicador | Fórmula | Fuente exacta | Consulta utilizada | Periodo | Muestra | Resultado |
+|---|---|---|---|---|---|---|---|
+| M01 | Usuarios activos totales | `count(is_active=True)` | API /reports/dashboard/summary/ -> users_total | `GET /api/v1/reports/dashboard/summary/` | Actual | 8 | **8** |
+| M02 | Clientes activos | `count(role=CLIENT, is_active=True)` | API /reports/dashboard/summary/ -> clients_total | `GET /api/v1/reports/dashboard/summary/` | Actual | 3 | **3** |
+| M03 | Empleados activos (recepción/cafetería) | `count(role=EMPLOYEE, is_active=True)` | API /reports/dashboard/summary/ -> employees_total | `GET /api/v1/reports/dashboard/summary/` | Actual | 0 | **0** |
+| M04 | Clientes nuevos en los últimos 30 días | `count(role=CLIENT, created_at >= hoy-30d)` | API /reports/dashboard/summary/ -> new_clients_last_30_days | `GET /api/v1/reports/dashboard/summary/` | Últimos 30 días | 3 | **3** |
+| M05 | Reservas registradas (histórico) | `count(Reservation)` | API /reports/dashboard/summary/ -> reservations_total | `GET /api/v1/reports/dashboard/summary/` | Histórico completo | 4 | **4** |
+| M06 | Reservas con inicio hoy | `count(start_time__date=hoy)` | API /reports/dashboard/summary/ -> reservations_today | `GET /api/v1/reports/dashboard/summary/` | Hoy | 0 | **0** |
+| M07 | Reservas confirmadas | `count(status=CONFIRMED)` | API /reports/dashboard/summary/ -> reservations_confirmed | `GET /api/v1/reports/dashboard/summary/` | Histórico completo | 0 | **0** |
+| M08 | Reservas pendientes de aprobación | `count(status=PENDING)` | API /reports/dashboard/summary/ -> reservations_pending | `GET /api/v1/reports/dashboard/summary/` | Histórico completo | 0 | **0** |
+| M09 | Reservas canceladas | `count(status=CANCELLED)` | API /reports/dashboard/summary/ -> reservations_cancelled | `GET /api/v1/reports/dashboard/summary/` | Histórico completo | 4 | **4** |
+| M10 | Ocupación de los últimos 7 días (%) | `sum(total_minutes confirmadas+completadas 7d) / 10080 * 100` | API /reports/dashboard/summary/ -> occupancy_rate_last_7 | `GET /api/v1/reports/dashboard/summary/` | Últimos 7 días | 0 | **0.0** |
+| M11 | Pedidos de refresquería registrados | `count(Order)` | API /reports/dashboard/summary/ -> orders_total | `GET /api/v1/reports/dashboard/summary/` | Histórico completo | 0 | **0** |
+| M12 | Pedidos creados hoy | `count(Order, created_at__date=hoy)` | API /reports/dashboard/summary/ -> orders_today | `GET /api/v1/reports/dashboard/summary/` | Hoy | 0 | **0** |
+| M13 | Ingresos por pedidos del mes (COP) | `sum(total_amount) de pedidos PAID del mes` | API /reports/dashboard/summary/ -> orders_revenue_month | `GET /api/v1/reports/dashboard/summary/` | Mes en curso | 0 | **0.00** |
+| M14 | Ingresos por reservas del mes (COP) | `sum(total_amount) de reservas PAID del mes` | API /reports/dashboard/summary/ -> reservations_revenue_month | `GET /api/v1/reports/dashboard/summary/` | Mes en curso | 4 | **40000.00** |
+| M15 | Puntos de fidelización distribuidos | `sum(amount) transacciones EARN` | API /reports/dashboard/summary/ -> points_distributed | `GET /api/v1/reports/dashboard/summary/` | Histórico completo | 3 | **0** |
+| M16 | Puntos de fidelización redimidos | `abs(sum(amount) transacciones REDEEM)` | API /reports/dashboard/summary/ -> points_redeemed | `GET /api/v1/reports/dashboard/summary/` | Histórico completo | 3 | **0** |
+| M17 | Registros de gimnasio en 30 días | `count(WorkoutLog session_date >= hoy-30d)` | API /reports/dashboard/summary/ -> gym_logs_last_30 | `GET /api/v1/reports/dashboard/summary/` | Últimos 30 días | 3 | **0** |
+| M18 | Reservas rechazadas | `count(status=REJECTED)` | API /reservations/reservations/ (enumeración paginada) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **0** |
+| M19 | Reservas completadas | `count(status=COMPLETED)` | API /reservations/reservations/ (enumeración paginada) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **0** |
+| M20 | Reservas con inasistencia | `count(status=NO_SHOW)` | API /reservations/reservations/ (enumeración paginada) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **0** |
+| M21 | Total de reservas enumeradas (control de consistencia) | `len(enumeración paginada)` | API /reservations/reservations/ | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **4** |
+| M22 | Tasa de cancelación (%) | `canceladas / total * 100` | API /reservations/reservations/ (enumeración paginada) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 reservas | **100.0** |
+| M23 | Tasa de rechazo (%) | `rechazadas / total * 100` | API /reservations/reservations/ (enumeración paginada) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 reservas | **0.0** |
+| M24 | Reservas modificadas después de su creación | `count(updated_at > created_at)` | API /reservations/reservations/ (updated_at/created_at) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **4** |
+| M25 | Reservas pagadas | `count(payment_status=PAID)` | API /reservations/reservations/ (payment_status) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **1** |
+| M26 | Reservas identificadas como dato de prueba controlado | `count(notes contiene 'dato de prueba controlado'/'validacion railway')` | API /reservations/reservations/ (notes) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **2** |
+| M27 | Reservas operativas (excluye datos de prueba controlados) | `total - datos_de_prueba` | API /reservations/reservations/ | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **2** |
+| M28 | Primera reserva registrada (created_at) | `min(created_at)` | API /reservations/reservations/ (created_at) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **2026-10-12T09:02:28.127829-05:00** |
+| M29 | Última reserva registrada (created_at) | `max(created_at)` | API /reservations/reservations/ (created_at) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **2026-10-19T22:53:12.198590-05:00** |
+| M30 | Días distintos con creación de reservas | `count(distinct date(created_at))` | API /reservations/reservations/ (created_at) | `GET /api/v1/reservations/reservations/?page=N` | Histórico completo | 4 | **2** |
+| M31 | Días con al menos una reserva (últimos 30 días) | `count(días con total>0)` | API /reports/dashboard/reservations-by-date/?days=30 | `GET /api/v1/reports/dashboard/reservations-by-date/?days=30` | Últimos 30 días | 3 | **3** |
+| M32 | Promedio de reservas por día con actividad | `mean(total de días con actividad)` | API /reports/dashboard/reservations-by-date/?days=30 | `GET /api/v1/reports/dashboard/reservations-by-date/?days=30` | Últimos 30 días | 3 | **1.33** |
+| M33 | Cancelaciones registradas en la serie de 30 días | `sum(cancelled)` | API /reports/dashboard/reservations-by-date/?days=30 | `GET /api/v1/reports/dashboard/reservations-by-date/?days=30` | Últimos 30 días | 3 | **4** |
+| M34 | Clientes con actividad registrada (ranking) | `count(clientes en ranking)` | API /reports/dashboard/top-clients/ | `GET /api/v1/reports/dashboard/top-clients/?n=20` | Histórico completo | 10 | **3** |
+| M35 | Usuarios totales enumerados (activos + inactivos) | `len(enumeración de usuarios)` | API /auth/admin/users/ | `GET /api/v1/auth/admin/users/?page=N` | Histórico completo | 10 | **10** |
+| M36 | Usuarios activos enumerados | `count(is_active=True)` | API /auth/admin/users/ (is_active) | `GET /api/v1/auth/admin/users/?page=N` | Histórico completo | 10 | **8** |
+| M37 | Usuarios con rol CLIENT | `count(role=CLIENT)` | API /auth/admin/users/ (role) | `GET /api/v1/auth/admin/users/?page=N` | Histórico completo | 10 | **5** |
+| M38 | Usuarios con rol ADMIN | `count(role=ADMIN)` | API /auth/admin/users/ (role) | `GET /api/v1/auth/admin/users/?page=N` | Histórico completo | 10 | **3** |
+| M39 | Usuarios con rol RECEPCION | `count(role=RECEPCION)` | API /auth/admin/users/ (role) | `GET /api/v1/auth/admin/users/?page=N` | Histórico completo | 10 | **1** |
+| M40 | Usuarios con rol CAFETERIA | `count(role=CAFETERIA)` | API /auth/admin/users/ (role) | `GET /api/v1/auth/admin/users/?page=N` | Histórico completo | 10 | **1** |
+| M41 | Primer usuario registrado (created_at) | `min(created_at)` | API /auth/admin/users/ (created_at) | `GET /api/v1/auth/admin/users/?page=N` | Histórico completo | 10 | **2026-10-05T13:34:14.076688-05:00** |
+| M42 | Último usuario registrado (created_at) | `max(created_at)` | API /auth/admin/users/ (created_at) | `GET /api/v1/auth/admin/users/?page=N` | Histórico completo | 10 | **2026-10-19T22:53:08.638424-05:00** |
+
+## Indicadores NO calculables (información que el software no registra)
+
+- Tiempo de atención por reserva: el modelo no registra marcas de tiempo de
+  atención presencial ni duración de gestión.
+- Intentos de inicio de sesión y auditoría por rol: el modelo `AuditLog` los
+  registra internamente, pero la API de la versión final no expone un endpoint
+  de lectura de auditoría, por lo que no pueden derivarse retrospectivamente.
+- Tasa de ocupación real por espacio: el resumen calcula una ocupación
+  normalizada de 7 días, no una tasa por espacio individual.
+
+## Comandos de reproducción
+
+```powershell
+cd c:\Family_Health_MF
+$env:FH_PASS_ADMIN="<contraseña demo admin>"
+.venv\Scripts\python.exe tests\metricas_operacion.py
+```

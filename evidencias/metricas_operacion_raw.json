@@ -1,0 +1,108 @@
+{
+  "fecha": "2026-10-20T04:21:48+00:00",
+  "url": "https://familyhealthmf-production.up.railway.app",
+  "crudos": {
+    "dashboard_summary": {
+      "users_total": 8,
+      "total_users": 8,
+      "spaces_total": 10,
+      "clients_total": 3,
+      "employees_total": 0,
+      "new_clients_last_30_days": 3,
+      "reservations_total": 4,
+      "reservations_today": 0,
+      "reservations_confirmed": 0,
+      "reservations_pending": 0,
+      "reservations_cancelled": 4,
+      "occupancy_rate_last_7": 0.0,
+      "orders_total": 0,
+      "orders_today": 0,
+      "orders_revenue_month": "0.00",
+      "reservations_revenue_month": "40000.00",
+      "total_revenue_month": "40000.00",
+      "points_distributed": 0,
+      "points_redeemed": 0,
+      "active_tiers": [
+        {
+          "id": 1,
+          "name": "Bronce",
+          "color": "#cd7f32",
+          "users": 2
+        },
+        {
+          "id": 2,
+          "name": "Plata",
+          "color": "#c0c0c0",
+          "users": 0
+        },
+        {
+          "id": 3,
+          "name": "Oro",
+          "color": "#d4af37",
+          "users": 0
+        },
+        {
+          "id": 4,
+          "name": "Diamante",
+          "color": "#b9f2ff",
+          "users": 0
+        }
+      ],
+      "gym_logs_last_30": 0
+    },
+    "reservations_by_date": [
+      {
+        "date": "2026-10-13",
+        "total": 1,
+        "confirmed": 0,
+        "cancelled": 1
+      },
+      {
+        "date": "2026-10-16",
+        "total": 1,
+        "confirmed": 0,
+        "cancelled": 1
+      },
+      {
+        "date": "2026-10-28",
+        "total": 2,
+        "confirmed": 0,
+        "cancelled": 2
+      }
+    ],
+    "reservations_total_enumeradas": 4,
+    "top_clients": [
+      {
+        "id": 3,
+        "username": "cliente1_fh",
+        "first_name": "Juan Carlos",
+        "last_name": "Gómez Romero",
+        "membership_type": "Básica",
+        "reservations_count": 4,
+        "orders_count": 0,
+        "total_spent": 0.0
+      },
+      {
+        "id": 4,
+        "username": "cliente2_fh",
+        "first_name": "Valeria Sofía",
+        "last_name": "Martínez López",
+        "membership_type": "Básica",
+        "reservations_count": 0,
+        "orders_count": 0,
+        "total_spent": 0.0
+      },
+      {
+        "id": 5,
+        "username": "cliente3_fh",
+        "first_name": "Carlos Alberto",
+        "last_name": "Muñoz Sánchez",
+        "membership_type": "",
+        "reservations_count": 0,
+        "orders_count": 0,
+        "total_spent": 0.0
+      }
+    ],
+    "usuarios_enumerados": 10
+  }
+}
