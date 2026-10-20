@@ -171,8 +171,25 @@ ASGI_APPLICATION = "config.asgi.application"
 # archivo .env con django-environ, IGNORANDO por completo la variable global
 # de sistema de Windows (que podría pertenecer a OTRO proyecto, ej: SENA).
 # En producción (DEBUG=False) sí se permite DATABASE_URL global de Railway.
+def _read_dotenv_value(name: str) -> str:
+    """Lee un valor EXCLUSIVAMENTE desde el archivo .env (ignora os.environ)."""
+    if not ENV_FILE.exists():
+        return ""
+    try:
+        for raw_line in ENV_FILE.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if line.startswith(f"{name}="):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    except OSError:  # pragma: no cover - protección ante .env ilegible
+        return ""
+    return ""
+
+
 if DEBUG:
-    _DATABASE_URL_FROM_ENV = env("DATABASE_URL", default="")
+    # En desarrollo local DATABASE_URL se lee SÓLO desde el archivo .env.
+    # La variable global de sistema puede pertenecer a OTRO proyecto instalado
+    # en el mismo equipo y desviaría la suite local hacia una base de datos ajena.
+    _DATABASE_URL_FROM_ENV = _read_dotenv_value("DATABASE_URL")
 else:
     _DATABASE_URL_FROM_ENV = env("DATABASE_URL", default="") or os.getenv(
         "DATABASE_URL", ""
