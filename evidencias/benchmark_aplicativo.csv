@@ -1,0 +1,5 @@
+﻿escenario,n,media_ms,mediana_ms,min_ms,max_ms,desviacion_ms,exito_pct,conflictos_persistidos_pct,resolucion_primer_intento_pct,reprocesos_tecnicos,linea_base_manual
+S1_consultar_disponibilidad,30,328.47,320.18,303.7,559.14,44.23,100.0,0.0,100.0,0,
+S2_registrar_reserva,30,331.75,331.16,314.33,355.3,9.4,100.0,0.0,100.0,0,
+S3_detectar_solapamiento,30,320.77,319.68,304.42,349.72,11.3,100.0,0.0,100.0,0,
+S4_cancelar_reserva,30,327.49,323.75,310.57,352.4,10.96,100.0,0.0,100.0,0,
