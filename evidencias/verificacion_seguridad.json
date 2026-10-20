@@ -1,0 +1,123 @@
+{
+  "fecha": "2026-10-20T04:14:28+00:00",
+  "url": "https://familyhealthmf-production.up.railway.app",
+  "total": 12,
+  "cumple": 11,
+  "revisar": 1,
+  "cabeceras_observadas": {
+    "allow": "GET, OPTIONS",
+    "content-language": "es-co",
+    "content-type": "application/json",
+    "cross-origin-opener-policy": "same-origin",
+    "date": "Tue, 20 Oct 2026 04:14:33 GMT",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "server": "railway-hikari",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "vary": "Accept-Language, Cookie, origin",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-railway-request-id": "5jO7AaBTTkiQ4RNe0-QtfA",
+    "content-length": "247",
+    "x-hikari-trace": "mia1.0twb",
+    "x-railway-edge": "mia1",
+    "connection": "keep-alive"
+  },
+  "hallazgos": [
+    {
+      "id": "SEC-01",
+      "control": "Servicio disponible (health check publico)",
+      "esperado": "HTTP 200",
+      "real": "HTTP 200",
+      "resultado": "CUMPLE",
+      "nota": ""
+    },
+    {
+      "id": "SEC-02",
+      "control": "HSTS (Strict-Transport-Security) presente en produccion",
+      "esperado": "max-age declarado",
+      "real": "max-age=31536000; includeSubDomains; preload",
+      "resultado": "CUMPLE",
+      "nota": "Solo aplica cuando la peticion llega por HTTPS (SECURE_SSL_REDIRECT)."
+    },
+    {
+      "id": "SEC-03",
+      "control": "X-Content-Type-Options = nosniff",
+      "esperado": "nosniff",
+      "real": "nosniff",
+      "resultado": "CUMPLE",
+      "nota": ""
+    },
+    {
+      "id": "SEC-04",
+      "control": "X-Frame-Options restringe el enmarcado (clickjacking)",
+      "esperado": "DENY o SAMEORIGIN",
+      "real": "DENY",
+      "resultado": "CUMPLE",
+      "nota": ""
+    },
+    {
+      "id": "SEC-05",
+      "control": "Referrer-Policy declarada",
+      "esperado": "strict-origin-when-cross-origin",
+      "real": "strict-origin-when-cross-origin",
+      "resultado": "CUMPLE",
+      "nota": ""
+    },
+    {
+      "id": "SEC-06",
+      "control": "Cabecera Server sin versiones sensibles",
+      "esperado": "sin numero de version",
+      "real": "railway-hikari",
+      "resultado": "CUMPLE",
+      "nota": "valor real: railway-hikari"
+    },
+    {
+      "id": "SEC-07",
+      "control": "Las respuestas de error no exponen trazas ni configuracion",
+      "esperado": "sin trazas",
+      "real": "HTTP 404; fugas=ninguna",
+      "resultado": "CUMPLE",
+      "nota": ""
+    },
+    {
+      "id": "SEC-08",
+      "control": "Recurso protegido sin token devuelve 401",
+      "esperado": "HTTP 401",
+      "real": "HTTP 401",
+      "resultado": "CUMPLE",
+      "nota": ""
+    },
+    {
+      "id": "SEC-09",
+      "control": "Panel administrativo sin token devuelve 401",
+      "esperado": "HTTP 401",
+      "real": "HTTP 401",
+      "resultado": "CUMPLE",
+      "nota": ""
+    },
+    {
+      "id": "SEC-10",
+      "control": "Solicitud con Host no autorizado (riesgo de Host Header Injection)",
+      "esperado": "HTTP 400 (ALLOWED_HOSTS restringido)",
+      "real": "HTTP 404",
+      "resultado": "REVISAR",
+      "nota": "Si devuelve 200, ALLOWED_HOSTS='*' sigue activo en produccion: ver propuesta de restriccion en checklist_seguridad.md."
+    },
+    {
+      "id": "SEC-11",
+      "control": "Mensaje de error de login uniforme (no revela existencia del usuario)",
+      "esperado": "mismo mensaje para usuario inexistente y contrasena incorrecta",
+      "real": "HTTP 401 vs 401; iguales=True",
+      "resultado": "CUMPLE",
+      "nota": "usuario_inexistente='{\"detail\": \"La combinación de credenciales no tiene una cuenta activa\"}' | contrasena_incorrecta='{\"detail\": \"La combinación de credenciales no tiene una cuenta activa\"}'"
+    },
+    {
+      "id": "SEC-12",
+      "control": "El registro rechaza solicitudes sin aceptar politica de privacidad",
+      "esperado": "HTTP 400",
+      "real": "HTTP 400",
+      "resultado": "CUMPLE",
+      "nota": ""
+    }
+  ]
+}

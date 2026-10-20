@@ -1,0 +1,33 @@
+VERIFICACION DE SEGURIDAD NO DESTRUCTIVA - 2026-10-20T04:14:28+00:00
+URL: https://familyhealthmf-production.up.railway.app
+
+[CUMPLE] SEC-01 | Servicio disponible (health check publico) | esperado=HTTP 200 | real=HTTP 200 | 
+[CUMPLE] SEC-02 | HSTS (Strict-Transport-Security) presente en produccion | esperado=max-age declarado | real=max-age=31536000; includeSubDomains; preload | Solo aplica cuando la peticion llega por HTTPS (SECURE_SSL_REDIRECT).
+[CUMPLE] SEC-03 | X-Content-Type-Options = nosniff | esperado=nosniff | real=nosniff | 
+[CUMPLE] SEC-04 | X-Frame-Options restringe el enmarcado (clickjacking) | esperado=DENY o SAMEORIGIN | real=DENY | 
+[CUMPLE] SEC-05 | Referrer-Policy declarada | esperado=strict-origin-when-cross-origin | real=strict-origin-when-cross-origin | 
+[CUMPLE] SEC-06 | Cabecera Server sin versiones sensibles | esperado=sin numero de version | real=railway-hikari | valor real: railway-hikari
+[CUMPLE] SEC-07 | Las respuestas de error no exponen trazas ni configuracion | esperado=sin trazas | real=HTTP 404; fugas=ninguna | 
+[CUMPLE] SEC-08 | Recurso protegido sin token devuelve 401 | esperado=HTTP 401 | real=HTTP 401 | 
+[CUMPLE] SEC-09 | Panel administrativo sin token devuelve 401 | esperado=HTTP 401 | real=HTTP 401 | 
+[REVISAR] SEC-10 | Solicitud con Host no autorizado (riesgo de Host Header Injection) | esperado=HTTP 400 (ALLOWED_HOSTS restringido) | real=HTTP 404 | Si devuelve 200, ALLOWED_HOSTS='*' sigue activo en produccion: ver propuesta de restriccion en checklist_seguridad.md.
+[CUMPLE] SEC-11 | Mensaje de error de login uniforme (no revela existencia del usuario) | esperado=mismo mensaje para usuario inexistente y contrasena incorrecta | real=HTTP 401 vs 401; iguales=True | usuario_inexistente='{"detail": "La combinación de credenciales no tiene una cuenta activa"}' | contrasena_incorrecta='{"detail": "La combinación de credenciales no tiene una cuenta activa"}'
+[CUMPLE] SEC-12 | El registro rechaza solicitudes sin aceptar politica de privacidad | esperado=HTTP 400 | real=HTTP 400 | 
+
+--- CABECERAS HTTP OBSERVADAS ---
+allow: GET, OPTIONS
+connection: keep-alive
+content-language: es-co
+content-length: 247
+content-type: application/json
+cross-origin-opener-policy: same-origin
+date: Tue, 20 Oct 2026 04:14:33 GMT
+referrer-policy: strict-origin-when-cross-origin
+server: railway-hikari
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+vary: Accept-Language, Cookie, origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-hikari-trace: mia1.0twb
+x-railway-edge: mia1
+x-railway-request-id: 5jO7AaBTTkiQ4RNe0-QtfA
