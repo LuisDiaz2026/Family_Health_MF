@@ -135,8 +135,10 @@ def t5():
     )
     assert resp.status_code == 200, f"status={resp.status_code} body={resp.content[:500]}"
     d = resp.json()
-    slots = len(d.get("available_slots", [])) if isinstance(d, dict) else 0
-    return f"{space.name} {fecha} -> {slots} slots libres (verificado)"
+    slots = len(d.get("thirty_minute_slots", [])) if isinstance(d, dict) else 0
+    ocupados = len(d.get("occupied_slots", [])) if isinstance(d, dict) else 0
+    return (f"{space.name} {fecha} -> {slots} franjas de 30 min libres "
+            f"({ocupados} ocupadas)")
 
 
 do_test("Consulta disponibilidad espacio", t5)
