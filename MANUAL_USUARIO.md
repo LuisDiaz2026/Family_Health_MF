@@ -1,297 +1,223 @@
-# MANUAL DE USUARIO - Club Family Health MF
-### Versión 1.0 · Trabajo de Grado - Ingeniería de Sistemas y Computación - Universidad Antonio Nariño - Periodo Académico 2026-2
-#### Por: Luis Fermín Díaz Choles
+# Manual de Usuario - Family Health MF
 
----
+## 1. Presentación
 
-## Índice
+Este manual describe el uso de la versión final del aplicativo web **Family Health MF**, desarrollado para la gestión centralizada de reservas y módulos complementarios del Club Family Health. El documento se redacta con base en la interfaz realmente implementada y en las capturas verificadas durante las pruebas Mobile-First ejecutadas sobre el despliegue productivo.
 
-1. [¿Qué es Club Family Health MF?](#1-qué-es-club-family-health-mf)
-2. [Primeros pasos: Iniciar la aplicación](#2-primeros-pasos-iniciar-la-aplicación)
-3. [Crear una cuenta de Cliente](#3-crear-una-cuenta-de-cliente)
-4. [Iniciar sesión](#4-iniciar-sesión)
-5. [Zona Cliente - Menú inferior](#5-zona-cliente---menú-inferior)
-   - 5.1 Inicio
-   - 5.2 Mis Reservas
-   - 5.3 Refrescos
-   - 5.4 Mis Puntos
-   - 5.5 Gimnasio
-   - 5.6 Perfil y Notificaciones
-6. [Zona Staff (ADMIN / Recepción) - Menú inferior](#6-zona-staff-admin--recepción---menú-inferior)
-   - 6.1 Panel principal
-   - 6.2 Gestión de Reservas
-   - 6.3 Pedidos de Barra
-   - 6.4 Clientes
-   - 6.5 Inventario (Productos + Espacios)
-   - 6.6 Reportes operativos
-7. [Preguntas frecuentes (FAQ)](#7-preguntas-frecuentes-faq)
-8. [Contacto](#8-contacto)
+**Datos generales**
 
----
+- **Proyecto:** Family Health MF
+- **Autor:** Luis Fermín Díaz Choles
+- **Programa:** Ingeniería de Sistemas y Computación
+- **Universidad:** Universidad Antonio Nariño, sede Maicao
+- **Versión funcional verificada:** despliegue productivo con validación real en Railway
+- **URL pública del sistema:** `https://familyhealthmf-production.up.railway.app/#/login`
 
-## 1. ¿Qué es Club Family Health MF?
+## 2. Propósito del sistema
 
-Es una aplicación web mobile-first (optimizada para celulares) del Club Family Health de Maicao. Con ella podrás:
+Family Health MF permite centralizar la operación del club en una sola aplicación, con acceso diferenciado por rol. En su versión final, el sistema permite:
 
-✅ **Reservar** canchas, piscinas, salones y espacios del club (sin cruces de horario).
-✅ **Comprar** snacks, bebidas y almuerzos en la barra (con descuento automático por nivel).
-✅ **Ganar puntos** por cada reserva/pedido y canjear premios.
-✅ **Consultar** rutinas del gimnasio con calorías, sets, descansos.
-✅ (ADMIN / Recepción) Controlar todo el club desde un solo panel.
+- autenticación con control de acceso por roles;
+- registro público de clientes;
+- consulta de espacios y disponibilidad;
+- creación y cancelación de reservas;
+- administración operativa de reservas, clientes, productos, ofertas, espacios y reportes;
+- uso en resoluciones móviles y de escritorio sin desbordamiento horizontal injustificado.
 
-Todo **100% presencial** — no hay pagos online, tu pagas en recepción o barra.
+## 3. Acceso al aplicativo
 
----
+El ingreso a la versión final se realiza desde un navegador web moderno. La dirección de acceso validada es:
 
-## 2. Primeros pasos: Iniciar la aplicación
+```text
+https://familyhealthmf-production.up.railway.app/#/login
+```
 
-El software corre localmente en el PC del club o de pruebas. **Para acceder desde un celular en la misma red Wi-Fi del club, usa la IP privada del PC (no 127.0.0.1).**
+La aplicación utiliza enrutamiento con hash, por lo que las pantallas principales se identifican con rutas como:
 
-### Opción A: En el mismo computador que ejecuta el servidor
-1. Abre la carpeta `C:\Family_Health_MF\`
-2. Haz **doble clic** en **`arrancar.bat`**
-3. Se abrirán dos ventanas negras de consola. **No las cierres** (son el backend y el frontend).
-4. Espera 15 segundos, luego en tu navegador (Chrome/Safari/Edge) abre:
-   - **Frontend (todos los usuarios):** http://127.0.0.1:5173/
-   - **Panel Admin Django (solo personal):** http://127.0.0.1:8000/admin/
+- `#/login`
+- `#/cliente`
+- `#/cliente/reservas`
+- `#/cliente/reservas/crear`
+- `#/cliente/refrescos`
+- `#/panel`
+- `#/panel/reservas`
+- `#/panel/productos`
+- `#/panel/espacios`
 
-### Opción B: Desde tu celular o tablet en la MISMA RED WI-FI del club (Mobile-First)
-1. En el PC servidor, **averigua tu IP privada LAN**:
-   - Abre PowerShell y escribe: `ipconfig`
-   - Busca en "Adaptador Wi-Fi" la línea **Dirección IPv4**: suele ser `192.168.1.XX`, `192.168.0.XX` o `10.0.0.XX` (anótala, p.ej. `192.168.1.42`)
-2. En el PC servidor, **detén Vite y levántalo permitiendo conexiones externas** (solo la primera vez):
-   - En el archivo `frontend\vite.config.js`, modifica la sección `server` para que quede así:
-     ```js
-     server: { port: 5173, host: "0.0.0.0", strictPort: true }
-     ```
-   - Haz lo mismo con Django en `backend\config\settings.py` añadiendo tu IP a `ALLOWED_HOSTS`:
-     ```py
-     ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.1.42"]  # <- reemplaza por tu IP
-     ```
-3. Reinicia `arrancar.bat` (cierra las 2 ventanas y vuelve a dar doble clic).
-4. **En el celular, conectado al MISMO Wi-Fi del club**, abre Chrome/Safari y navega a:
-   - `http://192.168.1.42:5173/`  ← **reemplaza 192.168.1.42 por TU IP real**
+## 4. Roles de uso
 
-> Si no carga: espera 10 segundos y actualiza. Las dos ventanas CMD deben permanecer abiertas todo el tiempo. Si el firewall de Windows pregunta, marca "Permitir en redes privadas".
+El sistema trabaja con roles diferenciados. Cada rol visualiza únicamente las pantallas y acciones autorizadas.
 
----
+### 4.1 Cliente
 
-## 3. Crear una cuenta de Cliente
+El cliente puede:
 
-1. Entra a la URL del Frontend (127.0.0.1 en el PC o la IP LAN en el celular).
-2. Pulsa **Crear cuenta**.
-3. Rellena **TODOS** los campos (nombres, apellidos, usuario, email, tipo + número doc, celular, contraseña x2).
-4. ✅ Marca **Acepto Política de Privacidad Ley 1581** (OBLIGATORIO — sin esto no te deja registrarte).
-5. Pulsa **Crear cuenta**. ¡Listo! Serás redirigido/a automáticamente.
+- iniciar sesión;
+- consultar su panel de inicio;
+- revisar sus reservas;
+- crear una nueva reserva;
+- consultar el catálogo de refresquería.
 
----
+### 4.2 Administrador
 
-## 4. Iniciar sesión
+El administrador puede:
 
-> ⚠️ **ADVERTENCIA ENTORNO DE PRUEBAS:** Los usuarios que aparecen a continuación son **usuarios de demostración (seed data)** creados para evaluar el sistema en un entorno aislado. **Nunca utilices estas credenciales en un entorno de producción accesible por internet.** En el club real deberás crear cuentas con contraseñas propias y seguras, y jamás publicar las credenciales de administración en documentos, manuales o el código fuente.
+- acceder al panel general del club;
+- gestionar reservas;
+- consultar productos;
+- consultar espacios;
+- acceder a reportes operativos.
 
-| Tipo de usuario | Usuario DEMO | Contraseña DEMO (solo entorno pruebas) |
-|---|---|---|
-| 👑 Administrador Total | `admin_fh` | (configurar internamente en recepción) |
-| 🧑‍💼 Recepción / Barra | `recepcion_fh` | (configurar internamente en recepción) |
-| 🏋️ Cliente de prueba 1 | `cliente1_fh` | (solo pruebas internas) |
-| 🏋️ Cliente de prueba 2 | `cliente2_fh` | (solo pruebas internas) |
-| 🏋️ Cliente de prueba 3 | `cliente3_fh` | (solo pruebas internas) |
+### 4.3 Recepción y cafetería
 
-> Para ejecutar las pruebas humo del sistema (14 tests automáticos) y consultar los usuarios seed reales, consúltalo con el administrador del proyecto o revisa el script `backend/bootstrap_data.py` y `backend/smoke_test.py`. **La pantalla de login NO muestra credenciales públicas**, son solo para uso del equipo de desarrollo y validación.
+Los roles de recepción y cafetería están restringidos a sus módulos operativos. En la validación final se confirmó que la recepción puede consultar el listado de reservas y que el cliente no puede acceder al panel administrativo.
 
-**Paso a paso inicio sesión:**
-1. Escribe tu **usuario** (no email).
-2. Escribe tu **contraseña** (usa el ojo 👁️ para mostrarla).
-3. (Opcional) Marca **Recordarme en este equipo** para no volver a ingresar la próxima vez (solo en equipos privados, NO en celulares compartidos).
-4. Pulsa **Ingresar**.
+## 5. Ingreso al sistema
 
----
+Para iniciar sesión:
 
-## 5. Zona Cliente - Menú inferior
+1. Abra la URL pública del aplicativo.
+2. Escriba su nombre de usuario.
+3. Escriba su contraseña.
+4. Pulse el botón **Ingresar**.
 
-Cuando entras como CLIENTE verás 5 botones abajo:
-**🏠 Inicio · 📅 Reservas · 🥤 Refrescos · 🏆 Puntos · 💪 Gimnasio**
+Si el usuario pertenece al rol cliente, el sistema lo redirige a la zona cliente. Si pertenece a un rol operativo, el sistema lo redirige a su panel autorizado.
 
-### 5.1 🏠 Inicio
-- Saludo personalizado + membresía + puntos actuales.
-- 4 botones **rápidos** (Reservar, Refrescos, Puntos, Gimnasio).
-- Tus **3 reservas más recientes** (y botón "Ver todas").
-- **Ofertas destacadas** de refresquería (desliza horizontalmente).
-- **Rutina recomendada del día** (entra directo al detalle).
+## 6. Registro de cliente
 
-### 5.2 📅 Reservas
-- Pulsa **+ Nueva Reserva** para abrir el asistente.
-- **Filtros scrolleables** (Todas / Pendientes / Confirmadas / Completadas / Canceladas).
-- Cada reserva tiene un botón **Cancelar** si aún no está completada.
+El registro público está disponible desde la pantalla de acceso mediante la opción **Crear cuenta**. El proceso requiere diligenciar los datos personales y aceptar la política de privacidad. La aceptación de dicha política es obligatoria; si no se marca, el sistema rechaza el registro.
 
-**Asistente 3 pasos:**
-1. **Elige espacio**: Cancha fútbol, piscina, salones… verás tarifa/hora y si requiere aprobación de recepción.
-2. **Elige fecha** (solo fechas futuras).
-3. **Elige horario**: slots de 30/60 minutos verdes = libre.
-4. (Final) Ajusta cuántas personas, pulsa **Confirmar Reserva**.
+La cuenta creada mediante registro público queda sujeta al flujo de activación definido por la administración del club.
 
-### 5.3 🥤 Refrescos
-- Buscador arriba 🔍 + chips categorías (Todos, Bebidas Frías, Calientes, Snacks, Comidas, Postres).
-- Tarjetas de producto con foto, stock, alergenos, precio.
-- Botones `−` y `+` para añadir al carrito.
-- **🛒 Botón carrito (arriba derecha)** → entra al checkout.
-- En el checkout verás:
-  - Subtotal.
-  - ✅ Descuento fidelidad (aplicado automáticamente según tu nivel).
-  - Método de pago (todos presenciales: Efectivo, Transferencia, Tarjeta, Prepagada).
-  - Campo notas (ej. "sin cebolla", "vaso extra hielo").
-- Pulsa **Confirmar pedido** → recibes número de pedido y puedes ver el estado (Preparando → Listo → Pagado/Entregado).
+## 7. Funcionamiento por pantallas
 
-### 5.4 🏆 Mis Puntos
-Arriba tienes 2 pestañas (cambian pulsando):
+Las siguientes descripciones corresponden a pantallas realmente verificadas durante las pruebas automatizadas de navegador y Mobile-First.
 
-**⭐ Recompensas (catálogo)**
-- Cada premio muestra el nombre, foto, puntos que cuesta.
-- Si tienes suficientes puntos → botón **Canjear** habilitado (verde).
-- Si no → botón deshabilitado (gris) y mensaje de cuántos puntos te faltan.
-- Al canjear: Toast éxito ✅ "Dirígete a recepción para reclamar".
-- Los puntos se descuentan automáticamente.
+### 7.1 Pantalla de acceso
 
-**📈 Mi Fidelidad**
-- Tarjeta gradiente de tu nivel actual (Bronce = café, Plata = plata, Oro = dorado, Diamante = celeste pálido).
-- 3 KPIs: Puntos actuales · % Descuento · Amigos invitados.
-- **Barra progreso % hacia próximo nivel** (actualizado en tiempo real).
-- Reglas para ganar puntos (ej. "+20 por reserva confirmada").
-- Movimientos recientes (ganado → verde ↑, canjeado → rojo ↓).
+La pantalla de acceso presenta el formulario de autenticación y el enlace hacia el registro de clientes. Desde aquí inicia cualquier flujo del sistema. El usuario ingresa sus credenciales y, tras autenticarse, es redirigido a la interfaz correspondiente a su rol.
 
-### 5.5 💪 Gimnasio
-- 6 botones filtro por objetivo (Todos, Fuerza, Hipertrofia, Definición, Pérdida, General).
-- Tarjetas de rutina: color por objetivo + 3 KPIs (ejercicios, días/sem, semanas).
-- Pulsa una rutina → **Detalle**:
-  - Header gradiente color objetivo.
-  - 4 KPIs (días/semana, semanas, nivel, nº ejercicios).
-  - Calentamiento (lista).
-  - **Ejercicios numerados**: Sets · Repeticiones · Descanso · Dificultad (chip).
-  - Enfriamiento (lista).
-  - Tips nutricionales finales.
+### 7.2 Panel del cliente
 
-### 5.6 👤 Perfil y 🔔 Notificaciones
-- **Arriba derecha de todas las pantallas** → botón 🔔 con badge azul (notificaciones NO leídas).
-  - Cada notificación tiene un color por tipo (reserva, pedido, recompensa, puntos, info, aviso).
-  - Clic sobre ella → se marca como leída, desaparece el punto azul.
-- **Botón iniciales (arriba derecha)** → **Mi Perfil**:
-  - Avatar iniciales (p.ej. "JG" para Juan Gómez).
-  - Datos personales (cédula, celular, email, membresía).
-  - Tarjeta fidelidad (y link directo a Fidelidad).
-  - Bloque Seguridad Ley 1581 (Argon2, JWT, auditoría).
-  - Botón **Cerrar sesión** (rojo).
+El panel del cliente muestra la información general del usuario autenticado y ofrece accesos rápidos a los módulos principales. Desde esta vista el usuario puede desplazarse hacia reservas, refresquería, fidelización y gimnasio, aunque en la validación visual final se verificaron específicamente las pantallas de inicio, reservas, formulario de reserva y catálogo de refrescos.
 
----
+### 7.3 Listado de reservas del cliente
 
-## 6. Zona Staff (ADMIN / Recepción) - Menú inferior
+El módulo **Mis Reservas** permite consultar el historial propio de reservas. La pantalla ofrece filtros por estado y mantiene visible únicamente la información del cliente autenticado. Durante el cierre técnico se corrigió el acceso a este listado mediante un endpoint específico de consulta de reservas propias.
 
-Al iniciar con `admin_fh` o `recepcion_fh` → menú cambia automáticamente a:
-**📊 Panel · 📅 Reservas · 🥡 Pedidos · 👥 Clientes · 📈 Reportes**
+### 7.4 Formulario de nueva reserva
 
-### 6.1 📊 Panel (Dashboard principal)
-**6 KPIs grandes arriba**:
-- Usuarios activos · Clientes registrados · Espacios activos · Reservas totales · Pedidos · Ingresos mes.
-- **4 StatBox** estados reservas (Pendientes, Confirmadas, Canceladas, Completadas).
-- **📊 Distribución niveles fidelidad** (barras porcentaje clientes Bronce/Plata/Oro/Diamante).
-- **🥇 Top 5 Clientes** (puesto 1-5, nombre, # reservas, # pedidos, $ total gastado).
-- **4 Acciones rápidas**: Gestionar Reservas, Pedidos Barra, Inventario, Reportes.
+El formulario de reserva guía al usuario por la selección de espacio, fecha y franja horaria. El sistema consulta la disponibilidad real del espacio y presenta las franjas calculadas por bloques de 30 minutos. En la versión final se corrigió la lectura de esas franjas para que el formulario mostrara correctamente la disponibilidad retornada por la API.
 
-### 6.2 📅 Gestión de Reservas
-- Filtros estados (Todas, Pendientes, Confirmadas, Completadas, Canceladas).
-- Cada reserva: #ID, cliente, espacio, fecha + hora, total.
-- Botones según estado:
-  - 🟡 Pendiente → **Confirmar** (verde), **Cancelar** (rojo).
-  - 🔵 Confirmada → **Marcar completada**, **Cancelar**, **Marcar pagada**.
-  - 🟢 Completada → sin acciones, solo lectura.
+### 7.5 Catálogo de refresquería
 
-### 6.3 🥡 Pedidos de Barra
-- Filtros 6 estados: Todos/Pendientes/Preparando/Listos/Pagados/Cancelados.
-- Cada pedido: #, cliente, fecha, items, total, método pago.
-- Botones flujo barra:
-  - **Preparar** → **Listo para retirar** → **Marcar pagado y entregado**.
-  - Cancelar (antes de entrega).
+La pantalla de refrescos presenta productos agrupados y navegables desde el cliente. Permite consultar la oferta disponible del club y avanzar hacia el flujo de selección de productos.
 
-### 6.4 👥 Clientes
-- Buscador por nombre / cédula / usuario.
-- Tarjetas mini: avatar iniciales + username + cédula + membresía + nivel fidelidad + teléfono.
-- Badge Activo/Inactivo.
+### 7.6 Panel administrativo
 
-### 6.5 Inventario (2 secciones en menú hamburguesa staff)
-**📦 Productos**:
-- Total / Stock bajo / Agotados (3 KPIs arriba).
-- Buscador productos.
-- Tarjeta cada producto: SKU, categoría, stock/minimo, precio, color chip (OK/Stock bajo/Agotado).
+El panel administrativo consolida indicadores operativos del club. Incluye métricas generales, estados de reservas, acciones rápidas y accesos a módulos de operación.
 
-**🏟️ Espacios**:
-- Buscador por nombre/código.
-- Tarjeta: tarifa/hora, capacidad, antelación días, chip si requiere aprobación o confirmación instantánea.
+### 7.7 Listado administrativo de reservas
 
-### 6.6 📈 Reportes operativos
-- Resumen (usuarios, clientes, nuevos 30d, reservas total/hoy, pedidos total/hoy).
-- 💰 Ingresos (mes reservas, mes barra, TOTAL MES destacado verde).
-- 📊 % Ocupación 7 días.
-- Puntos distribuidos vs canjeados.
-- Distribución por niveles (barras).
-- 🥇 **Top 10 clientes ranking** (puesto, avatar, nombre, $ total, # reservas R, # pedidos P).
+Esta vista permite a los roles autorizados revisar las reservas registradas, su estado y la información básica de cada solicitud. Desde esta pantalla se soporta la gestión operativa del módulo de reservas.
 
----
+### 7.8 Catálogo administrativo de productos
 
-## 7. Preguntas frecuentes (FAQ)
+La pantalla de productos presenta el inventario administrable, acompañado de indicadores de stock y herramientas de consulta. Su diseño fue verificado en las cuatro resoluciones objetivo.
 
-**❓ ¿Puedo pagar con tarjeta online?**
-➡️ No. Toda transacción es 100% presencial en recepción/barra.
+### 7.9 Catálogo administrativo de espacios
 
-**❓ ¿Perdí mi contraseña?**
-➡️ Comunicate con recepción (admin) en el panel Django Admin para reestablecer.
+La vista de espacios permite revisar la configuración general de los espacios reservables, con información relacionada con capacidad, tarifa y operación.
 
-**❓ ¿Dos reservas quedaron al mismo tiempo en la misma cancha?**
-➡️ El sistema implementa una **validación de disponibilidad a nivel de aplicación** mediante el método `Space.is_available_at()` (consulta de solapamiento `start_time < fin_solicitado AND end_time > inicio_solicitado`), combinado con una transacción atómica `transaction.atomic()` en el `save()` de la reserva (models.py línea 459). **Esta validación es efectiva en escenarios normales de uso en el club**, pero tiene dos limitaciones técnicas que deben conocerse para usarlo en producción:
-1. En **SQLite (entorno de desarrollo local)** el motor no implementa bloqueos de fila `SELECT ... FOR UPDATE` al mismo nivel que PostgreSQL; en escenarios de concurrencia EXTREMA (dos usuarios pulsando "Confirmar reserva" al milisexacto en el mismo slot) podría darse una ventana de solapamiento.
-2. Actualmente **no existe un Exclusion Constraint a nivel de base de datos** (ej: PostgreSQL `btree_gist` sobre `space, tstzrange(start_time, end_time)`) que bloquee a nivel motor cualquier solapamiento parcial. La protección actual se realiza en la capa de aplicación (Django ORM).
-➡️ **Recomendación para producción:** migrar a PostgreSQL 16 y añadir un Exclusion Constraint `USING gist (space_id WITH =, tstzrange(start_time, end_time) WITH &&)` para garantía al 100.00% incluso ante concurrencia extrema. Esto está contemplado como mejora para versiones posteriores.
-➡️ **Pruébalo ahora:** si intentas reservar dos veces el mismo espacio en el mismo horario, la segunda recibirá el mensaje "Conflicto: Espacio no disponible en horario solicitado".
+## 8. Inventario de capturas reales verificadas
 
-**❓ ¿Se pierde mi carrito si cierro la pestaña?**
-➡️ No. Se guarda en `localStorage` del navegador (vuelve intacto).
+La versión Word de este manual incorpora las capturas completas del aplicativo con formato de figura y nota conforme a presentación académica. El inventario base utilizado para esa versión es el siguiente:
 
-**❓ ¿Cómo paso de Bronce a Plata?**
-➡️ Junta **500 puntos** (reservas confirmadas, pedidos pagados). Se actualiza automáticamente al próximo login.
+### 8.1 Acceso público
 
-**❓ Me equivoqué en una reserva. ¿Qué hago?**
-➡️ Entra a la reserva y pulsa **Cancelar** (gratis si faltan >24 horas, consulta política del club para cancelaciones tardías).
+- Figura 1. `publico_acceso-login_360x800.png`
+- Figura 2. `publico_acceso-login_390x844.png`
+- Figura 3. `publico_acceso-login_768x1024.png`
+- Figura 4. `publico_acceso-login_1280x800.png`
 
-**❓ Las ventanas CMD aparecen y desaparecen al abrir arrancar.bat**
-➡️ Abre la carpeta Family_Health_MF, clic derecho → "Abrir ventana de PowerShell aquí" y escribe `.\arrancar.bat` para ver el error.
+### 8.2 Panel del cliente
 
----
+- Figura 5. `cliente_dashboard-cliente_360x800.png`
+- Figura 6. `cliente_dashboard-cliente_390x844.png`
+- Figura 7. `cliente_dashboard-cliente_768x1024.png`
+- Figura 8. `cliente_dashboard-cliente_1280x800.png`
 
-## 8. Contacto y Datos del Proyecto
+### 8.3 Reservas del cliente
 
-Este manual forma parte del **Trabajo de Grado en Ingeniería de Sistemas y Computación** de la **Universidad Antonio Nariño (UAN)**, sede Maicao, La Guajira, Colombia. El periodo académico de presentación es **2026-2**.
+- Figura 9. `cliente_listado-reservas-cliente_360x800.png`
+- Figura 10. `cliente_listado-reservas-cliente_390x844.png`
+- Figura 11. `cliente_listado-reservas-cliente_768x1024.png`
+- Figura 12. `cliente_listado-reservas-cliente_1280x800.png`
 
-| Datos Proyecto | Valor |
-|---|---|
-| Autor | **Luis Fermín Díaz Choles** |
-| Correo | `luis.diaz@uan.edu.co` (institucional) |
-| Programa | Ingeniería de Sistemas y Computación |
-| Universidad | **Universidad Antonio Nariño (UAN)** - Maicao, La Guajira |
-| Empresa socia | **Club Family Health** · NIT 32739028-5 · Maicao · La Guajira |
-| Metodología | Scrum 4 Sprints · 12 semanas académicas |
-| Roles Scrum acordados (Anteproyecto Tabla 5) | PO = Club Family Health · SM = Director Tesis · Developer = L. F. Díaz |
+### 8.4 Formulario de reserva
 
----
+- Figura 13. `cliente_formulario-reserva_360x800.png`
+- Figura 14. `cliente_formulario-reserva_390x844.png`
+- Figura 15. `cliente_formulario-reserva_768x1024.png`
+- Figura 16. `cliente_formulario-reserva_1280x800.png`
 
-### Anexo: Accesos de Referencia (ENTORNO PRUEBAS LOCAL - NO PRODUCCIÓN)
+### 8.5 Catálogo de refrescos
 
-| Recurso | URL (Equipo local PC servidor) | Credencial DEMO |
-|---|---|---|
-| App Web Cliente / Staff | http://127.0.0.1:5173/ | Cuenta propia de cada usuario |
-| Panel Admin Django | http://127.0.0.1:8000/admin/ | Solo personal autorizado por el club |
-| API REST Base | http://127.0.0.1:8000/api/v1/ | JWT Bearer token después de login |
-| Health Check (sin auth) | http://127.0.0.1:8000/api/v1/health/ | Público |
-| Acceso móvil red local | `http://[TU_IP_LAN]:5173/` | Igual que app web |
+- Figura 17. `cliente_catalogo-refrescos_360x800.png`
+- Figura 18. `cliente_catalogo-refrescos_390x844.png`
+- Figura 19. `cliente_catalogo-refrescos_768x1024.png`
+- Figura 20. `cliente_catalogo-refrescos_1280x800.png`
 
----
+### 8.6 Panel administrativo
 
-**¡Gracias por usar Club Family Health MF!** 🏋️⚽🏊‍♀️🥤
+- Figura 21. `admin_dashboard-admin_360x800.png`
+- Figura 22. `admin_dashboard-admin_390x844.png`
+- Figura 23. `admin_dashboard-admin_768x1024.png`
+- Figura 24. `admin_dashboard-admin_1280x800.png`
+
+### 8.7 Reservas administrativas
+
+- Figura 25. `admin_listado-reservas-admin_360x800.png`
+- Figura 26. `admin_listado-reservas-admin_390x844.png`
+- Figura 27. `admin_listado-reservas-admin_768x1024.png`
+- Figura 28. `admin_listado-reservas-admin_1280x800.png`
+
+### 8.8 Productos administrativos
+
+- Figura 29. `admin_productos_360x800.png`
+- Figura 30. `admin_productos_390x844.png`
+- Figura 31. `admin_productos_768x1024.png`
+- Figura 32. `admin_productos_1280x800.png`
+
+### 8.9 Espacios administrativos
+
+- Figura 33. `admin_espacios_360x800.png`
+- Figura 34. `admin_espacios_390x844.png`
+- Figura 35. `admin_espacios_768x1024.png`
+- Figura 36. `admin_espacios_1280x800.png`
+
+## 9. Recomendaciones de uso
+
+- Utilice navegadores actualizados.
+- Verifique que el usuario corresponda al rol operativo correcto antes de iniciar sesión.
+- Para crear reservas, seleccione siempre una fecha futura y una franja disponible.
+- Si una reserva ya no es necesaria, realice la cancelación desde el módulo correspondiente.
+- En ambientes institucionales compartidos, cierre la sesión al terminar.
+
+## 10. Preguntas frecuentes
+
+**¿El sistema permite pagos en línea?**  
+No. La operación documentada en la versión final corresponde a una atención presencial del club.
+
+**¿El cliente puede ver reservas de otros usuarios?**  
+No. La versión final restringe el listado global y ofrece al cliente un acceso solo a sus propias reservas.
+
+**¿Qué ocurre si dos usuarios intentan reservar el mismo espacio en la misma hora?**  
+El sistema rechaza la segunda solicitud cuando existe solapamiento, lo cual fue comprobado en pruebas locales, benchmark controlado, smoke test y validación sobre Railway.
+
+**¿La interfaz funciona en celular?**  
+Sí. Se verificaron resoluciones de 360 px, 390 px, 768 px y 1280 px, con 36 combinaciones aprobadas y 0 px de desbordamiento horizontal injustificado.
+
+## 11. Cierre
+
+Este manual documenta el uso real de la versión final del aplicativo Family Health MF y sirve como base para la guía en Word entregada junto con las capturas completas del sistema. La evidencia visual utilizada proviene de la carpeta `evidencias/mobile/`, generada durante las pruebas finales de usabilidad técnica y validación Mobile-First.

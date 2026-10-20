@@ -561,9 +561,9 @@ En producción, tanto el `Dockerfile` como `scripts/railway_start.sh` ejecutan `
 
 La suite real y sus comandos (PowerShell, desde la raíz del repositorio):
 
-### 16.1 Pruebas unitarias (31 casos: U01-U31)
+### 16.1 Pruebas unitarias (32 casos: U01-U32)
 
-Archivos: `tests/unit/test_auth.py` (U01-U06), `tests/unit/test_users.py` (U07-U11), `tests/unit/test_spaces.py` (U12-U16), `tests/unit/test_reservations.py` (U17-U31).
+Archivos: `tests/unit/test_auth.py` (U01-U06), `tests/unit/test_users.py` (U07-U11), `tests/unit/test_spaces.py` (U12-U16), `tests/unit/test_reservations.py` (U17-U32).
 
 ```powershell
 cd c:\Family_Health_MF
@@ -571,6 +571,8 @@ cd c:\Family_Health_MF
 ```
 
 Genera evidencias en `evidencias/`: `pruebas_unitarias.txt`, `pruebas_unitarias.json`, `pruebas_unitarias.csv`.
+
+La ejecución final conservada en el repositorio registra **32/32 casos aprobados**, incluyendo el caso `U32`, que valida el endpoint `mis-reservas/` para que el cliente consulte todas sus reservas propias sin exponer el listado global administrativo.
 
 ### 16.2 Pruebas de integración (12 casos: I01-I12)
 
@@ -640,7 +642,7 @@ Salidas declaradas por el script (carpeta `evidencias/`):
 
 El informe marca explícitamente los indicadores **no calculables** porque el software no los registra: tiempo de atención por reserva, intentos de inicio de sesión/auditoría por rol (la API no expone un endpoint de lectura de auditoría) y tasa de ocupación por espacio individual. También separa las reservas identificadas como dato de prueba controlado (M26/M27).
 
-> Nota de verificación: al momento de redactar este manual, la carpeta `evidencias/` contiene las salidas de las secciones 16.1 a 16.4 (`pruebas_unitarias.*`, `pruebas_integracion.*`, `smoke_tests_raw.txt`, `validacion_railway.*`) y los metadatos `_*.txt`; los tres archivos de métricas (`metricas_operacion_real.csv`, `metricas_operacion_real.md`, `metricas_operacion_raw.json`) no estaban presentes en el repositorio y se generan al ejecutar el script.
+> Nota de verificación: la carpeta `evidencias/` contiene las salidas reales de las secciones 16.1 a 16.5, incluyendo `pruebas_unitarias.*`, `pruebas_integracion.*`, `smoke_tests_raw.txt`, `validacion_railway.*`, `metricas_operacion_real.*` y `metricas_operacion_raw.json`, además de los metadatos `_*.txt`.
 
 ---
 
@@ -652,8 +654,8 @@ El despliegue es automático desde GitHub: un `push` a la rama `main` dispara la
 
 ```powershell
 cd c:\Family_Health_MF
-git add -A
-git commit -m "feat: descripción del cambio"
+git add <archivos>
+git commit -m "manuales: actualizar documentación final del cierre técnico"
 git push origin main
 ```
 
@@ -774,4 +776,4 @@ Este manual se elaboró exclusivamente a partir de la lectura directa de los sig
 - `evidencias/` (`validacion_railway.md`, `_gitinfo.txt`, `_versions.txt` y archivos de resultados de pruebas)
 - Estado del repositorio verificado con `git rev-parse HEAD`, `git branch --show-current`, `git tag` y `git log`.
 
-No se documentaron funcionalidades que no existen en el repositorio. Los documentos citados en `EVIDENCIA_VERSION_FINAL.md` (`MATRIZ_CORRESPONDENCIA_FINAL.xlsx` e `INFORME_RESULTADOS_FINALES.md`) no se encontraron en el repositorio y por ello no se describen en este manual.
+No se documentaron funcionalidades que no existen en el repositorio. Los documentos `MATRIZ_CORRESPONDENCIA_FINAL.xlsx` e `INFORME_RESULTADOS_FINALES.md` forman parte del cierre final y complementan la trazabilidad y la consolidación de resultados del proyecto.
