@@ -1,0 +1,9 @@
+{
+  "name": "fh-e2e",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Automatizacion de navegador (Playwright) para validacion Mobile-First y evaluacion controlada de tareas - Family Health MF",
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

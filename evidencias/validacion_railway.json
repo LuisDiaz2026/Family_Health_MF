@@ -1,0 +1,229 @@
+{
+  "fecha_ejecucion": "2026-10-20T03:53:13+00:00",
+  "url": "https://familyhealthmf-production.up.railway.app",
+  "total": 20,
+  "aprobadas": 20,
+  "fallidas": 0,
+  "casos": [
+    {
+      "id": "RW01",
+      "requisito": "RNF-DIS-01",
+      "descripcion": "Health check publico",
+      "metodo": "GET",
+      "ruta": "/api/v1/health/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "database=ok version=1.0.0"
+    },
+    {
+      "id": "RW02",
+      "requisito": "RQF-AUT-01",
+      "descripcion": "Login correcto (cliente1_fh)",
+      "metodo": "POST",
+      "ruta": "/api/v1/auth/login/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "rol=CLIENT access=eyJhbGciOi...YR0g (551 car.) (0.3487s)"
+    },
+    {
+      "id": "RW03",
+      "requisito": "RQF-AUT-02",
+      "descripcion": "Login con contrasena incorrecta",
+      "metodo": "POST",
+      "ruta": "/api/v1/auth/login/",
+      "http_esperado": "401",
+      "http_real": 401,
+      "resultado": "PASS",
+      "observacion": ""
+    },
+    {
+      "id": "RW04",
+      "requisito": "RQF-AUT-03",
+      "descripcion": "Usuario inactivo (registro publico) no puede autenticarse",
+      "metodo": "POST",
+      "ruta": "/api/v1/auth/login/",
+      "http_esperado": "400",
+      "http_real": 400,
+      "resultado": "PASS",
+      "observacion": "registro HTTP 201; usuario=val_rw_047999e2; detalle={\"non_field_errors\": [\"Tu cuenta está INACTIVA o pendiente de aprobación por el Administrador del Club Family Health. Contáctate con recepción o con el administ"
+    },
+    {
+      "id": "RW05",
+      "requisito": "RQF-AUT-04",
+      "descripcion": "Login administrador y acceso al panel de KPIs",
+      "metodo": "GET",
+      "ruta": "/api/v1/reports/dashboard/summary/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": ""
+    },
+    {
+      "id": "RW06",
+      "requisito": "RQF-AUT-05",
+      "descripcion": "Login recepcion y listado de reservas",
+      "metodo": "GET",
+      "ruta": "/api/v1/reservations/reservations/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": ""
+    },
+    {
+      "id": "RW07",
+      "requisito": "RQF-AUT-06",
+      "descripcion": "Login cliente y consulta de su propio perfil",
+      "metodo": "GET",
+      "ruta": "/api/v1/auth/me/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "usuario=cliente1_fh"
+    },
+    {
+      "id": "RW08",
+      "requisito": "RQF-AUT-07",
+      "descripcion": "Acceso permitido: cliente consulta sus reservas",
+      "metodo": "GET",
+      "ruta": "/api/v1/reservations/reservations/my-upcoming/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "reservas_proximas=0"
+    },
+    {
+      "id": "RW09",
+      "requisito": "RQF-AUT-08",
+      "descripcion": "Acceso prohibido: cliente hacia panel administrativo",
+      "metodo": "GET",
+      "ruta": "/api/v1/reports/dashboard/summary/",
+      "http_esperado": "403",
+      "http_real": 403,
+      "resultado": "PASS",
+      "observacion": ""
+    },
+    {
+      "id": "RW10",
+      "requisito": "RQF-RES-01",
+      "descripcion": "Consulta del catalogo de espacios",
+      "metodo": "GET",
+      "ruta": "/api/v1/reservations/spaces/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "10 espacios"
+    },
+    {
+      "id": "RW11",
+      "requisito": "RQF-RES-02",
+      "descripcion": "Consulta de disponibilidad de un espacio",
+      "metodo": "GET",
+      "ruta": "/api/v1/reservations/spaces/2/availability/?date=2026-10-28",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "espacio=CANCHA-BASKET-01 fecha=2026-10-28 franjas_libres=32"
+    },
+    {
+      "id": "RW12",
+      "requisito": "RQF-RES-03",
+      "descripcion": "Creacion real de una reserva",
+      "metodo": "POST",
+      "ruta": "/api/v1/reservations/reservations/",
+      "http_esperado": "201",
+      "http_real": 201,
+      "resultado": "PASS",
+      "observacion": "id=4 estado=CONFIRMED total=40000.00"
+    },
+    {
+      "id": "RW13",
+      "requisito": "RQF-RES-04",
+      "descripcion": "Consulta posterior de la reserva creada",
+      "metodo": "GET",
+      "ruta": "/api/v1/reservations/reservations/4/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "estado=CONFIRMED"
+    },
+    {
+      "id": "RW14",
+      "requisito": "RQF-RES-05",
+      "descripcion": "Rechazo de una reserva solapada",
+      "metodo": "POST",
+      "ruta": "/api/v1/reservations/reservations/",
+      "http_esperado": "400",
+      "http_real": 400,
+      "resultado": "PASS",
+      "observacion": "respuesta={'detail': \"['Conflicto: Espacio no disponible en horario solicitado']\"}"
+    },
+    {
+      "id": "RW15",
+      "requisito": "RNF-ERR-01",
+      "descripcion": "Error 400 controlado (duracion invalida)",
+      "metodo": "POST",
+      "ruta": "/api/v1/reservations/reservations/",
+      "http_esperado": "400",
+      "http_real": 400,
+      "resultado": "PASS",
+      "observacion": ""
+    },
+    {
+      "id": "RW16",
+      "requisito": "RNF-ERR-02",
+      "descripcion": "Error 401 sin credenciales",
+      "metodo": "GET",
+      "ruta": "/api/v1/reservations/reservations/",
+      "http_esperado": "401",
+      "http_real": 401,
+      "resultado": "PASS",
+      "observacion": ""
+    },
+    {
+      "id": "RW17",
+      "requisito": "RNF-ERR-03",
+      "descripcion": "Error 404 sobre recurso inexistente",
+      "metodo": "GET",
+      "ruta": "/api/v1/reservations/spaces/99999999/",
+      "http_esperado": "404",
+      "http_real": 404,
+      "resultado": "PASS",
+      "observacion": ""
+    },
+    {
+      "id": "RW18",
+      "requisito": "RQF-AUT-09",
+      "descripcion": "Refresco de token de acceso",
+      "metodo": "POST",
+      "ruta": "/api/v1/auth/token/refresh/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "nuevo access=eyJhbGciOi...I0Dg (551 car.)"
+    },
+    {
+      "id": "RW19",
+      "requisito": "RQF-RES-06",
+      "descripcion": "Cancelacion de la reserva de prueba",
+      "metodo": "POST",
+      "ruta": "/api/v1/reservations/reservations/4/cancel/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "estado final=CANCELLED"
+    },
+    {
+      "id": "RW20",
+      "requisito": "RQF-BDI-01",
+      "descripcion": "Persistencia verificada en una sesion nueva (nueva autenticacion)",
+      "metodo": "GET",
+      "ruta": "/api/v1/reservations/reservations/4/",
+      "http_esperado": "200",
+      "http_real": 200,
+      "resultado": "PASS",
+      "observacion": "estado en BD=CANCELLED sesion_nueva_token=eyJhbGciOi...iWOA (562 car.)"
+    }
+  ]
+}
