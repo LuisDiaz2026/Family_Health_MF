@@ -90,8 +90,20 @@ c:\Family_Health_MF\
 ├── MATRIZ_CORRESPONDENCIA_FINAL.xlsx <- Trazabilidad requerimiento-prueba
 ├── MANUAL_TECNICO.md   <- Fuente del manual técnico (documento FIS-UDCII-G05)
 ├── MANUAL_USUARIO.md   <- Fuente del manual de usuario (documento FIS-UDCII-G06)
+├── docs/               <- Manuales formales en Word: G05 (técnico) y G06 (usuario)
 └── README.md           <- Este archivo
 ```
+
+### 2.1 Documentos formales del proyecto
+
+Los manuales entregables en formato Word (normas APA, plantilla institucional FIS-UDCII) están en la carpeta [`docs/`](file:///c:/Family_Health_MF/docs):
+
+| Documento | Código | Archivo | Fuente Markdown |
+|---|---|---|---|
+| **Manual Técnico** | FIS-UDCII-G05 | [docs/Manual_Tecnico_Family_Health.docx](file:///c:/Family_Health_MF/docs/Manual_Tecnico_Family_Health.docx) | [MANUAL_TECNICO.md](file:///c:/Family_Health_MF/MANUAL_TECNICO.md) |
+| **Manual de Usuario** | FIS-UDCII-G06 | [docs/Manual_Usuario_Family_Health.docx](file:///c:/Family_Health_MF/docs/Manual_Usuario_Family_Health.docx) | [MANUAL_USUARIO.md](file:///c:/Family_Health_MF/MANUAL_USUARIO.md) |
+
+El **Manual de Usuario** está organizado por perfiles (Cliente, Administrador, Recepción y Cafetería) y describe el manejo de cada pantalla con capturas reales del despliegue productivo. El **Manual Técnico** documenta la arquitectura, el modelo de datos, la seguridad y el despliegue.
 
 ---
 

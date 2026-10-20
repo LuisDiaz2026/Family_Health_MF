@@ -48,6 +48,13 @@ La aplicación utiliza enrutamiento con hash, por lo que las pantallas principal
 
 El sistema trabaja con roles diferenciados. Cada rol visualiza únicamente las pantallas y acciones autorizadas.
 
+| Perfil | Módulos habilitados |
+| --- | --- |
+| Cliente | Panel, Reservas, Refresquería, Puntos, Gimnasio y Perfil |
+| Administrador | Panel, Reservas, Clientes, Productos, Espacios, Ofertas y Reportes |
+| Recepción | Reservas, Clientes y Espacios |
+| Cafetería | Pedidos, Productos y Ofertas |
+
 ### 4.1 Cliente
 
 El cliente puede:
@@ -56,21 +63,21 @@ El cliente puede:
 - consultar su panel de inicio;
 - revisar sus reservas;
 - crear una nueva reserva;
-- consultar el catálogo de refresquería.
+- consultar el catálogo de refresquería y gestionar su carrito;
+- consultar sus puntos de fidelidad, las rutinas de gimnasio y su perfil.
 
 ### 4.2 Administrador
 
 El administrador puede:
 
 - acceder al panel general del club;
-- gestionar reservas;
-- consultar productos;
-- consultar espacios;
+- gestionar reservas y clientes;
+- administrar productos (inventario), ofertas y espacios;
 - acceder a reportes operativos.
 
 ### 4.3 Recepción y cafetería
 
-Los roles de recepción y cafetería están restringidos a sus módulos operativos. En la validación final se confirmó que la recepción puede consultar el listado de reservas y que el cliente no puede acceder al panel administrativo.
+Los roles de recepción y cafetería están restringidos a sus módulos operativos. Recepción gestiona reservas y consulta clientes y espacios; cafetería administra pedidos, productos y ofertas. En la validación final se confirmó que la recepción puede consultar el listado de reservas y que el cliente no puede acceder al panel administrativo.
 
 ## 5. Ingreso al sistema
 
@@ -89,112 +96,79 @@ El registro público está disponible desde la pantalla de acceso mediante la op
 
 La cuenta creada mediante registro público queda sujeta al flujo de activación definido por la administración del club.
 
-## 7. Funcionamiento por pantallas
+## 7. Funcionamiento por perfil y por pantalla
 
-Las siguientes descripciones corresponden a pantallas realmente verificadas durante las pruebas automatizadas de navegador y Mobile-First.
+Las descripciones se organizan según el perfil de usuario y corresponden a pantallas realmente verificadas durante las pruebas automatizadas de navegador y Mobile-First.
 
-### 7.1 Pantalla de acceso
+### 7.1 Acceso (común a todos los perfiles)
 
 La pantalla de acceso presenta el formulario de autenticación y el enlace hacia el registro de clientes. Desde aquí inicia cualquier flujo del sistema. El usuario ingresa sus credenciales y, tras autenticarse, es redirigido a la interfaz correspondiente a su rol.
 
-### 7.2 Panel del cliente
+### 7.2 Perfil Cliente
 
-El panel del cliente muestra la información general del usuario autenticado y ofrece accesos rápidos a los módulos principales. Desde esta vista el usuario puede desplazarse hacia reservas, refresquería, fidelización y gimnasio, aunque en la validación visual final se verificaron específicamente las pantallas de inicio, reservas, formulario de reserva y catálogo de refrescos.
+- **Panel del cliente.** Muestra el resumen de puntos, nivel de fidelidad y membresía, los accesos rápidos (Reservar, Refrescos, Puntos y Gimnasio), la oferta destacada y la rutina recomendada del día.
+- **Mis Reservas.** Permite consultar el historial propio de reservas con filtros por estado. Muestra exclusivamente la información del cliente autenticado.
+- **Nueva reserva.** Guía la selección de espacio, fecha y franja horaria. El sistema consulta la disponibilidad real y presenta las franjas calculadas por bloques de 30 minutos.
+- **Refresquería y carrito.** Presenta los productos del club y permite agregarlos a un carrito para confirmar el pedido.
+- **Puntos de fidelidad.** Muestra el nivel alcanzado, los puntos acumulados y las recompensas disponibles.
+- **Gimnasio y rutinas.** Presenta las rutinas de ejercicio y el detalle de cada una.
+- **Perfil.** Permite consultar los datos de la cuenta y cerrar la sesión de forma segura.
 
-### 7.3 Listado de reservas del cliente
+### 7.3 Perfil Administrador
 
-El módulo **Mis Reservas** permite consultar el historial propio de reservas. La pantalla ofrece filtros por estado y mantiene visible únicamente la información del cliente autenticado. Durante el cierre técnico se corrigió el acceso a este listado mediante un endpoint específico de consulta de reservas propias.
+- **Panel administrativo.** Consolida los indicadores operativos del club y los accesos a los módulos de operación.
+- **Gestión de reservas.** Permite revisar y gestionar las reservas registradas, con filtros por estado.
+- **Gestión de clientes.** Presenta el listado de clientes registrados y su estado.
+- **Inventario de productos.** Presenta el catálogo administrable con indicadores de stock y herramientas de consulta.
+- **Espacios.** Permite revisar la configuración de los espacios reservables (capacidad, tarifa, reglas y tipo de confirmación).
+- **Ofertas.** Permite crear y administrar ofertas vinculadas a productos, con precio, etiqueta y vigencia.
+- **Reportes.** Presenta la información consolidada de la operación del club.
 
-### 7.4 Formulario de nueva reserva
+### 7.4 Perfil Recepción
 
-El formulario de reserva guía al usuario por la selección de espacio, fecha y franja horaria. El sistema consulta la disponibilidad real del espacio y presenta las franjas calculadas por bloques de 30 minutos. En la versión final se corrigió la lectura de esas franjas para que el formulario mostrara correctamente la disponibilidad retornada por la API.
+Recepción atiende la operación diaria y su menú se limita a **Reservas**, **Clientes** y **Espacios**. Las pantallas coinciden con las del administrador, con las acciones permitidas por su rol. Si intenta acceder a un módulo no autorizado, el sistema responde con un mensaje de acceso denegado.
 
-### 7.5 Catálogo de refresquería
+### 7.5 Perfil Cafetería
 
-La pantalla de refrescos presenta productos agrupados y navegables desde el cliente. Permite consultar la oferta disponible del club y avanzar hacia el flujo de selección de productos.
+Cafetería administra la operación de la refresquería y su menú se limita a **Pedidos**, **Productos** y **Ofertas**. La gestión de productos y ofertas reutiliza las pantallas administrativas correspondientes; el módulo de pedidos permite consultar y gestionar los pedidos generados por los clientes.
 
-### 7.6 Panel administrativo
+## 8. Figuras incorporadas en la versión Word
 
-El panel administrativo consolida indicadores operativos del club. Incluye métricas generales, estados de reservas, acciones rápidas y accesos a módulos de operación.
+La versión Word de este manual (documento FIS–UDCII–G06) está organizada por perfiles y utiliza 18 figuras de capturas reales, dimensionadas uniformemente para su correcta apreciación en la hoja. Cuando una pantalla es extensa, la figura muestra únicamente la vista inicial, sin desplazamiento.
 
-### 7.7 Listado administrativo de reservas
+### 8.1 Acceso
 
-Esta vista permite a los roles autorizados revisar las reservas registradas, su estado y la información básica de cada solicitud. Desde esta pantalla se soporta la gestión operativa del módulo de reservas.
+- Figura 1. `publico_acceso-login` (pantalla de acceso).
 
-### 7.8 Catálogo administrativo de productos
+### 8.2 Perfil Cliente
 
-La pantalla de productos presenta el inventario administrable, acompañado de indicadores de stock y herramientas de consulta. Su diseño fue verificado en las cuatro resoluciones objetivo.
+- Figura 2. Panel principal del cliente.
+- Figura 3. Listado de reservas del cliente.
+- Figura 4. Selección del espacio para una nueva reserva.
+- Figura 5. Selección de fecha y franja horaria.
+- Figura 6. Catálogo de refresquería.
+- Figura 7. Carrito de compras.
+- Figura 8. Puntos de fidelidad.
+- Figura 9. Gimnasio y rutinas.
+- Figura 10. Perfil del cliente.
 
-### 7.9 Catálogo administrativo de espacios
+### 8.3 Perfil Administrador
 
-La vista de espacios permite revisar la configuración general de los espacios reservables, con información relacionada con capacidad, tarifa y operación.
+- Figura 11. Panel administrativo.
+- Figura 12. Gestión de reservas.
+- Figura 13. Gestión de clientes.
+- Figura 14. Inventario de productos (vista inicial del catálogo).
+- Figura 15. Espacios del club (vista inicial del catálogo).
+- Figura 16. Ofertas de la refresquería.
+- Figura 17. Reportes del sistema.
 
-## 8. Inventario de capturas reales verificadas
+### 8.4 Perfil Cafetería
 
-La versión Word de este manual incorpora las capturas completas del aplicativo con formato de figura y nota conforme a presentación académica. El inventario base utilizado para esa versión es el siguiente:
+- Figura 18. Pedidos de la cafetería.
 
-### 8.1 Acceso público
+### 8.5 Evidencias originales conservadas
 
-- Figura 1. `publico_acceso-login_360x800.png`
-- Figura 2. `publico_acceso-login_390x844.png`
-- Figura 3. `publico_acceso-login_768x1024.png`
-- Figura 4. `publico_acceso-login_1280x800.png`
-
-### 8.2 Panel del cliente
-
-- Figura 5. `cliente_dashboard-cliente_360x800.png`
-- Figura 6. `cliente_dashboard-cliente_390x844.png`
-- Figura 7. `cliente_dashboard-cliente_768x1024.png`
-- Figura 8. `cliente_dashboard-cliente_1280x800.png`
-
-### 8.3 Reservas del cliente
-
-- Figura 9. `cliente_listado-reservas-cliente_360x800.png`
-- Figura 10. `cliente_listado-reservas-cliente_390x844.png`
-- Figura 11. `cliente_listado-reservas-cliente_768x1024.png`
-- Figura 12. `cliente_listado-reservas-cliente_1280x800.png`
-
-### 8.4 Formulario de reserva
-
-- Figura 13. `cliente_formulario-reserva_360x800.png`
-- Figura 14. `cliente_formulario-reserva_390x844.png`
-- Figura 15. `cliente_formulario-reserva_768x1024.png`
-- Figura 16. `cliente_formulario-reserva_1280x800.png`
-
-### 8.5 Catálogo de refrescos
-
-- Figura 17. `cliente_catalogo-refrescos_360x800.png`
-- Figura 18. `cliente_catalogo-refrescos_390x844.png`
-- Figura 19. `cliente_catalogo-refrescos_768x1024.png`
-- Figura 20. `cliente_catalogo-refrescos_1280x800.png`
-
-### 8.6 Panel administrativo
-
-- Figura 21. `admin_dashboard-admin_360x800.png`
-- Figura 22. `admin_dashboard-admin_390x844.png`
-- Figura 23. `admin_dashboard-admin_768x1024.png`
-- Figura 24. `admin_dashboard-admin_1280x800.png`
-
-### 8.7 Reservas administrativas
-
-- Figura 25. `admin_listado-reservas-admin_360x800.png`
-- Figura 26. `admin_listado-reservas-admin_390x844.png`
-- Figura 27. `admin_listado-reservas-admin_768x1024.png`
-- Figura 28. `admin_listado-reservas-admin_1280x800.png`
-
-### 8.8 Productos administrativos
-
-- Figura 29. `admin_productos_360x800.png`
-- Figura 30. `admin_productos_390x844.png`
-- Figura 31. `admin_productos_768x1024.png`
-- Figura 32. `admin_productos_1280x800.png`
-
-### 8.9 Espacios administrativos
-
-- Figura 33. `admin_espacios_360x800.png`
-- Figura 34. `admin_espacios_390x844.png`
-- Figura 35. `admin_espacios_768x1024.png`
-- Figura 36. `admin_espacios_1280x800.png`
+Las 36 capturas completas (9 pantallas en 4 resoluciones: 360, 390, 768 y 1280 px) se conservan sin recortes en la carpeta `evidencias/mobile/`. Los recortes del manual se derivaron únicamente de estas imágenes originales y no modifican el contenido funcional mostrado.
 
 ## 9. Recomendaciones de uso
 
@@ -220,4 +194,4 @@ Sí. Se verificaron resoluciones de 360 px, 390 px, 768 px y 1280 px, con 36 com
 
 ## 11. Cierre
 
-Este manual documenta el uso real de la versión final del aplicativo Family Health MF y sirve como base para la guía en Word entregada junto con las capturas completas del sistema. La evidencia visual utilizada proviene de la carpeta `evidencias/mobile/`, generada durante las pruebas finales de usabilidad técnica y validación Mobile-First.
+Este manual documenta el uso real de la versión final del aplicativo Family Health MF y sirve como base para la guía en Word (documento FIS–UDCII–G06), organizada por perfiles de usuario. La evidencia visual utilizada proviene de la carpeta `evidencias/mobile/`, generada durante las pruebas finales de usabilidad técnica y validación Mobile-First.
