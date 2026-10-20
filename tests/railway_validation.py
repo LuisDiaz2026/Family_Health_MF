@@ -28,6 +28,11 @@ from pathlib import Path
 
 import requests
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from credenciales import cargar_en_entorno  # noqa: E402
+
+cargar_en_entorno()
+
 RAIZ = Path(__file__).resolve().parent.parent
 DIR_EVIDENCIAS = RAIZ / "evidencias"
 DIR_EVIDENCIAS.mkdir(exist_ok=True)
