@@ -11,6 +11,8 @@
 **Repositorio GitHub:** <https://github.com/LuisDiaz2026/Family_Health_MF>
 **Health Check API:** <https://familyhealthmf-production.up.railway.app/api/v1/health/>
 
+**Versión funcional validada en producción:** rama `main`, commit `51cffda` (despliegue Railway con PostgreSQL y health check HTTP 200). La etiqueta **`v1.0.0`** marca el commit de cierre `2a0124a`, que añade exclusivamente documentación y evidencias (sin cambios funcionales).
+
 ---
 
 ## 1. Stack Tecnológico
@@ -36,7 +38,7 @@ c:\Family_Health_MF\
 ├── backend/
 │   ├── config/            <- Settings, URLs, WSGI/ASGI
 │   ├── apps/
-│   │   ├── authentication/ <- 3 roles RBAC (ADMIN/EMPLOYEE/CLIENT), perfil, Leyes 1581
+│   │   ├── authentication/ <- 4 roles RBAC (ADMIN/RECEPCION/CAFETERIA/CLIENT; EMPLOYEE de compatibilidad), perfil, Leyes 1581
 │   │   ├── reservations/   <- Espacios + disponibilidad + anti-solape transaccional
 │   │   ├── refreshments/   <- Inventario productos + pedidos + stock atómico F()
 │   │   ├── rewards/        <- 4 tiers (Bronce Plata Oro Diamante) + puntos + canje
@@ -51,7 +53,7 @@ c:\Family_Health_MF\
 ├── frontend/
 │   ├── src/
 │   │   ├── api/client.js          <- Axios + JWT refresh queue
-│   │   ├── stores/ (6 stores Pinia)
+│   │   ├── stores/ (7 stores Pinia)
 │   │   ├── router/index.js        <- Hash mode + guards RBAC
 │   │   ├── layouts/MobileLayout    <- Sticky header + bottom nav safe-area
 │   │   ├── components/            <- GlobalToast Teleport, Cards, Empty, Skeleton
@@ -59,7 +61,7 @@ c:\Family_Health_MF\
 │   │   └── views/
 │   │       ├── auth/              <- Login + Registro (2 vistas)
 │   │       ├── client/            <- 12 vistas: Home, Reservas, ReservaCreate, Refrescos, Carrito, Pedidos, Puntos, Fidelidad, Gimnasio, RutinaDetalle, Perfil, Notificaciones
-│   │       ├── staff/             <- 8 vistas: Dashboard, Reservas, Pedidos, Clientes, Productos, Espacios, Reportes, Perfil
+│   │       ├── staff/             <- 9 vistas: Dashboard, Reservas, Pedidos, Clientes, Productos, Espacios, Ofertas, Reportes, Perfil
 │   │       └── NotFoundView.vue
 │   ├── package.json    <- Deps pinneadas Node 18+
 │   ├── tailwind.config.js
@@ -73,7 +75,21 @@ c:\Family_Health_MF\
 ├── arrancar.bat        <- Doble clic: levanta Django 8000 + Vite 5173 (SOLO LOCAL)
 ├── scripts/
 │   ├── railway_build.sh <- Build script (legacy, reemplazado por Dockerfile)
-│   └── railway_start.sh <- Start: migrate + collectstatic + bootstrap + gunicorn
+│   ├── railway_start.sh <- Start: migrate + collectstatic + bootstrap + gunicorn
+│   └── railway_build_local.bat / railway_start_local.bat <- Simulación local (Windows)
+├── tests/
+│   ├── unit/           <- 32 pruebas unitarias (U01-U32)
+│   ├── integration/    <- 12 pruebas de integración (I01-I12)
+│   ├── e2e/            <- Pruebas de navegador (mobile-first, evaluación de tareas)
+│   ├── run_suite.py    <- Ejecutor de la suite que genera evidencias
+│   ├── railway_validation.py <- 20 casos HTTP contra producción (RW01-RW20)
+│   └── metricas_operacion.py <- 42 indicadores operativos reales (M01-M42)
+├── evidencias/         <- Salidas reales de las suites (txt/json/csv/md) y capturas Mobile-First
+├── EVIDENCIA_VERSION_FINAL.md        <- Punto de restauración y versión congelada
+├── INFORME_RESULTADOS_FINALES.md     <- Consolidado de resultados (secciones A-K)
+├── MATRIZ_CORRESPONDENCIA_FINAL.xlsx <- Trazabilidad requerimiento-prueba
+├── MANUAL_TECNICO.md   <- Fuente del manual técnico (documento FIS-UDCII-G05)
+├── MANUAL_USUARIO.md   <- Fuente del manual de usuario (documento FIS-UDCII-G06)
 └── README.md           <- Este archivo
 ```
 
@@ -182,7 +198,7 @@ npm.cmd run dev
 
 ## 4. Módulos implementados
 
-### 4.1 Autenticación + Perfiles RBAC 3 roles
+### 4.1 Autenticación + Perfiles RBAC 4 roles
 - Registro CLIENTE con políticas Ley 1581 (doble checkbox).
 - Login JWT SimpleJWT: access 60 min + refresh 7 días, rotación + blacklist.
 - Axios interceptor `client.js` con **queue refresh token** (evita race conditions).
@@ -200,7 +216,7 @@ npm.cmd run dev
 - **Limitaciones conocidas y acciones pendientes (revisión profesor):**
   1. **SQLite (dev):** emula `SELECT FOR UPDATE` pero sin garantía a nivel motor (no implementa bloqueo real de filas ni exclusion constraints). Para el uso habitual del club (flujo de trabajo serial) es válido, pero en producción se recomienda PostgreSQL.
   2. **PostgreSQL (producción):** para garantía 100.00% y evitar solapes incluso por fallos de aplicación, se **RECOMIENDA AÑADIR una Exclusion Constraint** con extensión `btree_gist`: `ALTER TABLE reservations ADD CONSTRAINT no_overlap_reservations EXCLUDE USING gist (space_id WITH =, tstzrange(start_time, end_time) WITH &&)`. Esta mejora es responsabilidad del DBA en despliegue final.
-- **Pruebas:** Smoke test [14] ejecuta el flujo "crear reserva + intento solapado → 2ª reserva rechazada HTTP400 + BD count=1 SIN duplicados" correctamente → ver archivo [`SCRUM_DOCS\05_EVIDENCIA_SMOKE_TEST_20261005.txt`](file:///c:/Users/gusta/OneDrive%20-%20UNIR/TRABAJOS%20DE%20GRADO/TRABAJOS%20DE%20GRADO/UAN/LUIS/SCRUM_DOCS/05_EVIDENCIA_SMOKE_TEST_20261005.txt).
+- **Pruebas:** Smoke test [14] ejecuta el flujo "crear reserva + intento solapado → 2ª reserva rechazada HTTP400 + BD count=1 SIN duplicados" correctamente → ver archivo [`evidencias/smoke_tests_raw.txt`](file:///c:/Family_Health_MF/evidencias/smoke_tests_raw.txt).
 
 ### 4.3 Gestión Pedidos Refresquería
 - 23 productos SKU en 5 categorías (Bebidas frías, Calientes, Snacks, Comidas rápidas, Postres).
@@ -256,10 +272,10 @@ cd backend
 **Resultado ejecución real:** `14 OK · 0 FALLIDOS` ✅
 - **Fecha y hora de ejecución:** 2026-10-05 09:45 (formato ISO).
 - **Entorno de pruebas:** backend/db.sqlite3 (seed data 10 espacios / 23 productos / 5 rutinas / 5 usuarios demo).
-- **Evidencia archivo original guardada en:** [`SCRUM_DOCS\05_EVIDENCIA_SMOKE_TEST_20261005.txt`](file:///c:/Users/gusta/OneDrive%20-%20UNIR/TRABAJOS%20DE%20GRADO/TRABAJOS%20DE%20GRADO/UAN/LUIS/SCRUM_DOCS/05_EVIDENCIA_SMOKE_TEST_20261005.txt)
+- **Evidencia de la ejecución guardada en:** [`evidencias/smoke_tests_raw.txt`](file:///c:/Family_Health_MF/evidencias/smoke_tests_raw.txt)
 - **Escenarios probados en la suite 14 humos:** [01] Health → [02] Login Cliente → [03] Login Admin → [04] Listar 10 Espacios → [05] Consulta disponibilidad → [06] 23 Productos → [07] Perfil + Fidelidad → [08] 5 Rutinas Gym → [09] Dashboard KPI → [10] Top3 Clientes → [11] Bloqueo 401 sin Token → [12] Refresh Token → [13] Registro sin Política (rechazo 400) → [14] Reserva + Anti-solapamiento (HTTP201 + HTTP400 + count=1 BD VERIFICADO).
 
-> **Pruebas unitarias / integración / aceptación (restante para validación formal):** Las pruebas complementarias (31 UT + 12 IT + 30 AT usuarios reales club) están planificadas, pero **aún no cuentan con registro de ejecución ni firma de acta de validación formal por el Product Owner Club Family Health**. Una vez disponibles, se incorporarán los certificados y actas al anexo de la monografía.
+> **Pruebas unitarias / integración / validación en producción (ejecutadas con evidencia registrada):** **32 pruebas unitarias (32/32 PASS)**, **12 pruebas de integración (12/12 PASS)** y **20 casos HTTP contra el despliegue de Railway (20/20 PASS)**. Las salidas quedan en [`evidencias/`](file:///c:/Family_Health_MF/evidencias): `pruebas_unitarias.txt`, `pruebas_integracion.txt` y `validacion_railway.md`. La firma del acta formal de validación por el Product Owner del Club Family Health permanece como trámite administrativo de cierre.
 
 ---
 

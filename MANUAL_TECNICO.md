@@ -155,7 +155,7 @@ c:\Family_Health_MF\
 │   ├── railway_build.sh  railway_start.sh          (Linux / Railway)
 │   ├── railway_build_local.bat  railway_start_local.bat  (Windows, simulación local)
 ├── tests/
-│   ├── unit/         31 pruebas unitarias (test_auth, test_users, test_spaces, test_reservations)
+│   ├── unit/         32 pruebas unitarias (test_auth, test_users, test_spaces, test_reservations)
 │   ├── integration/  12 pruebas de integración (test_flujos)
 │   ├── e2e/          paquete Node para pruebas de navegador
 │   ├── base.py  harness.py  runner.py  run_suite.py  credenciales.py
@@ -747,15 +747,15 @@ Estado verificado en el repositorio local (con `git rev-parse HEAD`, `git branch
 
 | Elemento | Valor real |
 |---|---|
-| Rama actual | `release/tg-final` |
-| Commit actual (SHA completo) | `bf542280e26c229dac5fbac0de5fdd4c3d431218` |
-| Commit actual (SHA corto) | `bf54228` |
-| Fecha del último commit | 2026-10-19 23:01:02 -0500 |
-| Mensaje del último commit | `chore(evidencias): incorporar carpeta de evidencias al control de versiones` |
-| Etiquetas (`git tag`) | Ninguna (la salida del comando es vacía) |
+| Rama actual | `main` |
+| Commit actual (SHA completo) | `2a0124aa3c9f9c2709f148cfe57130cdbc93f91f` |
+| Commit actual (SHA corto) | `2a0124a` |
+| Fecha del último commit | 2026-10-20 00:15:24 -0500 |
+| Mensaje del último commit | `documentacion: actualizar manuales finales y agregar informe con matriz de correspondencia` |
+| Etiquetas (`git tag`) | `v1.0.0` (etiqueta anotada `6f25e4a` → commit `2a0124a`) |
 | Versión reportada por la API | El endpoint `/api/v1/health/` responde `"version": "1.0.0"` |
 
-**Discrepancia documentada con honestidad.** El documento `EVIDENCIA_VERSION_FINAL.md` registra el punto de restauración en el commit `fed4f2206d53410ab07346698ee44bf891ca4718` (`fed4f22`, rama `release/tg-final`, fecha 2026-10-12) e indica una etiqueta de versión `v1.0.0`; además, `evidencias/_gitinfo.txt` conserva ese mismo SHA de congelamiento. Sin embargo, el HEAD real del repositorio avanzó al commit `bf54228` (2026-10-19). En el repositorio consultado **no existe ninguna etiqueta `v1.0.0`**, por lo que dicha etiqueta se considera *pendiente/no verificable* en el estado actual. El número `1.0.0` sí aparece en la respuesta del endpoint de salud.
+**Coherencia de la versión publicada.** La etiqueta `v1.0.0` (`v1.0.0 - cierre final verificado del aplicativo Family Health MF`) apunta al commit de cierre `2a0124a`, que agrega exclusivamente documentación y evidencias. La **versión funcional validada en producción** corresponde al commit `51cffda5147b239231917d9ab781fdbb16b1012f` (`51cffda`, 2026-10-19 23:45:17), evaluada sobre el despliegue de Railway con PostgreSQL y health check HTTP 200 (`http://…/api/v1/health/` → `database=ok version=1.0.0`). No existen cambios funcionales posteriores al commit validado.
 
 ---
 
