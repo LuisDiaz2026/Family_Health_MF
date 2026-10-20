@@ -131,15 +131,18 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         space = validated_data["space"]
-        # Set automático: si requiere aprobación empleado, marcar pending
+        request = self.context.get("request")
+        # Regla de negocio: 'status' es read_only, por lo que NUNCA llega en
+        # validated_data. El estado se resuelve aquí: si el espacio exige
+        # aprobación de un empleado y quien reserva es un CLIENT, la reserva
+        # nace PENDING; en cualquier otro caso nace CONFIRMED (valor por
+        # defecto del modelo).
         if (
             space.requires_employee_approval
-            and validated_data.get("status") == Reservation.STATUS_CONFIRMED
+            and request is not None
+            and request.user.role == User.ROLE_CLIENT
         ):
-            request = self.context.get("request")
-            if request and request.user.role == User.ROLE_CLIENT:
-                validated_data["status"] = Reservation.STATUS_PENDING
-        request = self.context.get("request")
+            validated_data["status"] = Reservation.STATUS_PENDING
         if request:
             validated_data["created_by"] = validated_data.get("created_by") or request.user
         try:
