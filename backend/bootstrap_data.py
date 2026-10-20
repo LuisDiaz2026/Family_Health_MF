@@ -371,17 +371,9 @@ def run():
             )
             cat_objs[c] = cat
 
-        # SINCRONIZACIÓN NO DESTRUCTIVA:
-        # - No se borran productos existentes (preserva stock y cambios del admin).
-        # - Se crean los productos del catálogo que aún no existan.
-        # - Las categorías obsoletas sin productos se limpian.
-        sku_catalog = {sku for _, _, _, _, sku in productos}
-        Product.objects.exclude(sku__in=sku_catalog).delete()
-        ProductCategory.objects.exclude(
-            name__in=[c[0] for c in categorias]
-        ).filter(products__isnull=True).delete()
-
         # (nombre, categoría, precio, stock, sku)
+        # NOTA: la depuración NO destructiva del catálogo se ejecuta DESPUÉS de
+        # definir 'productos', porque requiere el conjunto de SKU vigentes.
         productos = [
             # Bebidas Frías e Hidratantes
             ("AGUA BRISA SABORIZADA CON GAS SABOR MARACUYA 600 ML", "Bebidas Frías e Hidratantes", 3000, 23, "7702535030660"),
@@ -462,6 +454,15 @@ def run():
             ("CANILLERA FOOTBALL E-5114", "Accesorios Deportivos", 15000, 11, "6936580051146"),
             ("CANILLERA FOOTBALL E-5109", "Accesorios Deportivos", 15000, 7, "6936580051092"),
         ]
+
+        # SINCRONIZACIÓN NO DESTRUCTIVA (requisito del proyecto):
+        # - NO se borran productos existentes (preserva stock y cambios del admin).
+        # - Se crean los productos del catálogo que aún no existan (get_or_create).
+        # - Sólo se limpian categorías obsoletas que hayan quedado sin productos.
+        ProductCategory.objects.exclude(
+            name__in=[c[0] for c in categorias]
+        ).filter(products__isnull=True).delete()
+
         for n, cat, p, stk, sku in productos:
             Product.objects.get_or_create(
                 sku=sku,
