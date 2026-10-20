@@ -1,0 +1,19 @@
+﻿origin	https://github.com/LuisDiaz2026/Family_Health_MF.git (fetch)
+origin	https://github.com/LuisDiaz2026/Family_Health_MF.git (push)
+  main
+* release/tg-final
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/main
+fed4f22 fix(bootstrap): separar actualizacion de contraseñas en transaccion independiente
+2c3de8b fix(bootstrap): sincronizar contraseñas demo con fallback fijo en Railway
+9230884 docs: actualizar README con despliegue en Railway (GitHub + Docker)
+git : fatal: ambiguous argument 'origin/master': unknown revision or path not in the working tree.
+En línea: 15 Carácter: 5361
++ ... ias\_gitremotes.txt"; git log --oneline -3 origin/master 2>&1 | Out-F ...
++                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (fatal: ambiguou...e working tree.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+0	0

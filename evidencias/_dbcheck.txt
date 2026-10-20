@@ -1,0 +1,9 @@
+﻿python.exe : INFO 2026-10-19 22:56:49,538 AXES: BEGIN version 6.3.0, blocking by username or ip_address or user_agent
+En línea: 15 Carácter: 5036
++ ... F\backend"; & "c:\Family_Health_MF\.venv\Scripts\python.exe" -c "impo ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO 2026-10-19...s or user_agent:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ENGINE= django.db.backends.sqlite3
+NAME= C:\Family_Health_MF\backend\db.sqlite3

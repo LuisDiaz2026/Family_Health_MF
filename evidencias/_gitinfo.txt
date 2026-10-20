@@ -1,0 +1,2 @@
+﻿fed4f2206d53410ab07346698ee44bf891ca4718
+fed4f2206d53410ab07346698ee44bf891ca4718|2026-10-12 16:19:11 -0500|fix(bootstrap): separar actualizacion de contraseñas en transaccion independiente

@@ -1,0 +1,40 @@
+﻿python.exe : INFO 2026-10-19 22:57:22,623 AXES: BEGIN version 6.3.0, blocking by username or ip_address or user_agent
+En línea: 15 Carácter: 5036
++ ... F\backend"; & "c:\Family_Health_MF\.venv\Scripts\python.exe" smoke_te ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO 2026-10-19...s or user_agent:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+C:\Family_Health_MF\.venv\lib\site-packages\jwt\api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 46 bytes 
+long, which is below the minimum recommended length of 64 bytes for SHA512. See RFC 7518 Section 3.2.
+  return self._jws.encode(
+C:\Family_Health_MF\.venv\lib\site-packages\jwt\api_jwt.py:368: InsecureKeyLengthWarning: The HMAC key is 46 bytes 
+long, which is below the minimum recommended length of 64 bytes for SHA512. See RFC 7518 Section 3.2.
+  decoded = self.decode_complete(
+C:\Family_Health_MF\.venv\lib\site-packages\django\db\models\fields\__init__.py:1600: RuntimeWarning: DateTimeField 
+Order.created_at received a naive datetime (2026-10-01 00:00:00) while time zone support is active.
+  warnings.warn(
+C:\Family_Health_MF\.venv\lib\site-packages\django\db\models\fields\__init__.py:1600: RuntimeWarning: DateTimeField 
+Reservation.start_time received a naive datetime (2026-10-01 00:00:00) while time zone support is active.
+  warnings.warn(
+============================================================
+SMOKE TEST - CLUB FAMILY HEALTH MF
+============================================================
+[OK] Health Check -> status: ok, club: Club Family Health
+[OK] Login cliente1_fh -> JWT válido | Rol: CLIENT | Puntos: 0 | Tier: None
+[OK] Login admin_fh -> JWT válido | Rol: ADMIN
+[OK] Listar espacios reservas -> 10 espacios disponibles
+[OK] Consulta disponibilidad espacio -> Cancha de Fútbol 5 2026-10-21 -> 32 franjas de 30 min libres (0 ocupadas)
+[OK] Catálogo refresquería -> 58 productos en catálogo
+[OK] Perfil Cliente + Loyalty -> tier=None, current_points=0
+[OK] Listar rutinas gimnasio -> 5 rutinas visibles
+[OK] Dashboard Admin Summary -> total_users=6, spaces_total=10
+[OK] Top Clientes (Admin) -> 3 clientes en ranking
+[OK] Seguridad: acceso sin token a ruta admin -> bloqueado correctamente (401)
+[OK] JWT Refresh Token -> nuevo access token generado
+[OK] Registro: Política privacidad obligatoria -> rechazo correcto por política priv (400)
+[OK] Reservas: creación + anti-solapamiento -> reserva #3 HTTP201 · solape rechazado HTTP400 · BD count=1 (sin duplicado)
+
+============================================================
+RESULTADOS FINALES: 14 OK | 0 FALLIDOS
+============================================================
