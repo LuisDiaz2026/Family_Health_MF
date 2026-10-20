@@ -292,3 +292,33 @@ class ReservasTests(BasePruebas):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(datos["payment_status"], Reservation.PAYMENT_STATUS_PAID)
         self.assertIsNotNone(datos["payment_received_at"])
+
+    def test_u32_mis_reservas_solo_propias_todos_los_estados(self):
+        """U32 | RQF-RES-16 | Roles/permisos | CLIENT: GET reservations/mis-reservas/ | HTTP 200 con todas sus reservas (incluye canceladas) y ninguna de otro cliente; el listado global sigue en 403"""
+        self._crear_reserva(
+            dias=5, hora=10, duracion_min=60, user=self.cliente,
+            status=Reservation.STATUS_CONFIRMED,
+        )
+        self._crear_reserva(
+            dias=5, hora=12, duracion_min=60, user=self.cliente,
+            status=Reservation.STATUS_CANCELLED,
+        )
+        self._crear_reserva(
+            dias=5, hora=14, duracion_min=60, user=self.cliente2,
+            status=Reservation.STATUS_CONFIRMED,
+        )
+        self.autenticar(self.cliente)
+        resp = self.client.get("/api/v1/reservations/reservations/mis-reservas/")
+        resultados = self._resultados(resp)
+        usuarios = sorted({r["user"]["username"] for r in resultados})
+        estados = sorted({r["status"] for r in resultados})
+        global_list = self.client.get("/api/v1/reservations/reservations/")
+        registrar("U32", (
+            f"HTTP {resp.status_code}; n={len(resultados)}; usuarios={usuarios}; "
+            f"estados={estados}; listado_global_HTTP={global_list.status_code}"
+        ))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resultados), 2)
+        self.assertEqual(usuarios, [self.cliente.username])
+        self.assertIn(Reservation.STATUS_CANCELLED, estados)
+        self.assertEqual(global_list.status_code, 403)

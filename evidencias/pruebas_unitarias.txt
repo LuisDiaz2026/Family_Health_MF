@@ -1,16 +1,16 @@
 ==============================================================================
 EVIDENCIA DE PRUEBAS - CLUB FAMILY HEALTH MF
 ==============================================================================
-Fecha de ejecucion : 2026-10-19T22:57:48
-Commit             : fed4f2206d53410ab07346698ee44bf891ca4718
+Fecha de ejecucion : 2026-10-19T23:43:37
+Commit             : c9b4b5226b056e7e9b2e085a6fc0846f4c5c34ac
 Entorno            : Local (win32) / Django test runner
 Base de datos      : SQLite en memoria (base de datos de prueba aislada)
-Total              : 31
-Aprobadas (PASS)   : 31
+Total              : 32
+Aprobadas (PASS)   : 32
 Fallidas  (FAIL)   : 0
 Errores   (ERROR)  : 0
 Omitidas  (SKIP)   : 0
-Duracion total (s) : 4.5365
+Duracion total (s) : 4.5981
 ==============================================================================
 
 [PASS] U01 - test_u01_login_admin_correcto
@@ -19,7 +19,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST /api/v1/auth/login/ {t_admin, ****}
   Resultado esperado: HTTP 200 con access, refresh y role=ADMIN
   Resultado real   : HTTP 200; access=True; refresh=True; role=ADMIN
-  Duracion (s)     : 0.2042
+  Duracion (s)     : 0.2016
 
 [PASS] U02 - test_u02_login_credenciales_incorrectas
   Requisito        : RQF-AUT-02
@@ -27,7 +27,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST /api/v1/auth/login/ con contraseña errónea
   Resultado esperado: HTTP 401 y sin tokens
   Resultado real   : HTTP 401; access=False; claves=['detail']
-  Duracion (s)     : 0.1797
+  Duracion (s)     : 0.1761
 
 [PASS] U03 - test_u03_login_usuario_inactivo
   Requisito        : RQF-AUT-03
@@ -35,7 +35,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST /api/v1/auth/login/ con usuario is_active=False
   Resultado esperado: HTTP 400 con mensaje de cuenta inactiva
   Resultado real   : HTTP 400; mensaje_inactivo=True; access=False
-  Duracion (s)     : 0.1231
+  Duracion (s)     : 0.1266
 
 [PASS] U04 - test_u04_refresh_token_valido
   Requisito        : RQF-AUT-04
@@ -43,7 +43,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST /api/v1/auth/token/refresh/ con refresh válido
   Resultado esperado: HTTP 200 y nuevo access
   Resultado real   : HTTP 200; nuevo_access=True; longitud_access=526
-  Duracion (s)     : 0.1332
+  Duracion (s)     : 0.1277
 
 [PASS] U05 - test_u05_logout_invalida_refresh
   Requisito        : RQF-AUT-05
@@ -51,7 +51,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST /api/v1/auth/logout/ y reintento de refresh
   Resultado esperado: HTTP 200 al salir y HTTP 401 al reusar el refresh (blacklist)
   Resultado real   : logout HTTP 200; reuso_refresh HTTP 401 (blacklist activa)
-  Duracion (s)     : 0.1338
+  Duracion (s)     : 0.1305
 
 [PASS] U06 - test_u06_me_sin_token
   Requisito        : RQF-AUT-06
@@ -59,7 +59,7 @@ Duracion total (s) : 4.5365
   Entrada          : GET /api/v1/auth/me/ sin cabecera Authorization
   Resultado esperado: HTTP 401 sin datos de usuario
   Resultado real   : HTTP 401; claves=['detail']; expone_datos=False
-  Duracion (s)     : 0.0556
+  Duracion (s)     : 0.0541
 
 [PASS] U17 - test_u17_cliente_crea_reserva_valida
   Requisito        : RQF-RES-01
@@ -67,7 +67,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST reservations/ como CLIENT en espacio sin aprobación
   Resultado esperado: HTTP 201 con status CONFIRMED y usuario = cliente
   Resultado real   : HTTP 201; status=CONFIRMED; user_id=3
-  Duracion (s)     : 0.1512
+  Duracion (s)     : 0.1396
 
 [PASS] U18 - test_u18_espacio_con_aprobacion_crea_pendiente
   Requisito        : RQF-RES-02
@@ -75,7 +75,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST como CLIENT en espacio con requires_employee_approval=True
   Resultado esperado: HTTP 201 con status PENDING
   Resultado real   : HTTP 201; status=PENDING
-  Duracion (s)     : 0.2157
+  Duracion (s)     : 0.2108
 
 [PASS] U19 - test_u19_calculo_total_amount
   Requisito        : RQF-RES-03
@@ -83,7 +83,7 @@ Duracion total (s) : 4.5365
   Entrada          : Reserva de 90 minutos con tarifa 50000 COP/hora
   Resultado esperado: total_minutes=90 y total_amount=75000.00
   Resultado real   : HTTP 201; total_minutes=90; total_amount=75000.00
-  Duracion (s)     : 0.1403
+  Duracion (s)     : 0.1393
 
 [PASS] U20 - test_u20_duracion_menor_al_minimo
   Requisito        : RQF-RES-04
@@ -91,7 +91,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST de 15 minutos (mínimo del espacio = 30)
   Resultado esperado: HTTP 400 y sin reserva creada
   Resultado real   : HTTP 400; reservas_antes=0; reservas_despues=0
-  Duracion (s)     : 0.138
+  Duracion (s)     : 0.1329
 
 [PASS] U21 - test_u21_duracion_mayor_al_maximo
   Requisito        : RQF-RES-05
@@ -99,7 +99,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST de 240 minutos (máximo del espacio = 180)
   Resultado esperado: HTTP 400 y sin reserva creada
   Resultado real   : HTTP 400; duracion_solicitada_min=240; reservas_despues=0
-  Duracion (s)     : 0.1482
+  Duracion (s)     : 0.1448
 
 [PASS] U22 - test_u22_reserva_en_el_pasado
   Requisito        : RQF-RES-06
@@ -107,7 +107,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST con start_time en el pasado
   Resultado esperado: HTTP 400 (la reserva debe ser en el futuro)
   Resultado real   : HTTP 400; detalle={'start_time': ['La reserva debe ser en el futuro']}
-  Duracion (s)     : 0.1317
+  Duracion (s)     : 0.1312
 
 [PASS] U23 - test_u23_solapamiento_exacto_rechazado
   Requisito        : RQF-RES-07
@@ -115,7 +115,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST con la misma franja de una reserva existente
   Resultado esperado: HTTP 400 y la reserva total no aumenta
   Resultado real   : HTTP 400; total_reservas=1
-  Duracion (s)     : 0.1431
+  Duracion (s)     : 0.1393
 
 [PASS] U24 - test_u24_solapamiento_parcial_rechazado
   Requisito        : RQF-RES-08
@@ -123,7 +123,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST 10:30-11:30 solapando con reserva existente 10:00-11:00
   Resultado esperado: HTTP 400 por conflicto
   Resultado real   : HTTP 400; total_reservas=1
-  Duracion (s)     : 0.144
+  Duracion (s)     : 0.1442
 
 [PASS] U25 - test_u25_reserva_adyacente_permitida
   Requisito        : RQF-RES-09
@@ -131,7 +131,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST 11:00-12:00 contigua a reserva 10:00-11:00
   Resultado esperado: HTTP 201 (no hay solapamiento real)
   Resultado real   : HTTP 201; total_reservas=2
-  Duracion (s)     : 0.2309
+  Duracion (s)     : 0.1946
 
 [PASS] U26 - test_u26_cliente_no_lista_ni_elimina
   Requisito        : RQF-RES-10
@@ -139,7 +139,7 @@ Duracion total (s) : 4.5365
   Entrada          : CLIENT: GET listado global y DELETE de reserva
   Resultado esperado: HTTP 403 en ambos casos y la reserva persiste
   Resultado real   : listado HTTP 403; borrado HTTP 403; reserva_persiste=True
-  Duracion (s)     : 0.1599
+  Duracion (s)     : 0.1349
 
 [PASS] U27 - test_u27_my_upcoming_solo_propias
   Requisito        : RQF-RES-11
@@ -147,7 +147,7 @@ Duracion total (s) : 4.5365
   Entrada          : GET reservations/my-upcoming/ como CLIENT
   Resultado esperado: HTTP 200 y solo las reservas del propio cliente
   Resultado real   : HTTP 200; n=1; usuarios=['t_cliente']
-  Duracion (s)     : 0.1515
+  Duracion (s)     : 0.1442
 
 [PASS] U28 - test_u28_recepcion_lista_todas
   Requisito        : RQF-RES-12
@@ -155,7 +155,7 @@ Duracion total (s) : 4.5365
   Entrada          : GET listado como RECEPCION
   Resultado esperado: HTTP 200 y aparecen reservas de distintos clientes
   Resultado real   : HTTP 200; n=2; usuarios=['t_cliente', 't_cliente2']
-  Duracion (s)     : 0.1523
+  Duracion (s)     : 0.1496
 
 [PASS] U29 - test_u29_aprobar_reserva
   Requisito        : RQF-RES-13
@@ -163,7 +163,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST reservations/{id}/approve/ como RECEPCION sobre reserva PENDING
   Resultado esperado: HTTP 200 con status CONFIRMED
   Resultado real   : HTTP 200; status=CONFIRMED; approved_by_id=2
-  Duracion (s)     : 0.1496
+  Duracion (s)     : 0.1463
 
 [PASS] U30 - test_u30_rechazar_reserva
   Requisito        : RQF-RES-14
@@ -171,7 +171,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST reservations/{id}/reject/ como ADMIN sobre reserva PENDING
   Resultado esperado: HTTP 200 con status REJECTED
   Resultado real   : HTTP 200; status=REJECTED
-  Duracion (s)     : 0.1464
+  Duracion (s)     : 0.1405
 
 [PASS] U31 - test_u31_marcar_pagada
   Requisito        : RQF-RES-15
@@ -179,7 +179,15 @@ Duracion total (s) : 4.5365
   Entrada          : POST reservations/{id}/mark-paid/ como RECEPCION
   Resultado esperado: HTTP 200 con payment_status=PAID y fecha de pago registrada
   Resultado real   : HTTP 200; payment_status=PAID; fecha_pago_registrada=True
-  Duracion (s)     : 0.1985
+  Duracion (s)     : 0.2081
+
+[PASS] U32 - test_u32_mis_reservas_solo_propias_todos_los_estados
+  Requisito        : RQF-RES-16
+  Componente       : Roles/permisos
+  Entrada          : CLIENT: GET reservations/mis-reservas/
+  Resultado esperado: HTTP 200 con todas sus reservas (incluye canceladas) y ninguna de otro cliente; el listado global sigue en 403
+  Resultado real   : HTTP 200; n=2; usuarios=['t_cliente']; estados=['CANCELLED', 'CONFIRMED']; listado_global_HTTP=403
+  Duracion (s)     : 0.1606
 
 [PASS] U12 - test_u12_listar_espacios
   Requisito        : RQF-ESP-01
@@ -187,7 +195,7 @@ Duracion total (s) : 4.5365
   Entrada          : GET /api/v1/reservations/spaces/ autenticado como CLIENT
   Resultado esperado: HTTP 200 e incluye el espacio ESP-TEST-01
   Resultado real   : HTTP 200; n_espacios=1; codigos=['ESP-TEST-01']
-  Duracion (s)     : 0.1355
+  Duracion (s)     : 0.135
 
 [PASS] U13 - test_u13_detalle_espacio_tarifa_y_limites
   Requisito        : RQF-ESP-02
@@ -195,7 +203,7 @@ Duracion total (s) : 4.5365
   Entrada          : GET /api/v1/reservations/spaces/{id}/
   Resultado esperado: HTTP 200 con hourly_rate=50000.00, min=30 y max=180
   Resultado real   : HTTP 200; hourly_rate=50000.00; min_reservation_minutes=30; max_reservation_minutes=180
-  Duracion (s)     : 0.1357
+  Duracion (s)     : 0.1307
 
 [PASS] U14 - test_u14_disponibilidad_franjas_30_min
   Requisito        : RQF-ESP-03
@@ -203,7 +211,7 @@ Duracion total (s) : 4.5365
   Entrada          : GET spaces/{id}/availability/?date= (horario 06:00-22:00)
   Resultado esperado: HTTP 200 y 32 franjas de 30 minutos
   Resultado real   : HTTP 200; n_franjas=32; primera=06:00; ultima=21:30
-  Duracion (s)     : 0.1386
+  Duracion (s)     : 0.1352
 
 [PASS] U15 - test_u15_disponibilidad_fecha_invalida
   Requisito        : RQF-ESP-04
@@ -211,7 +219,7 @@ Duracion total (s) : 4.5365
   Entrada          : GET availability con date=2026-13-45
   Resultado esperado: HTTP 400 con mensaje de fecha inválida
   Resultado real   : HTTP 400; mensaje=Fecha inválida (YYYY-MM-DD)
-  Duracion (s)     : 0.1314
+  Duracion (s)     : 0.1385
 
 [PASS] U16 - test_u16_is_available_at_logica_modelo
   Requisito        : RQF-ESP-05
@@ -219,7 +227,7 @@ Duracion total (s) : 4.5365
   Entrada          : Space.is_available_at() en franja libre y con status=MAINTENANCE
   Resultado esperado: True cuando está libre y False cuando no está ACTIVE
   Resultado real   : franja_libre=True; status_MAINTENANCE=False
-  Duracion (s)     : 0.0012
+  Duracion (s)     : 0.0013
 
 [PASS] U07 - test_u07_registro_sin_politica_privacidad
   Requisito        : RQF-USR-01
@@ -227,7 +235,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST /api/v1/auth/register/ sin aceptar política de privacidad
   Resultado esperado: HTTP 400 indicando aceptación obligatoria (Ley 1581)
   Resultado real   : HTTP 400; claves=['errors']; creado=False
-  Duracion (s)     : 0.0556
+  Duracion (s)     : 0.1037
 
 [PASS] U08 - test_u08_registro_valido_crea_cliente_inactivo
   Requisito        : RQF-USR-02
@@ -235,7 +243,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST /api/v1/auth/register/ con datos válidos y política aceptada
   Resultado esperado: HTTP 201 y usuario CLIENT creado con is_active=False (requiere aprobación)
   Resultado real   : HTTP 201; creado=True; role=CLIENT; is_active=False
-  Duracion (s)     : 0.1746
+  Duracion (s)     : 0.1321
 
 [PASS] U09 - test_u09_admin_crea_usuario
   Requisito        : RQF-USR-03
@@ -243,7 +251,7 @@ Duracion total (s) : 4.5365
   Entrada          : POST /api/v1/auth/admin/users/ autenticado como ADMIN
   Resultado esperado: HTTP 201 y usuario persistido con el rol indicado
   Resultado real   : HTTP 201; creado=True; role=RECEPCION
-  Duracion (s)     : 0.2007
+  Duracion (s)     : 0.2025
 
 [PASS] U10 - test_u10_cliente_no_accede_gestion_usuarios
   Requisito        : RQF-USR-04
@@ -251,7 +259,7 @@ Duracion total (s) : 4.5365
   Entrada          : GET /api/v1/auth/admin/users/ autenticado como CLIENT
   Resultado esperado: HTTP 403 y sin listado de usuarios
   Resultado real   : HTTP 403; claves=['detail']
-  Duracion (s)     : 0.1301
+  Duracion (s)     : 0.1354
 
 [PASS] U11 - test_u11_recepcion_lista_solo_clientes
   Requisito        : RQF-USR-05
@@ -259,6 +267,6 @@ Duracion total (s) : 4.5365
   Entrada          : GET /api/v1/auth/clients/ autenticado como RECEPCION
   Resultado esperado: HTTP 200 y todos los resultados con role=CLIENT
   Resultado real   : HTTP 200; n=3; roles=['CLIENT']
-  Duracion (s)     : 0.2022
+  Duracion (s)     : 0.2062
 
 ==============================================================================

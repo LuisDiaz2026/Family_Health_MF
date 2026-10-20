@@ -242,3 +242,20 @@ class ReservationViewSet(viewsets.ModelViewSet):
         )
         return Response(ReservationSerializer(qs, many=True,
                                               context={"request": request}).data)
+
+    @action(detail=False, methods=["get"], url_path="mis-reservas",
+            permission_classes=[IsAuthenticated & IsClient])
+    def mis_reservas(self, request):
+        """Devuelve todas las reservas del propio cliente (todos los estados).
+
+        El listado global sigue restringido a Admin/Recepción (RQF-RES-10);
+        el cliente accede únicamente a sus propios registros.
+        """
+        qs = self.get_queryset().filter(user=request.user)
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = ReservationSerializer(page, many=True,
+                                               context={"request": request})
+            return self.get_paginated_response(serializer.data)
+        return Response(ReservationSerializer(qs, many=True,
+                                              context={"request": request}).data)

@@ -38,7 +38,22 @@ export const useReservationsStore = defineStore('reservations', () => {
       const resp = await api.get(
         `/reservations/spaces/${spaceId}/availability/?date=${date}`
       )
-      availability.value = resp.data?.available_slots || resp.data || []
+      const data = resp.data || {}
+      const ocupados = (data.occupied_slots || []).map((o) => ({
+        ini: new Date(o.start_time).getTime(),
+        fin: new Date(o.end_time).getTime(),
+      }))
+      const base = data.thirty_minute_slots || []
+      availability.value = base.map((s) => {
+        const inicio = new Date(s.datetime).getTime()
+        const fin = inicio + 30 * 60000
+        const ocupado = ocupados.some((o) => inicio < o.fin && fin > o.ini)
+        return {
+          start: s.time || horaDe(s.datetime),
+          end: sumarMinutos(s.time || horaDe(s.datetime), 30),
+          available: !ocupado,
+        }
+      })
       return availability.value
     } catch (e) {
       error.value = extractError(e)
@@ -48,11 +63,24 @@ export const useReservationsStore = defineStore('reservations', () => {
     }
   }
 
+  function horaDe(iso) {
+    if (!iso) return ''
+    return new Date(iso).toTimeString().slice(0, 5)
+  }
+
+  function sumarMinutos(hhmm, minutos) {
+    const [h, m] = hhmm.split(':').map(Number)
+    const total = h * 60 + m + minutos
+    const hh = String(Math.floor(total / 60) % 24).padStart(2, '0')
+    const mm = String(total % 60).padStart(2, '0')
+    return `${hh}:${mm}`
+  }
+
   async function listMyReservations() {
     loading.value = true
     error.value = ''
     try {
-      const resp = await api.get('/reservations/reservations/')
+      const resp = await api.get('/reservations/reservations/mis-reservas/')
       myReservations.value = resp.data?.results || resp.data || []
       return myReservations.value
     } catch (e) {
