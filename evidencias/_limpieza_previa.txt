@@ -1,0 +1,12 @@
+﻿============================================================================
+EVALUACION SIMULADA DE ACEPTACION - CLUB FAMILY HEALTH MF
+Usuarios sinteticos: 2 por rol (6 en total). NO participan personas.
+URL: https://familyhealthmf-production.up.railway.app
+Fecha/hora (UTC): 2026-10-21T02:21:45+00:00
+============================================================================
+Administrador demo autenticado: admin_fh
+
+=== FASE 5: limpieza (eliminar datos de prueba) ===
+  reservas de prueba: 0 eliminadas, 0 canceladas de 0 (total en el club: 4)
+  verificacion: quedan 0 reservas de prueba en el club
+  usuarios sinteticos eliminados: 0/0

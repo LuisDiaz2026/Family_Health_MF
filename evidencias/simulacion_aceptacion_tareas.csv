@@ -1,0 +1,69 @@
+﻿codigo_usuario;rol;competencia;id_tarea;requisito;descripcion;http;completada;interacciones;duracion_tecnica_s;tiempo_simulado_s;errores;facilidad_1_5;claridad_1_5;satisfaccion_1_5;detalle;datos
+SIM-CLI-A;CLIENT;Intermedia;C01;RQF-AUT-01;Iniciar sesion como cliente;200;SI;1;0.353;3.353;0;5;5;5;rol=CLIENT access=eyJhbGciOi...5xlQ (559 car.);{}
+SIM-CLI-A;CLIENT;Intermedia;C02;RQF-AUT-06;Consultar su propio perfil;200;SI;1;0.301;3.301;0;5;5;5;usuario=sim_cli_a_sim rol=CLIENT;"{""username"": ""sim_cli_a_sim"", ""role"": ""CLIENT""}"
+SIM-CLI-A;CLIENT;Intermedia;C03;RQF-ESP-01;Consultar el catalogo de espacios;200;SI;1;0.321;3.321;0;5;5;5;10 espacios;{}
+SIM-CLI-A;CLIENT;Intermedia;C04;RQF-ESP-03;Consultar disponibilidad de un espacio;200;SI;1;0.321;3.321;0;5;5;5;franjas_libres=32;{}
+SIM-CLI-A;CLIENT;Intermedia;C05;RQF-RES-01;Crear una reserva (espacio sin aprobacion);201;SI;2;0.668;6.668;0;5;5;5;id=75 estado=CONFIRMED total=40000.00 (60 min);"{""id"": 75}"
+SIM-CLI-A;CLIENT;Intermedia;C06;RQF-RES-02;Crear reserva en espacio que requiere aprobacion;201;SI;2;0.657;6.657;0;5;5;5;id=76 estado=PENDING total=500000.00 (120 min);"{""id"": 76}"
+SIM-CLI-A;CLIENT;Intermedia;C07;RQF-RES-16;Consultar todas sus reservas (todos los estados);200;SI;1;0.306;3.306;0;5;5;5;reservas_propias=2;{}
+SIM-CLI-A;CLIENT;Intermedia;C08;RQF-RES-11;Consultar sus reservas proximas;200;SI;1;0.314;3.314;0;5;5;5;proximas=2;{}
+SIM-CLI-A;CLIENT;Intermedia;C09;RQF-RES-07;Intento de solapamiento (debe rechazarse);400;SI;1;0.321;3.321;0;5;4;4;conflicto rechazado;{}
+SIM-CLI-A;CLIENT;Intermedia;C10;RNF-ERR-01;Validacion de datos invalidos (400);400;SI;1;0.328;3.328;0;5;4;4;error 400 controlado;{}
+SIM-CLI-A;CLIENT;Intermedia;C11;RQF-RES-06;Cancelar una reserva propia;200;SI;1;0.348;3.348;0;5;5;5;estado=CANCELLED;{}
+SIM-CLI-A;CLIENT;Intermedia;C12;RQF-AUT-08;Verificar bloqueo del panel administrativo;403;SI;1;0.336;3.336;0;5;4;4;cliente bloqueado del panel de KPIs;{}
+SIM-CLI-A;CLIENT;Intermedia;C13;RQF-AUT-04;Refrescar el token de acceso;200;SI;1;0.32;3.32;0;5;5;5;nuevo access=eyJhbGciOi...39Sw (559 car.);{}
+SIM-CLI-B;CLIENT;Basica;C01;RQF-AUT-01;Iniciar sesion como cliente;200;SI;1;0.497;6.497;0;4;4;4;rol=CLIENT access=eyJhbGciOi...zXSw (559 car.);{}
+SIM-CLI-B;CLIENT;Basica;C02;RQF-AUT-06;Consultar su propio perfil;200;SI;1;0.325;6.325;0;4;4;4;usuario=sim_cli_b_sim rol=CLIENT;"{""username"": ""sim_cli_b_sim"", ""role"": ""CLIENT""}"
+SIM-CLI-B;CLIENT;Basica;C03;RQF-ESP-01;Consultar el catalogo de espacios;200;SI;1;0.344;6.344;0;4;4;4;10 espacios;{}
+SIM-CLI-B;CLIENT;Basica;C04;RQF-ESP-03;Consultar disponibilidad de un espacio;200;SI;1;0.31;6.31;0;4;4;4;franjas_libres=32;{}
+SIM-CLI-B;CLIENT;Basica;C05;RQF-RES-01;Crear una reserva (espacio sin aprobacion);201;SI;2;0.95;12.95;0;4;4;4;id=77 estado=CONFIRMED total=40000.00 (60 min);"{""id"": 77}"
+SIM-CLI-B;CLIENT;Basica;C06;RQF-RES-02;Crear reserva en espacio que requiere aprobacion;201;SI;2;0.95;12.95;0;4;4;4;id=78 estado=PENDING total=500000.00 (120 min);"{""id"": 78}"
+SIM-CLI-B;CLIENT;Basica;C07;RQF-RES-16;Consultar todas sus reservas (todos los estados);200;SI;1;0.32;6.32;0;4;4;4;reservas_propias=2;{}
+SIM-CLI-B;CLIENT;Basica;C08;RQF-RES-11;Consultar sus reservas proximas;200;SI;1;0.314;6.314;0;4;4;4;proximas=2;{}
+SIM-CLI-B;CLIENT;Basica;C09;RQF-RES-07;Intento de solapamiento (debe rechazarse);400;SI;1;0.313;6.313;0;4;3;4;conflicto rechazado;{}
+SIM-CLI-B;CLIENT;Basica;C10;RNF-ERR-01;Validacion de datos invalidos (400);400;SI;1;0.308;6.308;0;4;3;4;error 400 controlado;{}
+SIM-CLI-B;CLIENT;Basica;C11;RQF-RES-06;Cancelar una reserva propia;200;SI;1;0.341;6.341;0;4;4;4;estado=CANCELLED;{}
+SIM-CLI-B;CLIENT;Basica;C12;RQF-AUT-08;Verificar bloqueo del panel administrativo;403;SI;1;0.319;6.319;0;4;3;4;cliente bloqueado del panel de KPIs;{}
+SIM-CLI-B;CLIENT;Basica;C13;RQF-AUT-04;Refrescar el token de acceso;200;SI;1;0.315;6.315;0;4;4;4;nuevo access=eyJhbGciOi...pl7g (559 car.);{}
+SIM-REC-A;RECEPCION;Intermedia;R01;RQF-AUT-01;Iniciar sesion como recepcion;200;SI;1;0.362;3.362;0;5;5;5;rol=RECEPCION access=eyJhbGciOi...ML2Q (527 car.);{}
+SIM-REC-A;RECEPCION;Intermedia;R02;RQF-RES-12;Listar las reservas del club;200;SI;1;0.332;3.332;0;5;5;5;reservas_visibles=8;{}
+SIM-REC-A;RECEPCION;Intermedia;R03;RQF-USR-05;Listar clientes del club;200;SI;1;0.322;3.322;0;5;5;5;clientes=7;{}
+SIM-REC-A;RECEPCION;Intermedia;R04;RQF-RES-13;Aprobar una reserva pendiente;200;SI;1;0.321;3.321;0;5;5;5;estado=CONFIRMED;{}
+SIM-REC-A;RECEPCION;Intermedia;R05;RQF-RES-15;Registrar el pago de una reserva;200;SI;1;0.337;3.337;0;5;5;5;pago=PAID;{}
+SIM-REC-A;RECEPCION;Intermedia;R06;RQF-ESP-03;Consultar disponibilidad de espacios;200;SI;1;0.299;3.299;0;5;5;5;franjas_libres=32;{}
+SIM-REC-A;RECEPCION;Intermedia;R07;RQF-ESP-04;Validar fecha invalida en disponibilidad;400;SI;1;0.315;3.315;0;5;4;4;fecha invalida rechazada;{}
+SIM-REC-A;RECEPCION;Intermedia;R08;RNF-ERR-03;Consultar un recurso inexistente (404);404;SI;1;0.309;3.309;0;5;4;4;recurso inexistente;{}
+SIM-REC-A;RECEPCION;Intermedia;R09;RQF-AUT-04;Refrescar el token de acceso;200;SI;1;0.316;3.316;0;5;5;5;nuevo access=eyJhbGciOi...774Q (527 car.);{}
+SIM-REC-A;RECEPCION;Intermedia;R10;RQF-AUT-05;Cerrar sesion;200;SI;1;0.299;3.299;0;5;5;5;sesion cerrada;{}
+SIM-REC-B;RECEPCION;Basica;R01;RQF-AUT-01;Iniciar sesion como recepcion;200;SI;1;0.362;6.362;0;4;4;4;rol=RECEPCION access=eyJhbGciOi...mcTg (527 car.);{}
+SIM-REC-B;RECEPCION;Basica;R02;RQF-RES-12;Listar las reservas del club;200;SI;1;0.346;6.346;0;4;4;4;reservas_visibles=8;{}
+SIM-REC-B;RECEPCION;Basica;R03;RQF-USR-05;Listar clientes del club;200;SI;1;0.314;6.314;0;4;4;4;clientes=7;{}
+SIM-REC-B;RECEPCION;Basica;R04;RQF-RES-13;Aprobar una reserva pendiente;200;SI;1;0.305;6.305;0;4;4;4;estado=CONFIRMED;{}
+SIM-REC-B;RECEPCION;Basica;R05;RQF-RES-15;Registrar el pago de una reserva;200;SI;1;0.318;6.318;0;4;4;4;pago=PAID;{}
+SIM-REC-B;RECEPCION;Basica;R06;RQF-ESP-03;Consultar disponibilidad de espacios;200;SI;1;0.325;6.325;0;4;4;4;franjas_libres=32;{}
+SIM-REC-B;RECEPCION;Basica;R07;RQF-ESP-04;Validar fecha invalida en disponibilidad;400;SI;1;0.313;6.313;0;4;3;4;fecha invalida rechazada;{}
+SIM-REC-B;RECEPCION;Basica;R08;RNF-ERR-03;Consultar un recurso inexistente (404);404;SI;1;0.311;6.311;0;4;3;4;recurso inexistente;{}
+SIM-REC-B;RECEPCION;Basica;R09;RQF-AUT-04;Refrescar el token de acceso;200;SI;1;0.324;6.324;0;4;4;4;nuevo access=eyJhbGciOi...Nj7g (527 car.);{}
+SIM-REC-B;RECEPCION;Basica;R10;RQF-AUT-05;Cerrar sesion;200;SI;1;0.331;6.331;0;4;4;4;sesion cerrada;{}
+SIM-ADM-A;ADMIN;Intermedia;A01;RQF-AUT-01;Iniciar sesion como administrador;200;SI;1;0.354;3.354;0;5;5;5;rol=ADMIN access=eyJhbGciOi..._IAw (522 car.);{}
+SIM-ADM-A;ADMIN;Intermedia;A02;RQF-AUT-04;Consultar el panel de indicadores;200;SI;1;0.328;3.328;0;5;5;5;claves=21;{}
+SIM-ADM-A;ADMIN;Intermedia;A03;RQF-REP-01;Reservas por fecha (reporte);200;SI;1;0.291;3.291;0;5;5;5;reservas por fecha;{}
+SIM-ADM-A;ADMIN;Intermedia;A04;RQF-REP-02;Ingresos por mes (reporte);200;SI;1;0.312;3.312;0;5;5;5;ingresos por mes;{}
+SIM-ADM-A;ADMIN;Intermedia;A05;RQF-REP-03;Clientes destacados (reporte);200;SI;1;0.331;3.331;0;5;5;5;clientes destacados;{}
+SIM-ADM-A;ADMIN;Intermedia;A06;RQF-USR-03;Listar y consultar usuarios del sistema;200;SI;1;0.34;3.34;0;5;5;5;usuarios=16;{}
+SIM-ADM-A;ADMIN;Intermedia;A07;RQF-RES-12;Listar todas las reservas del club;200;SI;1;0.331;3.331;0;5;5;5;reservas_visibles=8;{}
+SIM-ADM-A;ADMIN;Intermedia;A08;RQF-ESP-01;Consultar el catalogo de espacios;200;SI;1;0.338;3.338;0;5;5;5;10 espacios;{}
+SIM-ADM-A;ADMIN;Intermedia;A09;RQF-RES-14;Rechazar una reserva pendiente;200;SI;2;1.025;7.025;0;5;5;5;estado=REJECTED;{}
+SIM-ADM-A;ADMIN;Intermedia;A10;RNF-ERR-03;Consultar un recurso inexistente (404);404;SI;1;0.297;3.297;0;5;4;4;recurso inexistente;{}
+SIM-ADM-A;ADMIN;Intermedia;A11;RQF-AUT-04;Refrescar el token de acceso;200;SI;1;0.317;3.317;0;5;5;5;nuevo access=eyJhbGciOi...wmqw (522 car.);{}
+SIM-ADM-B;ADMIN;Basica;A01;RQF-AUT-01;Iniciar sesion como administrador;200;SI;1;0.365;6.365;0;4;4;4;rol=ADMIN access=eyJhbGciOi...3R4w (522 car.);{}
+SIM-ADM-B;ADMIN;Basica;A02;RQF-AUT-04;Consultar el panel de indicadores;200;SI;1;0.319;6.319;0;4;4;4;claves=21;{}
+SIM-ADM-B;ADMIN;Basica;A03;RQF-REP-01;Reservas por fecha (reporte);200;SI;1;0.32;6.32;0;4;4;4;reservas por fecha;{}
+SIM-ADM-B;ADMIN;Basica;A04;RQF-REP-02;Ingresos por mes (reporte);200;SI;1;0.299;6.299;0;4;4;4;ingresos por mes;{}
+SIM-ADM-B;ADMIN;Basica;A05;RQF-REP-03;Clientes destacados (reporte);200;SI;1;0.295;6.295;0;4;4;4;clientes destacados;{}
+SIM-ADM-B;ADMIN;Basica;A06;RQF-USR-03;Listar y consultar usuarios del sistema;200;SI;1;0.347;6.347;0;4;4;4;usuarios=16;{}
+SIM-ADM-B;ADMIN;Basica;A07;RQF-RES-12;Listar todas las reservas del club;200;SI;1;0.33;6.33;0;4;4;4;reservas_visibles=9;{}
+SIM-ADM-B;ADMIN;Basica;A08;RQF-ESP-01;Consultar el catalogo de espacios;200;SI;1;0.325;6.325;0;4;4;4;10 espacios;{}
+SIM-ADM-B;ADMIN;Basica;A09;RQF-RES-14;Rechazar una reserva pendiente;200;SI;2;0.961;12.961;0;4;4;4;estado=REJECTED;{}
+SIM-ADM-B;ADMIN;Basica;A10;RNF-ERR-03;Consultar un recurso inexistente (404);404;SI;1;0.311;6.311;0;4;3;4;recurso inexistente;{}
+SIM-ADM-B;ADMIN;Basica;A11;RQF-AUT-04;Refrescar el token de acceso;200;SI;1;0.305;6.305;0;4;4;4;nuevo access=eyJhbGciOi...6fWg (522 car.);{}

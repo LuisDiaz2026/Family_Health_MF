@@ -1,0 +1,130 @@
+﻿============================================================================
+EVALUACION SIMULADA DE ACEPTACION - CLUB FAMILY HEALTH MF
+Usuarios sinteticos: 2 por rol (6 en total). NO participan personas.
+URL: https://familyhealthmf-production.up.railway.app
+Fecha/hora (UTC): 2026-10-21T02:21:55+00:00
+============================================================================
+Administrador demo autenticado: admin_fh
+
+=== FASE 1: preparacion (datos maestros y espacio de trabajo) ===
+  espacio sin aprobacion : CANCHA-BASKET-01
+  espacio con aprobacion : SALON-MAIN-01
+
+=== FASE 2: creacion de los 6 usuarios sinteticos (2 por rol) ===
+  [OK ] SIM-ADM-A -> sim_adm_a_sim (id=31, rol=ADMIN)
+  [OK ] SIM-ADM-B -> sim_adm_b_sim (id=32, rol=ADMIN)
+  [OK ] SIM-REC-A -> sim_rec_a_sim (id=33, rol=RECEPCION)
+  [OK ] SIM-REC-B -> sim_rec_b_sim (id=34, rol=RECEPCION)
+  [OK ] SIM-CLI-A -> sim_cli_a_sim (id=35, rol=CLIENT)
+  [OK ] SIM-CLI-B -> sim_cli_b_sim (id=36, rol=CLIENT)
+
+=== FASE 3: sesiones simuladas por rol ===
+
+-- Sesion SIM-CLI-A (CLIENT, competencia Intermedia) --
+  [OK ] C01    RQF-AUT-01   HTTP 200   0.35s  Iniciar sesion como cliente
+  [OK ] C02    RQF-AUT-06   HTTP 200   0.30s  Consultar su propio perfil
+  [OK ] C03    RQF-ESP-01   HTTP 200   0.32s  Consultar el catalogo de espacios
+  [OK ] C04    RQF-ESP-03   HTTP 200   0.32s  Consultar disponibilidad de un espacio
+  [OK ] C05    RQF-RES-01   HTTP 201   0.67s  Crear una reserva (espacio sin aprobacion)
+  [OK ] C06    RQF-RES-02   HTTP 201   0.66s  Crear reserva en espacio que requiere aprobacion
+  [OK ] C07    RQF-RES-16   HTTP 200   0.31s  Consultar todas sus reservas (todos los estados)
+  [OK ] C08    RQF-RES-11   HTTP 200   0.31s  Consultar sus reservas proximas
+  [OK ] C09    RQF-RES-07   HTTP 400   0.32s  Intento de solapamiento (debe rechazarse)
+  [OK ] C10    RNF-ERR-01   HTTP 400   0.33s  Validacion de datos invalidos (400)
+  [OK ] C11    RQF-RES-06   HTTP 200   0.35s  Cancelar una reserva propia
+  [OK ] C12    RQF-AUT-08   HTTP 403   0.34s  Verificar bloqueo del panel administrativo
+  [OK ] C13    RQF-AUT-04   HTTP 200   0.32s  Refrescar el token de acceso
+   -> 13/13 tareas completadas (100.0%) en 4.9s reales
+
+-- Sesion SIM-CLI-B (CLIENT, competencia Basica) --
+  [OK ] C01    RQF-AUT-01   HTTP 200   0.50s  Iniciar sesion como cliente
+  [OK ] C02    RQF-AUT-06   HTTP 200   0.33s  Consultar su propio perfil
+  [OK ] C03    RQF-ESP-01   HTTP 200   0.34s  Consultar el catalogo de espacios
+  [OK ] C04    RQF-ESP-03   HTTP 200   0.31s  Consultar disponibilidad de un espacio
+  [OK ] C05    RQF-RES-01   HTTP 201   0.95s  Crear una reserva (espacio sin aprobacion)
+  [OK ] C06    RQF-RES-02   HTTP 201   0.95s  Crear reserva en espacio que requiere aprobacion
+  [OK ] C07    RQF-RES-16   HTTP 200   0.32s  Consultar todas sus reservas (todos los estados)
+  [OK ] C08    RQF-RES-11   HTTP 200   0.31s  Consultar sus reservas proximas
+  [OK ] C09    RQF-RES-07   HTTP 400   0.31s  Intento de solapamiento (debe rechazarse)
+  [OK ] C10    RNF-ERR-01   HTTP 400   0.31s  Validacion de datos invalidos (400)
+  [OK ] C11    RQF-RES-06   HTTP 200   0.34s  Cancelar una reserva propia
+  [OK ] C12    RQF-AUT-08   HTTP 403   0.32s  Verificar bloqueo del panel administrativo
+  [OK ] C13    RQF-AUT-04   HTTP 200   0.31s  Refrescar el token de acceso
+   -> 13/13 tareas completadas (100.0%) en 5.6s reales
+
+-- Sesion SIM-REC-A (RECEPCION, competencia Intermedia) --
+  [OK ] R01    RQF-AUT-01   HTTP 200   0.36s  Iniciar sesion como recepcion
+  [OK ] R02    RQF-RES-12   HTTP 200   0.33s  Listar las reservas del club
+  [OK ] R03    RQF-USR-05   HTTP 200   0.32s  Listar clientes del club
+  [OK ] R04    RQF-RES-13   HTTP 200   0.32s  Aprobar una reserva pendiente
+  [OK ] R05    RQF-RES-15   HTTP 200   0.34s  Registrar el pago de una reserva
+  [OK ] R06    RQF-ESP-03   HTTP 200   0.30s  Consultar disponibilidad de espacios
+  [OK ] R07    RQF-ESP-04   HTTP 400   0.32s  Validar fecha invalida en disponibilidad
+  [OK ] R08    RNF-ERR-03   HTTP 404   0.31s  Consultar un recurso inexistente (404)
+  [OK ] R09    RQF-AUT-04   HTTP 200   0.32s  Refrescar el token de acceso
+  [OK ] R10    RQF-AUT-05   HTTP 200   0.30s  Cerrar sesion
+   -> 10/10 tareas completadas (100.0%) en 3.2s reales
+
+-- Sesion SIM-REC-B (RECEPCION, competencia Basica) --
+  [OK ] R01    RQF-AUT-01   HTTP 200   0.36s  Iniciar sesion como recepcion
+  [OK ] R02    RQF-RES-12   HTTP 200   0.35s  Listar las reservas del club
+  [OK ] R03    RQF-USR-05   HTTP 200   0.31s  Listar clientes del club
+  [OK ] R04    RQF-RES-13   HTTP 200   0.31s  Aprobar una reserva pendiente
+  [OK ] R05    RQF-RES-15   HTTP 200   0.32s  Registrar el pago de una reserva
+  [OK ] R06    RQF-ESP-03   HTTP 200   0.32s  Consultar disponibilidad de espacios
+  [OK ] R07    RQF-ESP-04   HTTP 400   0.31s  Validar fecha invalida en disponibilidad
+  [OK ] R08    RNF-ERR-03   HTTP 404   0.31s  Consultar un recurso inexistente (404)
+  [OK ] R09    RQF-AUT-04   HTTP 200   0.32s  Refrescar el token de acceso
+  [OK ] R10    RQF-AUT-05   HTTP 200   0.33s  Cerrar sesion
+   -> 10/10 tareas completadas (100.0%) en 3.2s reales
+
+-- Sesion SIM-ADM-A (ADMIN, competencia Intermedia) --
+  [OK ] A01    RQF-AUT-01   HTTP 200   0.35s  Iniciar sesion como administrador
+  [OK ] A02    RQF-AUT-04   HTTP 200   0.33s  Consultar el panel de indicadores
+  [OK ] A03    RQF-REP-01   HTTP 200   0.29s  Reservas por fecha (reporte)
+  [OK ] A04    RQF-REP-02   HTTP 200   0.31s  Ingresos por mes (reporte)
+  [OK ] A05    RQF-REP-03   HTTP 200   0.33s  Clientes destacados (reporte)
+  [OK ] A06    RQF-USR-03   HTTP 200   0.34s  Listar y consultar usuarios del sistema
+  [OK ] A07    RQF-RES-12   HTTP 200   0.33s  Listar todas las reservas del club
+  [OK ] A08    RQF-ESP-01   HTTP 200   0.34s  Consultar el catalogo de espacios
+  [OK ] A09    RQF-RES-14   HTTP 200   1.03s  Rechazar una reserva pendiente
+  [OK ] A10    RNF-ERR-03   HTTP 404   0.30s  Consultar un recurso inexistente (404)
+  [OK ] A11    RQF-AUT-04   HTTP 200   0.32s  Refrescar el token de acceso
+   -> 11/11 tareas completadas (100.0%) en 4.3s reales
+
+-- Sesion SIM-ADM-B (ADMIN, competencia Basica) --
+  [OK ] A01    RQF-AUT-01   HTTP 200   0.37s  Iniciar sesion como administrador
+  [OK ] A02    RQF-AUT-04   HTTP 200   0.32s  Consultar el panel de indicadores
+  [OK ] A03    RQF-REP-01   HTTP 200   0.32s  Reservas por fecha (reporte)
+  [OK ] A04    RQF-REP-02   HTTP 200   0.30s  Ingresos por mes (reporte)
+  [OK ] A05    RQF-REP-03   HTTP 200   0.29s  Clientes destacados (reporte)
+  [OK ] A06    RQF-USR-03   HTTP 200   0.35s  Listar y consultar usuarios del sistema
+  [OK ] A07    RQF-RES-12   HTTP 200   0.33s  Listar todas las reservas del club
+  [OK ] A08    RQF-ESP-01   HTTP 200   0.33s  Consultar el catalogo de espacios
+  [OK ] A09    RQF-RES-14   HTTP 200   0.96s  Rechazar una reserva pendiente
+  [OK ] A10    RNF-ERR-03   HTTP 404   0.31s  Consultar un recurso inexistente (404)
+  [OK ] A11    RQF-AUT-04   HTTP 200   0.30s  Refrescar el token de acceso
+   -> 11/11 tareas completadas (100.0%) en 4.2s reales
+
+=== FASE 4: verificaciones transversales ===
+  [OK ] RNF-DIS-01 health -> HTTP 200 database=ok version=1.0.0
+  [OK ] RNF-ERR-02 sin credenciales -> HTTP 401
+  [OK ] RQF-AUT-04 panel admin -> HTTP 200
+  CSV: C:\Family_Health_MF\evidencias\simulacion_aceptacion_tareas.csv
+  CSV: C:\Family_Health_MF\evidencias\simulacion_aceptacion_sesiones.csv
+
+  JSON: C:\Family_Health_MF\evidencias\simulacion_aceptacion.json
+  MD  : C:\Family_Health_MF\evidencias\simulacion_aceptacion.md
+
+>>> RESUMEN: 6 sesiones | 68 tareas | 68 completadas (100.0 %) | 25 requisitos cubiertos
+
+=== FASE 5: limpieza (eliminar datos de prueba) ===
+  reservas de prueba: 6 eliminadas, 0 canceladas de 6 (total en el club: 10)
+  verificacion: quedan 0 reservas de prueba en el club
+  [OK ] usuario eliminado: sim_adm_a_sim
+  [OK ] usuario eliminado: sim_adm_b_sim
+  [OK ] usuario eliminado: sim_rec_a_sim
+  [OK ] usuario eliminado: sim_rec_b_sim
+  [OK ] usuario eliminado: sim_cli_a_sim
+  [OK ] usuario eliminado: sim_cli_b_sim
+  usuarios sinteticos eliminados: 6/6
