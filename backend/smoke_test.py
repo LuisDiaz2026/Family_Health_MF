@@ -2,10 +2,10 @@
 Smoke Test - Valida endpoints principales sin levantar servidor web.
 Usa Django test Client.
 
-NOTA DE SEGURIDAD: Credenciales de prueba parametrizables por variables
-DEMO_PASS_ADMIN, DEMO_PASS_EMP, DEMO_PASS_C1, DEMO_PASS_C2, DEMO_PASS_C3.
-Fallback a valores legacy para entornos con seed anterior.
-EXCLUSIVO para base de datos de prueba AISLADA.
+NOTA DE SEGURIDAD: las contraseñas DEMO no se escriben en el código. Se leen
+de las variables de entorno DEMO_PASS_ADMIN, DEMO_PASS_EMP, DEMO_PASS_C1,
+DEMO_PASS_C2 y DEMO_PASS_C3. Si alguna no está definida, el script se detiene
+con un mensaje claro. EXCLUSIVO para base de datos de prueba AISLADA.
 """
 import os
 import sys
@@ -26,11 +26,22 @@ import json
 
 client = Client()
 
-PW_ADMIN = os.getenv("DEMO_PASS_ADMIN") or "AdminFH2026*!"
-PW_EMP = os.getenv("DEMO_PASS_EMP") or "RecepcionFH2026*!"
-PW_C1 = os.getenv("DEMO_PASS_C1") or "Cliente1FH*!"
-PW_C2 = os.getenv("DEMO_PASS_C2") or "Cliente2FH*!"
-PW_C3 = os.getenv("DEMO_PASS_C3") or "Cliente3FH*!"
+def _credencial_demo(env_key: str) -> str:
+    """Lee una contraseña DEMO del entorno; detiene el script si falta."""
+    valor = os.getenv(env_key, "").strip()
+    if not valor:
+        print(f"[ABORTA] Falta la variable de entorno {env_key}.")
+        print("Defina las credenciales DEMO en el entorno (o en el archivo local "
+              "ignorado por Git) antes de ejecutar el smoke test.")
+        sys.exit(2)
+    return valor
+
+
+PW_ADMIN = _credencial_demo("DEMO_PASS_ADMIN")
+PW_EMP = _credencial_demo("DEMO_PASS_EMP")
+PW_C1 = _credencial_demo("DEMO_PASS_C1")
+PW_C2 = _credencial_demo("DEMO_PASS_C2")
+PW_C3 = _credencial_demo("DEMO_PASS_C3")
 
 print("=" * 60)
 print("SMOKE TEST - CLUB FAMILY HEALTH MF")

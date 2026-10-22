@@ -133,7 +133,7 @@ c:\Family_Health_MF\
 │   ├── requirements.txt     Dependencias backend
 │   ├── bootstrap_data.py    Semilla (usuarios demo, espacios, productos, rutinas)
 │   ├── smoke_test.py        Pruebas humo de la API (14 casos)
-│   ├── debug_login.py, fix_tiers.py  Scripts auxiliares
+│   ├── fix_tiers.py         Script auxiliar de mantenimiento de niveles
 │   ├── fixtures/  media/  static/     Directorios de apoyo (.gitkeep)
 │   └── EVIDENCIA_SMOKE_TEST_20261005.txt
 ├── frontend/

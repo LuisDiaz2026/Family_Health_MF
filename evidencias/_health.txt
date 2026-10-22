@@ -1,4 +1,0 @@
-﻿STATUS 200
-{"status":"ok","timestamp":"2026-10-20T03:54:31.826180+00:00","version":"1.0.0","app":"Club Family Health MF API","club_name":"Club Family Health","club":{"name":"Club Family Health","nit":"32739028-5","city":"Maicao, La Guajira"},"database":"ok"}
-HOST_TEST_STATUS 404
-{"status":"error","code":404,"message":"Application not found","request_id":"cNeQPWP8S62LmsyfWUN5dQ"}

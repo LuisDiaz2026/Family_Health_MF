@@ -204,7 +204,7 @@ npm.cmd run dev
 | `cliente2_fh` | CLIENT | Caso manual |
 | `cliente3_fh` | CLIENT | Caso manual |
 
-> Las contraseñas exactas de estas cuentas DEMO no se publican en este README por política de seguridad. Para ejecutar las pruebas o reproducir el entorno, consulta el código fuente de `bootstrap_data.py` y `smoke_test.py` (archivos internos del proyecto), o comunícate con el desarrollador.
+> Las contraseñas exactas de estas cuentas DEMO no se publican en este README por política de seguridad. Para reproducir el entorno, consulta el código fuente de `bootstrap_data.py` (archivo interno del proyecto) o comunícate con el desarrollador.
 
 ---
 
