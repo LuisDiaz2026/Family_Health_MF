@@ -3,7 +3,7 @@
 **Proyecto:** Family Health MF — Aplicativo web Mobile-First para la gestión centralizada de reservas del Club Family Health
 **Trabajo de grado:** Ingeniería de Sistemas y Computación — Universidad Antonio Nariño (UAN), sede Maicao, La Guajira
 **Autor:** Luis Fermín Díaz Choles
-**Fecha de actualización de este documento:** 2026-10-23 (America/Bogota)
+**Fecha de actualización de este documento:** 2026-10-24 (America/Bogota)
 
 > Este documento identifica de forma inequívoca la **versión de software entregada** al director del trabajo de grado. No contiene secretos, tokens ni credenciales.
 
@@ -22,30 +22,41 @@
 | Commit funcional de referencia (validación) | `51cffda5147b239231917d9ab781fdbb16b1012f` |
 | Etiqueta de cierre documental | `v1.0.0` → `2a0124a` |
 | Commit documental (manuales corregidos en `docs/`) | `1fe8867` |
-| Árbol entregado (ZIP de software) | `main` en el commit de remisión: código de `d46cd89` + documentación corregida |
+| Commit documental (rutas relativas y árbol entregado) | `58ebe58` |
+| **Commit de integración de las correcciones (23-10-2026)** | `0e46926` — acciones de reserva (aprobar, completar, cancelar, registrar pago) y siembra sin credenciales predeterminadas |
+| Árbol entregado (ZIP de software) | `08_SOFTWARE_FINAL_FAMILY_HEALTH_MF.zip` → commit `58ebe58`; `08_SOFTWARE_FAMILY_HEALTH_CORREGIDO_NO_PUBLICADO.zip` → commit `0e46926` |
 | URL de producción | `https://familyhealthmf-production.up.railway.app/` |
 | Endpoint de salud | `/api/v1/health/` |
 
-El commit `d46cd89` corresponde al código final del backend y del frontend. Los commits posteriores en `main` son **exclusivamente documentales** (esta misma evidencia, la sincronización de los manuales corregidos en `docs/`, las guías de entrega y la corrección de rutas relativas en la documentación). Se puede comprobar con:
+El commit `d46cd89` corresponde al código final del backend y del frontend. Los commits posteriores en `main` incorporan documentación corregida y, en el commit `0e46926`, las **correcciones de código** del paquete auditado del 23-10-2026. Se puede comprobar con:
 
 ```powershell
-git diff --stat d46cd89..main
+git diff --stat d46cd89..0e46926
+git show --stat 0e46926
 ```
 
-que solo lista archivos `.md` y `docs/*.docx`.
+El commit `0e46926` modifica exclusivamente `README.md`, `INFORME_CORRECCIONES_23_OCT_2026.md`, `docs/*.docx`, `backend/apps/reservations/views.py`, `backend/bootstrap_data.py`, `frontend/src/views/staff/ReservationsView.vue` y `railway.json`.
 
-El archivo `08_SOFTWARE_FINAL_FAMILY_HEALTH_MF.zip` del paquete documental es un `git archive` de ese árbol: contiene el código completo y, en `docs/`, los mismos manuales corregidos que se remiten por separado, idénticos byte a byte.
+El archivo `08_SOFTWARE_FINAL_FAMILY_HEALTH_MF.zip` del paquete documental es un `git archive` del árbol en `58ebe58`: contiene el código completo y, en `docs/`, los mismos manuales corregidos que se remiten por separado, idénticos byte a byte.
 
 ### Cómo verificar la versión
 
 ```powershell
 git clone https://github.com/LuisDiaz2026/Family_Health_MF.git
 cd Family_Health_MF
-git checkout d46cd89
+git checkout 0e46926
 git show -s --format="%H | %ad | %s" --date=iso HEAD
 ```
 
-La verificación del despliegue se realiza consultando `GET /api/v1/health/`, que debe responder HTTP 200 con `"database":"ok"`.
+La verificación del despliegue **no puede reducirse al health check**. El endpoint `GET /api/v1/health/` responde HTTP 200 con `"database":"ok"` en cualquier revisión, por lo que se complementa con dos comprobaciones que distinguen la revisión corregida:
+
+1. **Ruta nueva del backend.** `POST /api/v1/reservations/reservations/{id}/complete/` debe responder **HTTP 401** sin token (la ruta existe y exige autenticación). En la revisión anterior responde **HTTP 404**.
+
+   ```powershell
+   Invoke-WebRequest -Uri "https://familyhealthmf-production.up.railway.app/api/v1/reservations/reservations/1/complete/" -Method POST
+   ```
+
+2. **Bundle del frontend compilado.** El chunk del personal servido (`/static/assets/ReservationsView-*.js`) debe contener las rutas `/approve/` y `/complete/`, **no** contener `/confirm/`, e incluir el mensaje «Acción de reserva no admitida».
 
 ---
 
@@ -94,6 +105,7 @@ La verificación del despliegue se realiza consultando `GET /api/v1/health/`, qu
 | Mobile-First | 36/36 PASS, 0 px de desbordamiento | `evidencias/mobile_first.*` |
 | Indicadores de estado en PostgreSQL | 42 indicadores | `evidencias/metricas_operacion_real.*` |
 | Evaluación programática por perfiles | 68/68 tareas, 25 requisitos (identidades sintéticas) | `evidencias/simulacion_aceptacion.*` |
+| Regresión sobre la revisión corregida (`0e46926`) | 44/44 aprobadas (32 unitarias + 12 integración); `manage.py check` sin incidencias | Ejecución local del 2026-10-24 sobre SQLite de prueba aislada |
 
 **Nota.** Las 68 comprobaciones con identidades sintéticas corresponden a **validación técnica del software**, no a pruebas de usabilidad con participantes humanos. El sistema no mide tiempos de atención humana ni satisfacción de usuarios.
 
@@ -105,12 +117,15 @@ La verificación del despliegue se realiza consultando `GET /api/v1/health/`, qu
 - El archivo `.env` está excluido del repositorio (`.gitignore`); solo se versiona `.env.example` con valores de relleno.
 - No se incluyen tokens JWT, contraseñas ni cadenas de conexión en el repositorio ni en las evidencias.
 - El script `backend/debug_login.py` fue retirado del repositorio; `backend/smoke_test.py` lee las credenciales del entorno.
+- Las contraseñas predeterminadas se retiraron de `bootstrap_data.py` y la siembra quedó desactivada por defecto (`RAILWAY_SEED_BOOTSTRAP=0`); sin variables `DEMO_PASS_*` la siembra se detiene.
+- **Pendiente declarado (no resuelto por el código).** Las cuentas de demostración ya creadas en producción (`admin_fh`, `recepcion_fh`, `cafeteria_fh`, `cliente1_fh`, `cliente2_fh`, `cliente3_fh`) **conservan las contraseñas almacenadas con anterioridad**; retirarlas del código no las revoca. Se mantienen activas porque el director las requiere para la revisión; sus credenciales se entregan por canal privado y deben rotarse o desactivarse al cierre de la evaluación.
 
 ---
 
 ## 6. Punto de restauración
 
 - **Punto de restauración funcional:** commit `d46cd89` (rama `main`).
+- **Revisión corregida publicada:** commit `0e46926` (rama `main`), desplegada en Railway el 2026-10-24.
 - **Rama histórica de cierre:** `release/tg-final` (conservada como referencia reversible).
 - **Artefacto de evidencias:** carpeta `evidencias/`.
 
