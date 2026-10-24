@@ -11,7 +11,7 @@
 **Repositorio GitHub:** <https://github.com/LuisDiaz2026/Family_Health_MF>
 **Health Check API:** <https://familyhealthmf-production.up.railway.app/api/v1/health/>
 
-**Versión funcional validada en producción:** rama `main`, commit `51cffda` (despliegue Railway con PostgreSQL y health check HTTP 200). La etiqueta **`v1.0.0`** marca el commit de cierre `2a0124a`, que añade exclusivamente documentación y evidencias (sin cambios funcionales).
+**Software final entregado:** rama `main`, commit `d46cd89` (aplicativo completo con backend, frontend, suites de pruebas y evidencias). Despliegue Railway con PostgreSQL y health check HTTP 200. El commit funcional de referencia de la validación es `51cffda`; la etiqueta **`v1.0.0`** marca el cierre documental `2a0124a`. Los commits posteriores a `d46cd89` son exclusivamente documentales. La identificación de la versión entregada se detalla en `EVIDENCIA_VERSION_FINAL.md`.
 
 ---
 

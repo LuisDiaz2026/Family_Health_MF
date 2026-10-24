@@ -719,7 +719,7 @@ Además, `bootstrap_data.py` parametriza las credenciales de demostración y la 
 
 ### Artefactos de evidencia
 
-La carpeta `evidencias/` (salidas de las suites, health check y metadatos de git) permite reproducir el estado validado. `EVIDENCIA_VERSION_FINAL.md` registra el punto de restauración (rama `release/tg-final` y commit de congelamiento).
+La carpeta `evidencias/` (salidas de las suites, health check y metadatos de git) permite reproducir el estado validado. `EVIDENCIA_VERSION_FINAL.md` registra la identificación de la versión de software entregada (rama `main`, commit `d46cd89`) y el punto de restauración.
 
 > Nota: si en Railway se emplea SQLite junto con un Volume (`RAILWAY_VOLUME_MOUNT_PATH`), el archivo de base de datos y los `media` residen en el volumen; el respaldo se realiza copiando ese volumen.
 
