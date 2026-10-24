@@ -95,19 +95,21 @@ async function load() {
 
 async function update(r, action) {
   try {
-    if (action === 'confirm') await api.post(`/reservations/reservations/${r.id}/confirm/`)
-    else if (action === 'cancel') await api.post(`/reservations/reservations/${r.id}/cancel/`)
-    else if (action === 'complete') await api.patch(`/reservations/reservations/${r.id}/`, { status: 'COMPLETED' })
-    else if (action === 'pay') await api.post(`/reservations/reservations/${r.id}/mark-paid/`)
-    showToast('Reserva actualizada.', 'success')
-    await load()
-  } catch (e) {
-    try { await api.patch(`/reservations/reservations/${r.id}/`, { status: action === 'cancel' ? 'CANCELLED' : (action === 'confirm' ? 'CONFIRMED' : r.status), payment_status: action === 'pay' ? 'PAID' : r.payment_status })
-      showToast('Reserva actualizada.', 'success')
-      await load()
-    } catch (err) {
-      showToast('No se pudo actualizar. Revisa permisos.', 'error')
+    if (action === 'confirm') {
+      await api.post(`/reservations/reservations/${r.id}/approve/`)
+    } else if (action === 'cancel') {
+      await api.post(`/reservations/reservations/${r.id}/cancel/`)
+    } else if (action === 'complete') {
+      await api.post(`/reservations/reservations/${r.id}/complete/`)
+    } else if (action === 'pay') {
+      await api.post(`/reservations/reservations/${r.id}/mark-paid/`)
+    } else {
+      throw new Error('Acción de reserva no admitida')
     }
+    await load()
+    showToast('Reserva actualizada.', 'success')
+  } catch (error) {
+    showToast('No se pudo actualizar. Comprueba el estado y tus permisos.', 'error')
   }
 }
 

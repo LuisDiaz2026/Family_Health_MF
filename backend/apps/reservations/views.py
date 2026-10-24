@@ -153,7 +153,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
             perms = [IsAuthenticated & (IsClient | IsAdminOrReception)]
         elif self.action in ("update", "partial_update"):
             perms = [IsAuthenticated & IsAdminOrReception]
-        elif self.action in ("approve", "reject", "mark_paid"):
+        elif self.action in ("approve", "reject", "mark_paid", "complete"):
             perms = [IsAuthenticated & IsAdminOrReception]
         elif self.action == "cancel":
             perms = [IsAuthenticated & (IsClient | IsAdminOrReception)]
@@ -231,6 +231,22 @@ class ReservationViewSet(viewsets.ModelViewSet):
         r.save(update_fields=["payment_status", "payment_received_by",
                               "payment_received_at"])
         return Response(ReservationSerializer(r, context={"request": request}).data)
+
+    @action(detail=True, methods=["post"], url_path="complete")
+    def complete(self, request, pk=None):
+        """Marca como completada una reserva confirmada por personal autorizado."""
+        reservation = self.get_object()
+        if reservation.status != Reservation.STATUS_CONFIRMED:
+            return Response(
+                {"error": "Solo se puede completar una reserva confirmada"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        reservation.status = Reservation.STATUS_COMPLETED
+        reservation.completed_at = timezone.now()
+        reservation.save(update_fields=["status", "completed_at"])
+        return Response(ReservationSerializer(
+            reservation, context={"request": request}
+        ).data)
 
     @action(detail=False, methods=["get"], url_path="my-upcoming",
             permission_classes=[IsAuthenticated & IsClient])

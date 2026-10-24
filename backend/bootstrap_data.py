@@ -6,7 +6,7 @@ Ejecución:
 
 NOTA DE SEGURIDAD: Credenciales de demostración parametrizables por variables
 DEMO_PASS_ADMIN, DEMO_PASS_EMP, DEMO_PASS_CAF, DEMO_PASS_C1, DEMO_PASS_C2, DEMO_PASS_C3.
-Si no están definidas se usan contraseñas fijas de demostración (conocidas).
+Sin estas variables la siembra se detiene: no se permiten contraseñas predeterminadas.
 Este script es EXCLUSIVO para entornos de prueba AISLADOS.
 """
 import os
@@ -19,25 +19,16 @@ from decimal import Decimal
 from django.utils.text import slugify
 
 
-# Fallback fijos (conocidos) cuando no hay variables DEMO_PASS_* configuradas.
-# Coinciden con los valores legacy de smoke_test.py para que las pruebas pasen
-# tanto en local como en Railway sin configuración adicional.
-_DEMO_PASS_FALLBACK = {
-    "DEMO_PASS_ADMIN": "AdminFH2026*!",
-    "DEMO_PASS_EMP": "RecepcionFH2026*!",
-    "DEMO_PASS_CAF": "CafeteriaFH2026*!",
-    "DEMO_PASS_C1": "Cliente1FH*!",
-    "DEMO_PASS_C2": "Cliente2FH*!",
-    "DEMO_PASS_C3": "Cliente3FH*!",
-}
-
-
+# En el paquete corregido no se distribuyen contraseñas predeterminadas.
+# Las credenciales de demostración son obligatorias solo al habilitar la siembra.
 def _demo_pass(env_key: str, label: str):
-    val = os.getenv(env_key)
-    if val:
-        return val, False
-    # Fallback fijo conocido (no aleatorio) para entornos Railway sin variables.
-    return _DEMO_PASS_FALLBACK.get(env_key, f"{label}FH2026*!"), False
+    value = os.getenv(env_key, "").strip()
+    if not value:
+        raise RuntimeError(
+            f"Falta {env_key}: establezca una contraseña de prueba en el entorno "
+            "antes de ejecutar la siembra en un entorno aislado."
+        )
+    return value, False
 
 # UTF-8 seguro para Windows
 if sys.platform.startswith("win"):
@@ -64,7 +55,7 @@ from apps.gym.models import MuscleGroup, Equipment, Exercise, Routine, RoutineEx
 def run():
     # Control de ejecución: si RAILWAY_SEED_BOOTSTRAP=0 o false, NO se ejecuta
     # el bootstrap (producción). Evita recrear datos demo y borrar inventario.
-    seed_flag = os.getenv("RAILWAY_SEED_BOOTSTRAP", "1").strip().lower()
+    seed_flag = os.getenv("RAILWAY_SEED_BOOTSTRAP", "0").strip().lower()
     if seed_flag in ("0", "false", "no", "off"):
         print("[BOOTSTRAP] RAILWAY_SEED_BOOTSTRAP desactivado — se omite la siembra de datos.")
         return
@@ -946,8 +937,7 @@ def run():
     print("  Empleado : recepcion_fh  | password vía DEMO_PASS_EMP")
     print("  Clientes : cliente1_fh, cliente2_fh, cliente3_fh")
     print("             | passwords vía DEMO_PASS_C1 / C2 / C3")
-    print("  Si variables .env no existen, passwords fueron")
-    print("  generadas aleatoriamente (marcadas [auto-generada]).")
+    print("  Las contraseñas DEMO_PASS_* fueron aportadas mediante variables de entorno.")
     print("=" * 60)
     print("Panel Admin Django:", "http://127.0.0.1:8000/admin/")
     print("API Base URL       :", "http://127.0.0.1:8000/api/v1/")

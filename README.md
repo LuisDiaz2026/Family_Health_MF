@@ -1,3 +1,5 @@
+> **Distribución de auditoría 23-10-2026.** Basada en `d46cd89`, incorpora las correcciones documentadas en `INFORME_CORRECCIONES_23_OCT_2026.md`, ya integradas en este repositorio y desplegadas en Railway mediante un commit propio. La siembra se encuentra desactivada por defecto; para habilitarla en desarrollo configure `DEMO_PASS_*` de manera explícita. No reutilice cuentas con credenciales de demostración anteriores.
+
 # CLUB FAMILY HEALTH MF - Aplicativo Web Integral
 
 > **Ingeniería de Sistemas**
@@ -11,7 +13,7 @@
 **Repositorio GitHub:** <https://github.com/LuisDiaz2026/Family_Health_MF>
 **Health Check API:** <https://familyhealthmf-production.up.railway.app/api/v1/health/>
 
-**Software final entregado:** rama `main`, commit `d46cd89` (aplicativo completo con backend, frontend, suites de pruebas y evidencias). Despliegue Railway con PostgreSQL y health check HTTP 200. El commit funcional de referencia de la validación es `51cffda`; la etiqueta **`v1.0.0`** marca el cierre documental `2a0124a`. Los commits posteriores a `d46cd89` son exclusivamente documentales. La identificación de la versión entregada se detalla en `EVIDENCIA_VERSION_FINAL.md`.
+**Software final entregado:** rama `main`, commit `d46cd89` (aplicativo completo con backend, frontend, suites de pruebas y evidencias), seguido del commit que integra las correcciones de acciones de reserva y de credenciales del paquete auditado del 23-10-2026. Despliegue Railway con PostgreSQL y health check HTTP 200. El commit funcional de referencia de la validación es `51cffda`; la etiqueta **`v1.0.0`** marca el cierre documental `2a0124a`. La identificación de la versión entregada se detalla en `EVIDENCIA_VERSION_FINAL.md`.
 
 ---
 
