@@ -96,12 +96,12 @@ c:\Family_Health_MF\
 
 ### 2.1 Documentos formales del proyecto
 
-Los manuales entregables en formato Word (normas APA, plantilla institucional FIS-UDCII) están en la carpeta [`docs/`](file:///c:/Family_Health_MF/docs):
+Los manuales entregables en formato Word (normas APA, plantilla institucional FIS-UDCII) están en la carpeta [`docs/`](docs):
 
 | Documento | Código | Archivo | Fuente Markdown |
 |---|---|---|---|
-| **Manual Técnico** | FIS-UDCII-G05 | [docs/Manual_Tecnico_Family_Health.docx](file:///c:/Family_Health_MF/docs/Manual_Tecnico_Family_Health.docx) | [MANUAL_TECNICO.md](file:///c:/Family_Health_MF/MANUAL_TECNICO.md) |
-| **Manual de Usuario** | FIS-UDCII-G06 | [docs/Manual_Usuario_Family_Health.docx](file:///c:/Family_Health_MF/docs/Manual_Usuario_Family_Health.docx) | [MANUAL_USUARIO.md](file:///c:/Family_Health_MF/MANUAL_USUARIO.md) |
+| **Manual Técnico** | FIS-UDCII-G05 | [docs/Manual_Tecnico_Family_Health.docx](docs/Manual_Tecnico_Family_Health.docx) | [MANUAL_TECNICO.md](MANUAL_TECNICO.md) |
+| **Manual de Usuario** | FIS-UDCII-G06 | [docs/Manual_Usuario_Family_Health.docx](docs/Manual_Usuario_Family_Health.docx) | [MANUAL_USUARIO.md](MANUAL_USUARIO.md) |
 
 El **Manual de Usuario** está organizado por perfiles (Cliente, Administrador, Recepción y Cafetería) y describe el manejo de cada pantalla con capturas reales del despliegue productivo. El **Manual Técnico** documenta la arquitectura, el modelo de datos, la seguridad y el despliegue.
 
@@ -222,13 +222,13 @@ npm.cmd run dev
 - Wizard 3 pasos (selecciona espacio → fecha → slot horario).
 - Precio final: `minutos / 60 * hourly_rate`.
 - **Protección anti-solape actual (3 niveles de defensa):**
-  1. `Space.is_available_at(start, end)` en [models.py:L163-L180](file:///c:/Family_Health_MF/backend/apps/reservations/models.py#L163-L180) — consulta `start_time < fin AND end_time > inicio` detecta solape PARCIAL (p. ej. 10:00-11:00 vs 10:30-11:30).
-  2. `Reservation.save()` en [models.py:L447-L460](file:///c:/Family_Health_MF/backend/apps/reservations/models.py#L447-L460) invoca la validación anterior **dentro de un bloque `with transaction.atomic()`**.
-  3. **Bloqueo explícito `Space.objects.select_for_update().get(pk=self.space_id)`** en [models.py:L455](file:///c:/Family_Health_MF/backend/apps/reservations/models.py#L455) — obtiene bloqueo exclusivo de fila del espacio ANTES de verificar disponibilidad, evitando race conditions TOCTOU (Time-of-Check / Time-of-Use) en PostgreSQL.
+  1. `Space.is_available_at(start, end)` en [models.py:L163-L180](backend/apps/reservations/models.py#L163-L180) — consulta `start_time < fin AND end_time > inicio` detecta solape PARCIAL (p. ej. 10:00-11:00 vs 10:30-11:30).
+  2. `Reservation.save()` en [models.py:L447-L460](backend/apps/reservations/models.py#L447-L460) invoca la validación anterior **dentro de un bloque `with transaction.atomic()`**.
+  3. **Bloqueo explícito `Space.objects.select_for_update().get(pk=self.space_id)`** en [models.py:L455](backend/apps/reservations/models.py#L455) — obtiene bloqueo exclusivo de fila del espacio ANTES de verificar disponibilidad, evitando race conditions TOCTOU (Time-of-Check / Time-of-Use) en PostgreSQL.
 - **Limitaciones conocidas y acciones pendientes (revisión profesor):**
   1. **SQLite (dev):** emula `SELECT FOR UPDATE` pero sin garantía a nivel motor (no implementa bloqueo real de filas ni exclusion constraints). Para el uso habitual del club (flujo de trabajo serial) es válido, pero en producción se recomienda PostgreSQL.
   2. **PostgreSQL (producción):** para garantía 100.00% y evitar solapes incluso por fallos de aplicación, se **RECOMIENDA AÑADIR una Exclusion Constraint** con extensión `btree_gist`: `ALTER TABLE reservations ADD CONSTRAINT no_overlap_reservations EXCLUDE USING gist (space_id WITH =, tstzrange(start_time, end_time) WITH &&)`. Esta mejora es responsabilidad del DBA en despliegue final.
-- **Pruebas:** Smoke test [14] ejecuta el flujo "crear reserva + intento solapado → 2ª reserva rechazada HTTP400 + BD count=1 SIN duplicados" correctamente → ver archivo [`evidencias/smoke_tests_raw.txt`](file:///c:/Family_Health_MF/evidencias/smoke_tests_raw.txt).
+- **Pruebas:** Smoke test [14] ejecuta el flujo "crear reserva + intento solapado → 2ª reserva rechazada HTTP400 + BD count=1 SIN duplicados" correctamente → ver archivo [`evidencias/smoke_tests_raw.txt`](evidencias/smoke_tests_raw.txt).
 
 ### 4.3 Gestión Pedidos Refresquería
 - 23 productos SKU en 5 categorías (Bebidas frías, Calientes, Snacks, Comidas rápidas, Postres).
@@ -284,10 +284,10 @@ cd backend
 **Resultado ejecución real:** `14 OK · 0 FALLIDOS` ✅
 - **Fecha y hora de ejecución:** 2026-10-05 09:45 (formato ISO).
 - **Entorno de pruebas:** backend/db.sqlite3 (seed data 10 espacios / 23 productos / 5 rutinas / 5 usuarios demo).
-- **Evidencia de la ejecución guardada en:** [`evidencias/smoke_tests_raw.txt`](file:///c:/Family_Health_MF/evidencias/smoke_tests_raw.txt)
+- **Evidencia de la ejecución guardada en:** [`evidencias/smoke_tests_raw.txt`](evidencias/smoke_tests_raw.txt)
 - **Escenarios probados en la suite 14 humos:** [01] Health → [02] Login Cliente → [03] Login Admin → [04] Listar 10 Espacios → [05] Consulta disponibilidad → [06] 23 Productos → [07] Perfil + Fidelidad → [08] 5 Rutinas Gym → [09] Dashboard KPI → [10] Top3 Clientes → [11] Bloqueo 401 sin Token → [12] Refresh Token → [13] Registro sin Política (rechazo 400) → [14] Reserva + Anti-solapamiento (HTTP201 + HTTP400 + count=1 BD VERIFICADO).
 
-> **Pruebas unitarias / integración / validación en producción (ejecutadas con evidencia registrada):** **32 pruebas unitarias (32/32 PASS)**, **12 pruebas de integración (12/12 PASS)** y **20 casos HTTP contra el despliegue de Railway (20/20 PASS)**. Las salidas quedan en [`evidencias/`](file:///c:/Family_Health_MF/evidencias): `pruebas_unitarias.txt`, `pruebas_integracion.txt` y `validacion_railway.md`. La firma del acta formal de validación por el Product Owner del Club Family Health permanece como trámite administrativo de cierre.
+> **Pruebas unitarias / integración / validación en producción (ejecutadas con evidencia registrada):** **32 pruebas unitarias (32/32 PASS)**, **12 pruebas de integración (12/12 PASS)** y **20 casos HTTP contra el despliegue de Railway (20/20 PASS)**. Las salidas quedan en [`evidencias/`](evidencias): `pruebas_unitarias.txt`, `pruebas_integracion.txt` y `validacion_railway.md`. La firma del acta formal de validación por el Product Owner del Club Family Health permanece como trámite administrativo de cierre.
 
 ---
 
@@ -295,10 +295,10 @@ cd backend
 
 **✅ CONFIGURACIÓN PREDETERMINADA (arrancar.bat):**
 Ahora los servidores publican automáticamente en `0.0.0.0` para acceso LAN sin editar archivos:
-- Django Backend: `0.0.0.0:8000` (vía [arrancar.bat](file:///c:/Family_Health_MF/arrancar.bat))
-- Vite Frontend: `0.0.0.0:5173` (vía [package.json](file:///c:/Family_Health_MF/frontend/package.json) scripts `dev`)
-- CORS: Permite todos los orígenes SÓLO si `DJANGO_DEBUG=True` en el `.env` ([settings.py#L311-L315](file:///c:/Family_Health_MF/backend/config/settings.py#L311-L315))
-- ALLOWED_HOSTS: Incluye rangos CIDR LAN 192.168.0.0/16 · 10.0.0.0/8 · 172.16.0.0/12 ([settings.py#L46-L53](file:///c:/Family_Health_MF/backend/config/settings.py#L46-L53))
+- Django Backend: `0.0.0.0:8000` (vía [arrancar.bat](arrancar.bat))
+- Vite Frontend: `0.0.0.0:5173` (vía [package.json](frontend/package.json) scripts `dev`)
+- CORS: Permite todos los orígenes SÓLO si `DJANGO_DEBUG=True` en el `.env` ([settings.py#L311-L315](backend/config/settings.py#L311-L315))
+- ALLOWED_HOSTS: Incluye rangos CIDR LAN 192.168.0.0/16 · 10.0.0.0/8 · 172.16.0.0/12 ([settings.py#L46-L53](backend/config/settings.py#L46-L53))
 
 **Pasos para probar en móvil/celular REAL:**
 

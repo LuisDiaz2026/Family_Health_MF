@@ -14,7 +14,7 @@ Se combinaron tres fuentes de evidencia:
 2. **Revisión estática del control de acceso**: `backend/apps/authentication/permissions.py`
    y los `permission_classes` declarados en cada `views.py`.
 3. **Verificación dinámica HTTP** contra la versión desplegada, ejecutada por el script
-   reproducible [verificacion_seguridad.py](file:///c:/Family_Health_MF/tests/verificacion_seguridad.py),
+   reproducible [verificacion_seguridad.py](../tests/verificacion_seguridad.py),
    cuya salida bruta quedó en `evidencias/_seguridad_raw.txt` y su resumen en
    `evidencias/verificacion_seguridad.json`.
 

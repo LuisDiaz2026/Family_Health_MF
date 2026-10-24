@@ -21,10 +21,20 @@
 | Fecha del commit | 2026-10-21 20:27:08 -0500 |
 | Commit funcional de referencia (validación) | `51cffda5147b239231917d9ab781fdbb16b1012f` |
 | Etiqueta de cierre documental | `v1.0.0` → `2a0124a` |
+| Commit documental (manuales corregidos en `docs/`) | `1fe8867` |
+| Árbol entregado (ZIP de software) | `main` en el commit de remisión: código de `d46cd89` + documentación corregida |
 | URL de producción | `https://familyhealthmf-production.up.railway.app/` |
 | Endpoint de salud | `/api/v1/health/` |
 
-El commit `d46cd89` corresponde al código final del aplicativo. Cualquier commit posterior en `main` es **exclusivamente documental** (esta misma evidencia y las guías de entrega) y no modifica el código del backend ni del frontend.
+El commit `d46cd89` corresponde al código final del backend y del frontend. Los commits posteriores en `main` son **exclusivamente documentales** (esta misma evidencia, la sincronización de los manuales corregidos en `docs/`, las guías de entrega y la corrección de rutas relativas en la documentación). Se puede comprobar con:
+
+```powershell
+git diff --stat d46cd89..main
+```
+
+que solo lista archivos `.md` y `docs/*.docx`.
+
+El archivo `08_SOFTWARE_FINAL_FAMILY_HEALTH_MF.zip` del paquete documental es un `git archive` de ese árbol: contiene el código completo y, en `docs/`, los mismos manuales corregidos que se remiten por separado, idénticos byte a byte.
 
 ### Cómo verificar la versión
 
