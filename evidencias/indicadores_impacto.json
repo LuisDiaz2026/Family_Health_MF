@@ -1,0 +1,38 @@
+{
+  "fecha": "2026-11-19T14:16:21+00:00",
+  "url": "https://familyhealthmf-production.up.railway.app",
+  "indicadores": {
+    "total": {
+      "reservas": 8,
+      "activas": 0,
+      "canceladas": 8,
+      "tasa_cancelacion_pct": 100.0,
+      "canceladas_con_motivo": 8,
+      "I-01_confirmadas": 0,
+      "I-01_con_aprobacion": 0,
+      "I-01_tiempo_min": {
+        "n": 0
+      },
+      "I-02_conflictos_persistidos": 0,
+      "I-02_detalle": []
+    },
+    "operativas": {
+      "reservas": 2,
+      "activas": 0,
+      "canceladas": 2,
+      "tasa_cancelacion_pct": 100.0,
+      "canceladas_con_motivo": 2,
+      "I-01_confirmadas": 0,
+      "I-01_con_aprobacion": 0,
+      "I-01_tiempo_min": {
+        "n": 0
+      },
+      "I-02_conflictos_persistidos": 0,
+      "I-02_detalle": []
+    },
+    "I-04": {
+      "calculable": false,
+      "motivo": "Requiere participantes reales; la version final no captura percepcion de usuarios."
+    }
+  }
+}

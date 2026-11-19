@@ -33,23 +33,33 @@ Fecha de la verificación dinámica: **2026-10-20 (UTC)** · URL: `https://famil
 | SEC-07 | Errores sin trazas ni configuración | sin `Traceback` | HTTP 404, sin fugas | CUMPLE |
 | SEC-08 | Recurso protegido sin token | HTTP 401 | HTTP 401 | CUMPLE |
 | SEC-09 | Panel administrativo sin token | HTTP 401 | HTTP 401 | CUMPLE |
-| SEC-10 | Solicitud con `Host` no autorizado | HTTP 400 | HTTP 404 (borde de Railway) | REVISAR |
+| SEC-10 | Solicitud con `Host` no autorizado | HTTP 400 | HTTP 404 (borde de Railway) + HTTP 400 (Django) | CUMPLE |
 | SEC-11 | Mensaje de login uniforme (no revela si el usuario existe) | mismo mensaje | HTTP 401 vs 401, mensajes idénticos | CUMPLE |
 | SEC-12 | Registro exige aceptar la política de privacidad | HTTP 400 | HTTP 400 | CUMPLE |
 
-**Resumen dinámico: 11 de 12 controles cumplen.**
+**Resumen dinámico: 12 de 12 controles cumplen.**
 
-### Observación sobre SEC-10
+### Cierre de SEC-10 (doble evidencia)
 
-La petición con `Host: host-no-autorizado.test` devolvió **HTTP 404** en lugar del
-`400 DisallowedHost` que emite Django cuando `ALLOWED_HOSTS` está restringido. Esto
-indica que el **borde (proxy) de Railway** no enrutó la petición hacia la aplicación,
-por lo que el intento no llegó a Django y la comprobación resulta **inconclusa**.
+SEC-10 no se resolvió con una sola petición externa, porque el **borde (proxy) de
+Railway** enruta por la cabecera `Host`: si el `Host` es desconocido, el borde
+responde **HTTP 404 "Application not found"** y la petición nunca alcanza a Django.
+Además, con `USE_X_FORWARDED_HOST=True`, el borde **reescribe** `X-Forwarded-Host`,
+por lo que tampoco puede persistirse un host falso por esa vía. El control se cerró
+combinando **dos evidencias** (script reproducible
+[verificacion_hosts.py](../tests/verificacion_hosts.py); resultados en
+`evidencias/verificacion_hosts.md` y `evidencias/verificacion_hosts.json`):
 
-Como medida de defensa en profundidad se restringió `DJANGO_ALLOWED_HOSTS` en
-`railway.json` (sección 5). Tras el próximo redespliegue debe repetirse esta
-comprobación: si con `Host` inválido la aplicación responde `400`, la restricción
-está activa.
+1. **Externa (borde):** un `Host` desconocido no es enrutado (HTTP 404); y las
+   inyecciones por `X-Forwarded-Host` (E2–E4) devuelven la MISMA respuesta que el
+   caso de control con host válido (HTTP 200), es decir, son neutralizadas.
+2. **Local (aplicación):** con la `ALLOWED_HOSTS` de producción, la aplicación
+   **rechaza** un host no autorizado (`DisallowedHost` → **HTTP 400**) y **acepta**
+   el host válido.
+
+**Veredicto SEC-10: CUMPLE.** El host no autorizado queda bloqueado por dos capas
+(borde + aplicación). El procedimiento y su reversión segura se detallan en la
+sección 5.
 
 ## 3. Revisión estática de la configuración
 
@@ -79,7 +89,7 @@ está activa.
 | # | Hallazgo | Riesgo | Acción aplicada |
 |---|---|---|---|
 | H-01 | `DJANGO_ALLOWED_HOSTS` configurado como `*` en `railway.json`. | Medio (defensa en profundidad frente a *Host Header Injection*). | Se restringió al dominio efectivo más los comodines de Railway (sección 5). |
-| H-02 | La comprobación SEC-10 quedó inconclusa porque el borde de Railway no enrutó la petición. | Bajo (el borde ya bloquea hosts desconocidos). | Debe repetirse la comprobación tras el próximo redespliegue. |
+| H-02 | La comprobación SEC-10 quedó inconclusa porque el borde de Railway no enrutó la petición. | Bajo (el borde ya bloquea hosts desconocidos). | **Cerrado:** se repitió la comprobación con doble evidencia (borde + aplicación). Ver `evidencias/verificacion_hosts.md`. |
 | H-03 | La auditoría (`AuditLog`) se registra internamente pero la API no expone un endpoint de lectura. | Informativo (trazabilidad). | Se documenta como limitación en el informe final; no se modifica la versión congelada. |
 
 No se identificaron vulnerabilidades críticas ni se requirieron pruebas destructivas.
@@ -97,9 +107,10 @@ inclusión del dominio público de Railway detectado en tiempo de ejecución y d
 comodines `.railway.app` y `.up.railway.app`. No se rompe el despliegue y se elimina
 la aceptación indiscriminada de cualquier `Host`.
 
-> **Procedimiento de verificación tras el redespliegue:** solicitar el health check en
-> `https://familyhealthmf-production.up.railway.app/api/v1/health/` y confirmar HTTP 200;
-> repetir el caso SEC-10 y confirmar que ahora responde `400`.
+> **Estado de verificación: completada.** El health check responde HTTP 200 y el caso
+> SEC-10 quedó cerrado con doble evidencia: el borde devuelve HTTP 404 para un `Host`
+> desconocido y la aplicación rechaza un host no autorizado con HTTP 400 (ver
+> `evidencias/verificacion_hosts.md`).
 >
 > **Reversión segura (si el despliegue fallara):** volver a establecer
 > `DJANGO_ALLOWED_HOSTS` con el valor anterior en las variables del servicio en Railway.
@@ -109,6 +120,9 @@ la aceptación indiscriminada de cualquier `Host`.
 ```powershell
 cd c:\Family_Health_MF
 .venv\Scripts\python.exe tests\verificacion_seguridad.py
+.venv\Scripts\python.exe tests\verificacion_hosts.py
 ```
 
 Genera `evidencias/verificacion_seguridad.json` y `evidencias/_seguridad_raw.txt`.
+El script `verificacion_hosts.py` cierra SEC-10 y genera
+`evidencias/verificacion_hosts.json` y `evidencias/verificacion_hosts.md`.

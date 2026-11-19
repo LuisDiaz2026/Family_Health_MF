@@ -1,0 +1,131 @@
+{
+  "fecha_ejecucion": "2026-11-19T14:16:22+00:00",
+  "url": "https://familyhealthmf-production.up.railway.app",
+  "tipo_prueba": "concurrencia - mismo espacio y misma franja horaria",
+  "n_solicitudes_simultaneas": 10,
+  "clientes": [
+    "cliente1_fh",
+    "cliente2_fh"
+  ],
+  "espacio": {
+    "id": 2,
+    "code": "CANCHA-BASKET-01",
+    "name": "Cancha de Baloncesto"
+  },
+  "fecha": "2026-11-22",
+  "franja": {
+    "inicio": "2026-11-22T07:00:00-05:00",
+    "fin": "2026-11-22T08:00:00-05:00"
+  },
+  "aceptadas_201": 1,
+  "rechazadas_400": 9,
+  "otras_respuestas": 0,
+  "reservas_activas_en_bd": 1,
+  "reservas_en_bd_detalle": [
+    {
+      "start_time": "2026-11-22T12:00:00Z",
+      "end_time": "2026-11-22T13:00:00Z",
+      "id": 85,
+      "status": "CONFIRMED"
+    }
+  ],
+  "limpieza_cancelaciones": [
+    {
+      "id": 85,
+      "http": 200
+    }
+  ],
+  "veredicto": "PASS",
+  "peticiones": [
+    {
+      "indice": 0,
+      "usuario": "cliente1_fh",
+      "http": 400,
+      "segundos": 0.3585,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...kihw (551 car.)"
+    },
+    {
+      "indice": 1,
+      "usuario": "cliente2_fh",
+      "http": 400,
+      "segundos": 0.3559,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...4_lg (562 car.)"
+    },
+    {
+      "indice": 2,
+      "usuario": "cliente1_fh",
+      "http": 400,
+      "segundos": 0.3755,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...kihw (551 car.)"
+    },
+    {
+      "indice": 3,
+      "usuario": "cliente2_fh",
+      "http": 400,
+      "segundos": 0.3728,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...4_lg (562 car.)"
+    },
+    {
+      "indice": 4,
+      "usuario": "cliente1_fh",
+      "http": 201,
+      "segundos": 0.3498,
+      "detalle": "{\"id\":85,\"space\":{\"id\":2,\"code\":\"CANCHA-BASKET-01\",\"name\":\"Cancha de Baloncesto\",\"space_type_name\":\"Canchas Deportivas\",",
+      "reserva_id": 85,
+      "token_huella": "eyJhbGciOi...kihw (551 car.)"
+    },
+    {
+      "indice": 5,
+      "usuario": "cliente2_fh",
+      "http": 400,
+      "segundos": 0.3709,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...4_lg (562 car.)"
+    },
+    {
+      "indice": 6,
+      "usuario": "cliente1_fh",
+      "http": 400,
+      "segundos": 0.3838,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...kihw (551 car.)"
+    },
+    {
+      "indice": 7,
+      "usuario": "cliente2_fh",
+      "http": 400,
+      "segundos": 0.3775,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...4_lg (562 car.)"
+    },
+    {
+      "indice": 8,
+      "usuario": "cliente1_fh",
+      "http": 400,
+      "segundos": 0.3815,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...kihw (551 car.)"
+    },
+    {
+      "indice": 9,
+      "usuario": "cliente2_fh",
+      "http": 400,
+      "segundos": 0.3696,
+      "detalle": "{\"detail\":\"['Conflicto: Espacio no disponible en horario solicitado']\"}",
+      "reserva_id": null,
+      "token_huella": "eyJhbGciOi...4_lg (562 car.)"
+    }
+  ]
+}

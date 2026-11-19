@@ -1,0 +1,71 @@
+{
+  "fecha": "2026-11-19T14:16:18+00:00",
+  "url": "https://familyhealthmf-production.up.railway.app",
+  "control": "SEC-10 - solicitud con Host no autorizado",
+  "allowed_hosts_produccion": "familyhealthmf-production.up.railway.app,.up.railway.app,.railway.app",
+  "externo": [
+    {
+      "id": "E1",
+      "descripcion": "Host no autorizado (test actual SEC-10)",
+      "cabeceras": {
+        "Host": "host-no-autorizado.test"
+      },
+      "http": 404,
+      "cuerpo": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"<id>\"}"
+    },
+    {
+      "id": "E2",
+      "descripcion": "X-Forwarded-Host no autorizado",
+      "cabeceras": {
+        "X-Forwarded-Host": "host-no-autorizado.test"
+      },
+      "http": 200,
+      "cuerpo": "{\"status\":\"ok\",\"timestamp\":\"<t>\",\"version\":\"1.0.0\",\"app\":\"Club Family Health MF API\",\"club_name\":\"Club Family Health\",\"club\":{\"name\":\"Club Family Health\",\"nit\":"
+    },
+    {
+      "id": "E3",
+      "descripcion": "X-Forwarded-Host con puerto",
+      "cabeceras": {
+        "X-Forwarded-Host": "malo.test:8080"
+      },
+      "http": 200,
+      "cuerpo": "{\"status\":\"ok\",\"timestamp\":\"<t>\",\"version\":\"1.0.0\",\"app\":\"Club Family Health MF API\",\"club_name\":\"Club Family Health\",\"club\":{\"name\":\"Club Family Health\",\"nit\":"
+    },
+    {
+      "id": "E4",
+      "descripcion": "X-Forwarded-Host encadenado",
+      "cabeceras": {
+        "X-Forwarded-Host": "familyhealthmf-production.up.railway.app, host-no-autorizado.test"
+      },
+      "http": 200,
+      "cuerpo": "{\"status\":\"ok\",\"timestamp\":\"<t>\",\"version\":\"1.0.0\",\"app\":\"Club Family Health MF API\",\"club_name\":\"Club Family Health\",\"club\":{\"name\":\"Club Family Health\",\"nit\":"
+    },
+    {
+      "id": "E5",
+      "descripcion": "Host valido (control positivo)",
+      "cabeceras": {
+        "Host": "familyhealthmf-production.up.railway.app"
+      },
+      "http": 200,
+      "cuerpo": "{\"status\":\"ok\",\"timestamp\":\"<t>\",\"version\":\"1.0.0\",\"app\":\"Club Family Health MF API\",\"club_name\":\"Club Family Health\",\"club\":{\"name\":\"Club Family Health\",\"nit\":"
+    }
+  ],
+  "analisis_borde": {
+    "host_desconocido_bloqueado": true,
+    "xfh_neutralizado": true,
+    "cuerpo_control_igual_inyecciones": true
+  },
+  "local": {
+    "allowed_hosts_efectivo": [
+      "familyhealthmf-production.up.railway.app",
+      ".up.railway.app",
+      ".railway.app"
+    ],
+    "host_invalido": "host-no-autorizado.test",
+    "host_valido": "familyhealthmf-production.up.railway.app",
+    "rechaza_host_invalido": true,
+    "acepta_host_valido": true,
+    "resultado": "CUMPLE"
+  },
+  "veredicto": "CUMPLE"
+}
