@@ -164,7 +164,11 @@ El jurado reconoce el trabajo como **pertinente, técnicamente sólido y con apl
 | `0e46926` | Corrección funcional previa | Base del software corregido |
 | `d0be182` | Trazabilidad previa | Versión referenciada en la aceptación institucional |
 | `04a6ab1` | Restauración y evidencia de los Bloques 2, 3, 5 y 6 | Scripts `concurrencia_reservas.py`, `verificacion_hosts.py`, `indicadores_impacto.py` + `checklist_seguridad.md` + `aceptacion_institucional.md` + salidas `.json`/`.md` |
-| `dadcf23` | **Versión final** | Re-ejecución de suites el 2026-11-19: unitarias, integración, humo y validación Railway |
+| `dadcf23` | Re-ejecución de suites sobre la versión final | Unitarias (32), integración (12), humo (14) y validación Railway (20) el 2026-11-19 |
+| `8c2b1cb` | Documento resumen de correcciones finales | `CORRECCIONES_FINALES_NOV.md` |
+| `ddec10f` | **Versión final (HEAD)** · caso de regresión U33 | `tests/unit/test_reservations.py` (U33 / RQF-RES-17) + evidencia unitaria actualizada (33 pruebas) |
+
+**HEAD actual publicado en `origin/main`: `ddec10f`.**
 
 ### D.2 · Evidencias clave en `evidencias/`
 
