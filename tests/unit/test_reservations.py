@@ -322,3 +322,55 @@ class ReservasTests(BasePruebas):
         self.assertEqual(usuarios, [self.cliente.username])
         self.assertIn(Reservation.STATUS_CANCELLED, estados)
         self.assertEqual(global_list.status_code, 403)
+    def test_u33_completar_reserva_confirmada(self):
+        """U33 | RQF-RES-17 | Estados | POST reservations/{id}/complete/ | CONFIRMED pasa a COMPLETED con completed_at persistido; PENDING responde 400 y CLIENT 403"""
+        # 1) Reserva CONFIRMED -> COMPLETED por RECEPCION
+        confirmada = self._crear_reserva(
+            dias=6, hora=17, duracion_min=60,
+            status=Reservation.STATUS_CONFIRMED,
+        )
+        self.autenticar(self.recepcion)
+        completar = self.client.post(
+            f"/api/v1/reservations/reservations/{confirmada.id}/complete/"
+        )
+        datos = completar.json()
+        # Persistencia: nueva consulta directa a la base de datos
+        persistida = Reservation.objects.get(pk=confirmada.id)
+        # 2) Estado no permitido (PENDING) -> HTTP 400 sin cambio de estado
+        pendiente = self._crear_reserva(
+            dias=6, hora=19, duracion_min=60,
+            status=Reservation.STATUS_PENDING,
+        )
+        rechazo = self.client.post(
+            f"/api/v1/reservations/reservations/{pendiente.id}/complete/"
+        )
+        pendiente.refresh_from_db()
+        # 3) CLIENT no puede invocar la accion administrativa -> HTTP 403
+        propia = self._crear_reserva(
+            dias=7, hora=10, duracion_min=60, user=self.cliente,
+            status=Reservation.STATUS_CONFIRMED,
+        )
+        self.cerrar_sesion()
+        self.autenticar(self.cliente)
+        prohibido = self.client.post(
+            f"/api/v1/reservations/reservations/{propia.id}/complete/"
+        )
+        propia.refresh_from_db()
+        registrar("U33", (
+            f"completar HTTP {completar.status_code}; status={datos.get('status')}; "
+            f"completed_at_api={datos.get('completed_at') is not None}; "
+            f"persistido={persistida.status == Reservation.STATUS_COMPLETED} "
+            f"(completed_at_bd={persistida.completed_at is not None}); "
+            f"estado_no_permitido HTTP {rechazo.status_code} "
+            f"(sigue {pendiente.status}); cliente HTTP {prohibido.status_code}"
+        ))
+        self.assertEqual(completar.status_code, 200)
+        self.assertEqual(datos["status"], Reservation.STATUS_COMPLETED)
+        self.assertIsNotNone(datos["completed_at"])
+        self.assertEqual(persistida.status, Reservation.STATUS_COMPLETED)
+        self.assertIsNotNone(persistida.completed_at)
+        self.assertEqual(rechazo.status_code, 400)
+        self.assertEqual(pendiente.status, Reservation.STATUS_PENDING)
+        self.assertEqual(prohibido.status_code, 403)
+        self.assertEqual(propia.status, Reservation.STATUS_CONFIRMED)
+

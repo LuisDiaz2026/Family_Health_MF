@@ -49,13 +49,14 @@ El jurado reconoce el trabajo como **pertinente, técnicamente sólido y con apl
 ### A.3 · Ejecutar y documentar las pruebas sobre la versión final
 
 - **Qué solicitó el jurado:** el documento reconocía cambios funcionales posteriores a algunas suites de pruebas; había que garantizar la correspondencia entre las pruebas y la versión entregada.
-- **Qué se hizo:** se **re-ejecutaron todas las suites críticas el 2026-11-19** contra el código de la versión final (HEAD `dadcf23`).
+- **Qué se hizo:** se **re-ejecutaron todas las suites críticas el 2026-11-19** contra el código de la versión final.
+- **Ajuste adicional:** se detectó que la acción `POST /reservations/{id}/complete/` (finalización añadida en octubre) **no tenía un caso específico** en las suites. Se agregó el **caso de regresión U33 (RQF-RES-17)**, que verifica: (a) la transición CONFIRMED → COMPLETED con registro de `completed_at`; (b) la persistencia tras una nueva consulta; (c) el rechazo (HTTP 400) al intentar completar una reserva en estado no permitido; y (d) que un CLIENT no pueda invocar la acción administrativa (HTTP 403).
 - **Resultados (reales, re-ejecutados):**
-  - Pruebas **unitarias:** 32 / 32 PASS.
+  - Pruebas **unitarias:** 33 / 33 PASS (incluye el nuevo U33).
   - Pruebas de **integración:** 12 / 12 PASS.
   - Pruebas de **humo:** 14 OK / 0 fallidos.
   - **HTTP contra Railway:** 20 / 20 PASS.
-- **Evidencia:** `evidencias/pruebas_unitarias.{csv,json,txt}`, `evidencias/pruebas_integracion.{csv,json,txt}`, `evidencias/smoke_tests_raw.txt`, `evidencias/validacion_railway.{json,md}`.
+- **Evidencia:** `tests/unit/test_reservations.py` (caso U33), `evidencias/pruebas_unitarias.{csv,json,txt}`, `evidencias/pruebas_integracion.{csv,json,txt}`, `evidencias/smoke_tests_raw.txt`, `evidencias/validacion_railway.{json,md}`.
 - **Estado:** **Ejecutado y documentado sobre la versión final.**
 
 ### A.4 · Completar la verificación de seguridad SEC-10
@@ -176,7 +177,7 @@ El jurado reconoce el trabajo como **pertinente, técnicamente sólido y con apl
 
 ### D.3 · Cifras consolidadas del sistema
 
-- Pruebas unitarias: **32** · Integración: **12** · Humo: **14** · HTTP Railway: **20**.
+- Pruebas unitarias: **33** (incluye el caso de regresión U33) · Integración: **12** · Humo: **14** · HTTP Railway: **20**.
 - Iteraciones de disponibilidad (Mobile-First): **120** · Casos Mobile-First: **36**.
 - Casos programáticos documentados: **68** (evidencia **funcional**, no pruebas de usabilidad con personas).
 - Requerimientos: **70 RF + 30 RNF = 100** · Historias de usuario: **34** · Story Points: **255** · Sprints: **4**.
@@ -191,7 +192,7 @@ El jurado reconoce el trabajo como **pertinente, técnicamente sólido y con apl
 |---|---|
 | Concurrencia (A.2 / B.2) | PASS · 1 aceptada / 9 rechazadas |
 | SEC-10 (A.4 / B.2) | CUMPLE · 12/12 controles |
-| Pruebas sobre versión final (A.3 / B.2) | Re-ejecutadas el 2026-11-19 |
+| Pruebas sobre versión final (A.3 / B.2) | Re-ejecutadas el 2026-11-19; se añadió el caso de regresión U33 para `complete/` |
 | Aceptación institucional (A.5) | Documento con criterios C1–C6 (6/6) y acta para firma |
 | Indicadores de impacto (B.3) | I-01…I-03 calculables; I-04 declarado no calculable |
 | Tablas, figuras y anexos (A.6) | Unificados en los 3 documentos |
