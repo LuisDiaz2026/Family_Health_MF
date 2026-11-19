@@ -1,5 +1,5 @@
 {
-  "fecha_ejecucion": "2026-10-20T03:53:13+00:00",
+  "fecha_ejecucion": "2026-11-19T13:43:55+00:00",
   "url": "https://familyhealthmf-production.up.railway.app",
   "total": 20,
   "aprobadas": 20,
@@ -25,7 +25,7 @@
       "http_esperado": "200",
       "http_real": 200,
       "resultado": "PASS",
-      "observacion": "rol=CLIENT access=eyJhbGciOi...YR0g (551 car.) (0.3487s)"
+      "observacion": "rol=CLIENT access=eyJhbGciOi...wZ8Q (551 car.) (0.4048s)"
     },
     {
       "id": "RW03",
@@ -47,7 +47,7 @@
       "http_esperado": "400",
       "http_real": 400,
       "resultado": "PASS",
-      "observacion": "registro HTTP 201; usuario=val_rw_047999e2; detalle={\"non_field_errors\": [\"Tu cuenta está INACTIVA o pendiente de aprobación por el Administrador del Club Family Health. Contáctate con recepción o con el administ"
+      "observacion": "registro HTTP 201; usuario=val_rw_43b69001; detalle={\"non_field_errors\": [\"Tu cuenta está INACTIVA o pendiente de aprobación por el Administrador del Club Family Health. Contáctate con recepción o con el administ"
     },
     {
       "id": "RW05",
@@ -120,11 +120,11 @@
       "requisito": "RQF-RES-02",
       "descripcion": "Consulta de disponibilidad de un espacio",
       "metodo": "GET",
-      "ruta": "/api/v1/reservations/spaces/2/availability/?date=2026-10-28",
+      "ruta": "/api/v1/reservations/spaces/2/availability/?date=2026-11-27",
       "http_esperado": "200",
       "http_real": 200,
       "resultado": "PASS",
-      "observacion": "espacio=CANCHA-BASKET-01 fecha=2026-10-28 franjas_libres=32"
+      "observacion": "espacio=CANCHA-BASKET-01 fecha=2026-11-27 franjas_libres=32"
     },
     {
       "id": "RW12",
@@ -135,14 +135,14 @@
       "http_esperado": "201",
       "http_real": 201,
       "resultado": "PASS",
-      "observacion": "id=4 estado=CONFIRMED total=40000.00"
+      "observacion": "id=81 estado=CONFIRMED total=40000.00"
     },
     {
       "id": "RW13",
       "requisito": "RQF-RES-04",
       "descripcion": "Consulta posterior de la reserva creada",
       "metodo": "GET",
-      "ruta": "/api/v1/reservations/reservations/4/",
+      "ruta": "/api/v1/reservations/reservations/81/",
       "http_esperado": "200",
       "http_real": 200,
       "resultado": "PASS",
@@ -201,14 +201,14 @@
       "http_esperado": "200",
       "http_real": 200,
       "resultado": "PASS",
-      "observacion": "nuevo access=eyJhbGciOi...I0Dg (551 car.)"
+      "observacion": "nuevo access=eyJhbGciOi...WBVw (551 car.)"
     },
     {
       "id": "RW19",
       "requisito": "RQF-RES-06",
       "descripcion": "Cancelacion de la reserva de prueba",
       "metodo": "POST",
-      "ruta": "/api/v1/reservations/reservations/4/cancel/",
+      "ruta": "/api/v1/reservations/reservations/81/cancel/",
       "http_esperado": "200",
       "http_real": 200,
       "resultado": "PASS",
@@ -219,11 +219,11 @@
       "requisito": "RQF-BDI-01",
       "descripcion": "Persistencia verificada en una sesion nueva (nueva autenticacion)",
       "metodo": "GET",
-      "ruta": "/api/v1/reservations/reservations/4/",
+      "ruta": "/api/v1/reservations/reservations/81/",
       "http_esperado": "200",
       "http_real": 200,
       "resultado": "PASS",
-      "observacion": "estado en BD=CANCELLED sesion_nueva_token=eyJhbGciOi...iWOA (562 car.)"
+      "observacion": "estado en BD=CANCELLED sesion_nueva_token=eyJhbGciOi...ndYA (562 car.)"
     }
   ]
 }
