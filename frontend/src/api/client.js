@@ -79,22 +79,39 @@ export function extractError(err, fallback = 'Ha ocurrido un error inesperado.')
   try {
     if (!err) return fallback
     if (typeof err === 'string') return err
+    const firstMessage = (value) => {
+      if (typeof value === 'string') return value
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          const message = firstMessage(item)
+          if (message) return message
+        }
+      } else if (value && typeof value === 'object') {
+        for (const key of ['detail', 'message']) {
+          const message = firstMessage(value[key])
+          if (message) return message
+        }
+        for (const item of Object.values(value)) {
+          const message = firstMessage(item)
+          if (message) return message
+        }
+      }
+      return ''
+    }
     if (err.response?.data) {
       const d = err.response.data
       if (typeof d === 'string') return d
-      if (d.detail) return d.detail
-      if (d.message) return d.message
+      if (d.detail) return firstMessage(d.detail)
+      if (d.message) return firstMessage(d.message)
       if (d.errors && typeof d.errors === 'object') {
         const [firstKey] = Object.keys(d.errors)
-        const firstVal = d.errors[firstKey]
-        const msg = Array.isArray(firstVal) ? firstVal[0] : firstVal
-        return `${firstKey}: ${msg}`
+        const msg = firstMessage(d.errors[firstKey])
+        return firstKey === '__all__' ? msg : `${firstKey}: ${msg}`
       }
       const [f] = Object.keys(d)
       if (f) {
-        const v = d[f]
-        const msg = Array.isArray(v) ? v[0] : v
-        if (typeof msg === 'string') return `${f}: ${msg}`
+        const msg = firstMessage(d[f])
+        if (msg) return f === '__all__' ? msg : `${f}: ${msg}`
       }
     }
     if (err.message) return err.message
