@@ -41,8 +41,11 @@
             <div>
               <span class="font-bold text-club-graphite">{{ it.quantity }}x</span>
               <span class="ml-1 text-club-gray-800">{{ it.product_name || it.product?.name }}</span>
+              <div class="mt-0.5 text-[10px] text-club-gray-500">
+                Precio unitario: ${{ formatMoney(itemUnitPrice(it)) }}
+              </div>
             </div>
-            <span class="font-semibold text-club-gray-700">${{ formatMoney(Number(it.price || 0) * Number(it.quantity || 1)) }}</span>
+            <span class="font-semibold text-club-gray-700">${{ formatMoney(itemLineTotal(it)) }}</span>
           </div>
         </div>
         <div v-if="o.notes" class="text-xs text-club-gray-600 bg-club-coral/5 p-2 rounded-lg border border-club-coral/20">
@@ -62,7 +65,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { ClipboardList } from 'lucide-vue-next'
-import api from '@/api/client'
+import api, { extractError } from '@/api/client'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { showToast } from '@/utils/toast'
@@ -100,6 +103,13 @@ function methodLabel(m) { return { CASH: 'Efectivo', TRANSFER: 'Transferencia', 
 function pad(n) { return String(n).padStart(2, '0') }
 function formatDateTime(iso) { const d = new Date(iso); return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}` }
 function formatMoney(n) { return Number(n || 0).toLocaleString('es-CO') }
+function itemUnitPrice(item) {
+  return Number(item.unit_price_at_purchase ?? item.product?.price ?? item.price ?? 0)
+}
+function itemLineTotal(item) {
+  if (item.line_total !== null && item.line_total !== undefined) return Number(item.line_total)
+  return itemUnitPrice(item) * Number(item.quantity || 1)
+}
 
 async function load() {
   loading.value = true
@@ -113,11 +123,23 @@ async function load() {
 
 async function update(o, status) {
   try {
-    await api.patch(`/refreshments/orders/${o.id}/`, { status })
+    let response
+    if (status === 'CANCELLED') {
+      response = await api.post(`/refreshments/orders/${o.id}/cancel/`, {
+        reason: 'Cancelado desde cafetería',
+      })
+    } else if (status === 'PAID') {
+      response = await api.post(`/refreshments/orders/${o.id}/mark-paid/`, {
+        paid_amount: o.total_amount,
+      })
+    } else {
+      response = await api.post(`/refreshments/orders/${o.id}/next-status/`)
+    }
+    if (response.data?.status) o.status = response.data.status
     showToast('Pedido actualizado.', 'success')
     await load()
   } catch (e) {
-    showToast('No se pudo actualizar el pedido.', 'error')
+    showToast(extractError(e, 'No se pudo actualizar el pedido.'), 'error')
   }
 }
 

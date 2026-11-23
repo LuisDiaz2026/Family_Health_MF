@@ -32,8 +32,13 @@
         </div>
         <div class="space-y-1.5 text-xs">
           <div v-for="it in (o.items || []).slice(0, 5)" :key="it.id || it.product_id" class="flex justify-between text-club-gray-600">
-            <span>{{ it.quantity }}x {{ it.product_name || it.product?.name || 'Producto' }}</span>
-            <span class="font-semibold">${{ Number(it.price || 0 * it.quantity).toLocaleString('es-CO') }}</span>
+            <div>
+              <div>{{ it.quantity }}x {{ it.product_name || it.product?.name || 'Producto' }}</div>
+              <div class="text-[10px] text-club-gray-500">
+                Precio unitario: ${{ formatMoney(itemUnitPrice(it)) }}
+              </div>
+            </div>
+            <span class="font-semibold">${{ formatMoney(itemLineTotal(it)) }}</span>
           </div>
         </div>
         <div class="mt-3 pt-3 border-t flex items-center justify-between text-sm">
@@ -92,6 +97,16 @@ function formatDate(iso) {
   if (!iso) return ''
   const d = new Date(iso)
   return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+function formatMoney(value) {
+  return Number(value || 0).toLocaleString('es-CO')
+}
+function itemUnitPrice(item) {
+  return Number(item.unit_price_at_purchase ?? item.product?.price ?? item.price ?? 0)
+}
+function itemLineTotal(item) {
+  if (item.line_total !== null && item.line_total !== undefined) return Number(item.line_total)
+  return itemUnitPrice(item) * Number(item.quantity || 1)
 }
 
 onMounted(() => store.listMyOrders().catch(() => {}))
